@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "ga.melara.stevesminipouch.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "stevesminipouch.refmap.json",
+  "mixins": [
+    "InventoryMenuMixin",
+    "ContainerMenuMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
