@@ -122,6 +122,9 @@ minecraft {
             }
         }
     }
+
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
 }
 
 mixin {
@@ -174,8 +177,7 @@ jar {
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
                 //"Implementation-Vendor": "stevesminipouch authors",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                'FMLAT': 'plugin_at.cfg'
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }

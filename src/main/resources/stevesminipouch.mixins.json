@@ -5,10 +5,14 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "stevesminipouch.refmap.json",
   "mixins": [
-    "InventoryMenuMixin",
-    "ContainerMenuMixin"
+    "ContainerMenuMixin",
+    "ContainerScreenMixin",
+    "InventoryMixin",
+    "PlayerMixin",
+    "SlotMixin"
   ],
   "client": [
+    "ClientPacketListenerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
