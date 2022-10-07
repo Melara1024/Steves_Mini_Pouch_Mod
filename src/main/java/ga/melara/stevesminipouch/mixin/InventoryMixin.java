@@ -15,6 +15,10 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(Inventory.class)
 public class InventoryMixin implements IStorageChangable {
 
+    /*
+    Todo コマンド・インベントリ拡張アイテムの放つイベントに合わせてitemsやsizeを増減する
+     */
+
     private int size = 36;
 
     @Shadow

@@ -18,6 +18,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractContainerMenu.class)
 public abstract class ContainerMenuMixin {
+    /*
+    Todo ページが変更されたときのイベント・メッセージを受け取ってページ変数を保持する
+    Todo 可能な限りイベントで実装したほうがよい(タイミングに合わせて変更できるので)
+
+    Todo ページ変更イベントに合わせてslots, lastSlots, remoteSlots, dataSlotsなど各変数を一挙に更新する機能を実装
+
+    AbstractContainerMenuの変更点
+    slotリストには変更なし
+    lastslots, remoteslotsリストをページ変更ごとにリアルタイムで更新する必要がある
+    MenuインスタンスはScreenインスタンスからmenuを通じて参照可能
+     */
 
     @Shadow public abstract void slotsChanged(Container p_38868_);
 

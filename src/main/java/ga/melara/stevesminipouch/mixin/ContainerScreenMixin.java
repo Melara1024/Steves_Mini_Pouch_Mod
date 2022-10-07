@@ -24,6 +24,15 @@ import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 @Mixin(AbstractContainerScreen.class)
 public class ContainerScreenMixin extends Screen {
 
+    /*
+    Todo ページ変更システム，ボタンを押してページ変数のインクリメント，デクリメント
+    Todo ページ変数が変更された際にメッセージ・もしくはイベントとしてページ変数そのものを送信する
+    Todo できるだけイベントでこの機能を実装する
+
+    Todo スロットつぶしシステム，スロットがactiveを返さないように設定，closedSlotはtrueを返す(SlotMixin)
+    Todo スロットが上記のような状態だったときに灰色の絵で隠せるようにrenderメソッドに対してMixinを適用
+     */
+
     private static final ResourceLocation PATCH = new ResourceLocation(MODID,"textures/gui/patch.png");
 
     private int page = 0;

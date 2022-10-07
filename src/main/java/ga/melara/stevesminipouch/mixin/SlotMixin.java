@@ -14,6 +14,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Slot.class)
 public class SlotMixin implements IHasSlotType {
+    /*
+    Todo スロットのアクティブ状態を変更できるようにする，新変数closedSlotを追加，これによって閉じられたスロットを表現する
+
+    Todo ページを受け取ってinventoryからの参照を変更できるようにする(これはSlotType.INVENTORYのときのみ適用されるように実装)
+    Todo ページの数の分だけインベントリのitemsのインデックスをシフトする，もしもitemsに参照できない場合はスロットを閉じる用に設定
+    スロットの変更点
+    インベントリから取得するアイテムをページ変数によってシフトする
+    プライベート変数slotによってインベントリのitemsリストとの関連付けがされている
+    Slotクラスはアイテムそのものを保持しない
+    未使用スロットには未使用アイテムを挿入，maypickupのオーバーライドでクリックとピックアップの阻止
+    カーソルのホバーに関してはレンダラーで対応可能
+     */
 
     public SlotType type = SlotType.OTHER;
     public int page = 0;
