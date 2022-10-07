@@ -29,10 +29,10 @@ public class Messager {
         INSTANCE = net;
 
 
-        net.messageBuilder(PacketSync.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(PacketSync::new)
-                .encoder(PacketSync::toBytes)
-                .consumer(PacketSync::handle)
+        net.messageBuilder(PageChangedPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PageChangedPacket::new)
+                .encoder(PageChangedPacket::toBytes)
+                .consumer(PageChangedPacket::handle)
                 .add();
     }
 

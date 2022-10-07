@@ -43,10 +43,10 @@ public abstract class ContainerMenuMixin {
     {
         //System.out.println("onAddSlot");
         //if(addAdditionalSlots(slot)) cir.setReturnValue(slot);
-        slot.index = this.slots.size();
-        this.slots.add(slot);
-        setType(slot);
-        cir.setReturnValue(slot);
+//        slot.index = this.slots.size();
+//        this.slots.add(slot);
+//        setType(slot);
+//        cir.setReturnValue(slot);
     }
 
     //todo  very dirty. must be rewrite.

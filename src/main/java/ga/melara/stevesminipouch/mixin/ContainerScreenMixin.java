@@ -2,7 +2,8 @@ package ga.melara.stevesminipouch.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import ga.melara.stevesminipouch.data.ClientInventoryData;
+import ga.melara.stevesminipouch.data.Messager;
+import ga.melara.stevesminipouch.data.PageChangedPacket;
 import ga.melara.stevesminipouch.util.IHasSlotType;
 import ga.melara.stevesminipouch.util.SlotType;
 import net.minecraft.client.gui.components.Button;
@@ -10,8 +11,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
 @Mixin(AbstractContainerScreen.class)
-public class ContainerScreenMixin extends Screen {
+public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Screen {
 
     /*
     Todo ページ変更システム，ボタンを押してページ変数のインクリメント，デクリメント
@@ -47,6 +47,8 @@ public class ContainerScreenMixin extends Screen {
     @Shadow protected int topPos;
 
     @Shadow protected int imageWidth;
+
+    @Shadow T menu;
 
     //dummy
     protected ContainerScreenMixin(Component p_96550_) {
@@ -103,6 +105,11 @@ public class ContainerScreenMixin extends Screen {
     @Inject(method = "renderLabels(Lcom/mojang/blaze3d/vertex/PoseStack;II)V", at = @At(value = "RETURN"), cancellable = true)
     public void onLabelRender(PoseStack poseStack, int unUsed1, int unUsed2, CallbackInfo ci)
     {
+        System.out.println(this.menu.getType().toString());
+        Messager.sendToServer(new PageChangedPacket(8));
+        //MinecraftForge.EVENT_BUS.post(new PageChangeEvent(8, Minecraft.getInstance().level));
+
+
         this.setBlitOffset(100);
         this.itemRenderer.blitOffset = 100.0F;
 
