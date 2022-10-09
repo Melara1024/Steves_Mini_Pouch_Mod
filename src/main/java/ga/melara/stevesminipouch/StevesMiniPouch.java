@@ -5,6 +5,7 @@ import ga.melara.stevesminipouch.data.*;
 import ga.melara.stevesminipouch.util.PageChangeEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -44,22 +45,10 @@ public class StevesMiniPouch {
         MinecraftForge.EVENT_BUS.register(this);
 
 
+
     }
 
-    @SubscribeEvent
-    public void ooo(PageChangeEvent e)
-    {
-        //Messager.sendToPlayer(new PacketSync(new PlayerInventorySizeData()));
-        System.out.print("from ");
-        //ページの変更時，setメソッドの発火と同時にイベントを送信してサーバー側にもイベントを知らせる？
-        if(Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER)
-        {
-            System.out.println("server");
-        }
-        else{
-            System.out.println("client");
-        }
-    }
+
 
 
     //パケット送信の例

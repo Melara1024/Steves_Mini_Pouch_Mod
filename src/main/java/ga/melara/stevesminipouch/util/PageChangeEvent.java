@@ -6,5 +6,15 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.event.IModBusEvent;
 
 public class PageChangeEvent extends Event implements IModBusEvent {
-    //単に変数の変更を告げるためだけのダミーイベント
+    int page = 0;
+
+    public PageChangeEvent(int p){
+        this.page = p;
+    }
+
+    public int getPage()
+    {
+        //Typeからキーを使ってプロパティマップから該当リストを入手，switchとかはしない(いちいち追加が必要になってしまう)
+        return this.page;
+    }
 }

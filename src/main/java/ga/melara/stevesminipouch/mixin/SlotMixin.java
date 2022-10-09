@@ -1,24 +1,33 @@
 package ga.melara.stevesminipouch.mixin;
 
+import ga.melara.stevesminipouch.util.IHasSlotPage;
 import ga.melara.stevesminipouch.util.IHasSlotType;
+import ga.melara.stevesminipouch.util.IStorageChangable;
 import ga.melara.stevesminipouch.util.SlotType;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Slot.class)
-public class SlotMixin implements IHasSlotType {
+public class SlotMixin implements IHasSlotType, IHasSlotPage {
     /*
     Todo スロットのアクティブ状態を変更できるようにする，新変数closedSlotを追加，これによって閉じられたスロットを表現する
 
     Todo ページを受け取ってinventoryからの参照を変更できるようにする(これはSlotType.INVENTORYのときのみ適用されるように実装)
     Todo ページの数の分だけインベントリのitemsのインデックスをシフトする，もしもitemsに参照できない場合はスロットを閉じる用に設定
+
+    Todo Set Get Removeの３つについてページからたどれるように
     スロットの変更点
     インベントリから取得するアイテムをページ変数によってシフトする
     プライベート変数slotによってインベントリのitemsリストとの関連付けがされている
@@ -30,12 +39,27 @@ public class SlotMixin implements IHasSlotType {
     public SlotType type = SlotType.OTHER;
     public int page = 0;
 
-    private static final int ESCAPE_RANGE = 10000;
+    @Final
+    @Shadow
+    @Mutable
+    private int slot;
+
+    @Final
+    @Shadow
+    @Mutable
+    public Container container;
+
+    @Shadow
+    public int index;
 
     @Shadow
     public int x;
+
     @Shadow
     public int y;
+
+    @Shadow
+    public void setChanged() {}
 
     private boolean isHiding = false;
 
@@ -64,18 +88,44 @@ public class SlotMixin implements IHasSlotType {
         return this.page;
     }
 
-    @Override
-    public void hide()
+
+    @Inject(method = "set(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
+    public void onSetItem(ItemStack p_40240_, CallbackInfo ci)
     {
-        if(!isHiding)this.y = this.y + ESCAPE_RANGE;
-        isHiding = true;
+        if(this.type == SlotType.INVENTORY)
+        {
+            System.out.println(this.slot + 27*page + " : " + ((IStorageChangable)container).getSize());
+            if(this.slot + 27*page < ((IStorageChangable)container).getSize())
+            {
+                this.container.setItem(this.slot + 27*page, p_40240_);
+                this.setChanged();
+                ci.cancel();
+            }
+        }
     }
 
-    @Override
-    public void show()
+    @Inject(method = "getItem()Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
+    public void onGetItem(CallbackInfoReturnable<ItemStack> cir)
     {
-        if(isHiding)this.y = this.y - ESCAPE_RANGE;
-        isHiding = false;
+        if(this.type == SlotType.INVENTORY)
+        {
+            if(this.slot + 27*page < ((IStorageChangable)container).getSize())
+            {
+                cir.setReturnValue(this.container.getItem(this.slot + 27*page));
+            }
+        }
+    }
+
+    @Inject(method = "remove(I)Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
+    public void onRemoveItem(int p_40227_, CallbackInfoReturnable<ItemStack> cir)
+    {
+        if(this.type == SlotType.INVENTORY)
+        {
+            if(this.slot + 27*page < ((IStorageChangable)container).getSize())
+            {
+                cir.setReturnValue(this.container.removeItem(this.slot + 27*page, p_40227_));
+            }
+        }
     }
 
 }

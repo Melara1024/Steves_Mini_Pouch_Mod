@@ -4,15 +4,21 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import ga.melara.stevesminipouch.data.Messager;
 import ga.melara.stevesminipouch.data.PageChangedPacket;
+import ga.melara.stevesminipouch.util.IHasSlotPage;
 import ga.melara.stevesminipouch.util.IHasSlotType;
+import ga.melara.stevesminipouch.util.IStorageChangable;
 import ga.melara.stevesminipouch.util.SlotType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -58,24 +64,25 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
     @Inject(method = "renderSlot(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/inventory/Slot;)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSlotRender(PoseStack poseStack, Slot slot, CallbackInfo ci)
     {
+        ((IHasSlotPage)slot).setPage(page);
         //ページから該当するもののみを表示する
         //System.out.println(((IHasSlotType)(Object)slot).getType());
         //System.out.println(slot.container.toString());
         //System.out.println(slot.getSlotIndex());
-        if(((IHasSlotType)(Object)slot).getType() == SlotType.INVENTORY)
-        {
-            //System.out.println(((IHasSlotType)(Object)slot).getPage());
-            //System.out.println(this.page);
-            //System.out.println(((IHasSlotType)(Object)slot).getVisiblity());
-            if(((IHasSlotType)(Object)slot).getPage() == this.page)
-            {
-                ((IHasSlotType)(Object)slot).show();
-            }
-            else
-            {
-                ((IHasSlotType)(Object)slot).hide();
-            }
-        }
+//        if(((IHasSlotType)(Object)slot).getType() == SlotType.INVENTORY)
+//        {
+//            //System.out.println(((IHasSlotType)(Object)slot).getPage());
+//            //System.out.println(this.page);
+//            //System.out.println(((IHasSlotType)(Object)slot).getVisiblity());
+//            if(((IHasSlotPage)(Object)slot).getPage() == this.page)
+//            {
+//                ((IHasSlotType)(Object)slot).show();
+//            }
+//            else
+//            {
+//                ((IHasSlotType)(Object)slot).hide();
+//            }
+//        }
 
 
 
@@ -105,8 +112,9 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
     @Inject(method = "renderLabels(Lcom/mojang/blaze3d/vertex/PoseStack;II)V", at = @At(value = "RETURN"), cancellable = true)
     public void onLabelRender(PoseStack poseStack, int unUsed1, int unUsed2, CallbackInfo ci)
     {
-        System.out.println(this.menu.getType().toString());
-        Messager.sendToServer(new PageChangedPacket(8));
+        //System.out.println(this.menu.getType().toString());
+
+
         //MinecraftForge.EVENT_BUS.post(new PageChangeEvent(8, Minecraft.getInstance().level));
 
 
@@ -131,23 +139,33 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
 
         this.addRenderableWidget(new Button(this.leftPos+this.inventoryLabelX+this.imageWidth-5, this.topPos+this.inventoryLabelY+18, 18, 18,
                 Component.literal("▲"), (p_96337_) -> {
+
+            //上ボタンの処理
+
             previousPage();
-            System.out.println("now page is" + page);
+            Messager.sendToServer(new PageChangedPacket(page));
+
+
+            //System.out.println("now page is" + page);
         }));
 
         this.addRenderableWidget(new Button(this.leftPos+this.inventoryLabelX+this.imageWidth-5, this.topPos+this.inventoryLabelY+24+18, 18, 18,
                 Component.literal("▼"), (p_96337_) -> {
+
             nextPage();
-            System.out.println("now page is" + page);
+            Messager.sendToServer(new PageChangedPacket(page));
+
+            //System.out.println("now page is" + page);
         }));
 
         this.itemRenderer.blitOffset = 0.0F;
         this.setBlitOffset(0);
     }
 
+    //最大値はClient側menuよりthis.menuとして入手
     private void nextPage()
     {
-        if(page < 1)page++;
+        if(page < (((IStorageChangable) Minecraft.getInstance().player.getInventory()).getMaxPage()))page++;
     }
     private void previousPage()
     {

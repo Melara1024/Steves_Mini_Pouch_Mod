@@ -38,7 +38,7 @@ public class Config {
         ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
 
 
-        SERVER_BUILDER.comment("Comment Server").push("powergen");
+        SERVER_BUILDER.comment("Comment Server").push("server");
 
         //server default slots
         DEFAULT_SIZE = SERVER_BUILDER.comment("Default Inventory Size").defineInRange("defaultsize", 80, 0, 1000);

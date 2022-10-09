@@ -1,28 +1,35 @@
 package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.Config;
-import ga.melara.stevesminipouch.util.IHasSlotType;
-import ga.melara.stevesminipouch.util.SlotType;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import ga.melara.stevesminipouch.util.*;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractContainerMenu.class)
-public abstract class ContainerMenuMixin {
+public abstract class ContainerMenuMixin{
     /*
     Todo ページが変更されたときのイベント・メッセージを受け取ってページ変数を保持する
     Todo 可能な限りイベントで実装したほうがよい(タイミングに合わせて変更できるので)
 
     Todo ページ変更イベントに合わせてslots, lastSlots, remoteSlots, dataSlotsなど各変数を一挙に更新する機能を実装
+
+
 
     AbstractContainerMenuの変更点
     slotリストには変更なし
@@ -36,61 +43,55 @@ public abstract class ContainerMenuMixin {
 
     @Shadow public abstract int incrementStateId();
 
-    @Shadow NonNullList<Slot> slots;
+    @Shadow
+    public NonNullList<Slot> slots;
 
-    @Inject(method = "addSlot(Lnet/minecraft/world/inventory/Slot;)Lnet/minecraft/world/inventory/Slot;", at = @At("HEAD"), cancellable = true)
-    public void onAddSlot(Slot slot, CallbackInfoReturnable<Slot> cir)
+    @Shadow
+    public NonNullList<ItemStack> remoteSlots;
+
+    @Shadow
+    public NonNullList<ItemStack> lastSlots;
+
+
+    @Shadow
+    public void broadcastFullState(){};
+
+    int pageMax = 1;
+    int page = 0;
+
+    @Inject(method = "<init>", at = @At("RETURN"), cancellable = true)
+    public void onConstruct(MenuType p_38851_, int p_38852_, CallbackInfo ci)
     {
-        //System.out.println("onAddSlot");
-        //if(addAdditionalSlots(slot)) cir.setReturnValue(slot);
-//        slot.index = this.slots.size();
-//        this.slots.add(slot);
-//        setType(slot);
-//        cir.setReturnValue(slot);
+        MinecraftForge.EVENT_BUS.register(this);
     }
+
+
+    @SubscribeEvent
+    public void onPageChange(PageChangeEvent e)
+    {
+        //System.out.println("hello! from abstractcontainermenu! " + e.getPage());
+        //送られてきたページ変数が正しいかどうかの処理はスロット側で行う
+        //ここでは変な値が送られてきたとしても無視
+        for(Slot s : this.slots)
+        {
+            //スロットに対してページ変更を報告
+            ((IHasSlotPage)s).setPage(e.getPage());
+            //System.out.println(s.getItem().getDisplayName().toString());
+        }
+
+        broadcastFullState();
+
+        System.out.println("page flipped to " + e.getPage());
+    }
+
+
 
     //todo  very dirty. must be rewrite.
 
-    public NonNullList<Slot> copyOfInventory = NonNullList.create();
-
-    private boolean addAdditionalSlots(Slot slot)
+    @Inject(method = "addSlot(Lnet/minecraft/world/inventory/Slot;)Lnet/minecraft/world/inventory/Slot;", at = @At("RETURN"), cancellable = true)
+    public void onAddSlot(Slot slot, CallbackInfoReturnable<Slot> cir)
     {
-        if(slot.container instanceof Inventory)
-        {
-            if(slot.getSlotIndex() >= 9 && slot.getSlotIndex() < 36)
-            {
-
-                int maxpage = (int)(Math.floor((Config.MAX_SIZE.get()-9) / 27));
-                maxpage = 1;
-                System.out.println("maxpage is " + maxpage);
-
-                for(int i=0; i<=maxpage; i++)
-                {
-                    Slot additionalSlot = copySlot(slot, i==0 ? 0 : Config.ADDITIONAL_INVENTORY_INDEX.get()+i);
-                    additionalSlot.index = ((AbstractContainerMenu)(Object)this).slots.size() + (i==0 ? 0:41);
-                    ((AbstractContainerMenu)(Object)this).slots.add(additionalSlot);
-                    ((AbstractContainerMenu)(Object)this).lastSlots.add(new ItemStack(Items.DIAMOND_BLOCK, 1));
-                    ((AbstractContainerMenu)(Object)this).remoteSlots.add(new ItemStack(Items.DIAMOND_BLOCK, 1));
-                    additionalSlot.set(new ItemStack(Items.DIAMOND_BLOCK));
-                    ((IHasSlotType)additionalSlot).setType(SlotType.INVENTORY);
-                    ((IHasSlotType)additionalSlot).setPage(i);
-
-
-                    System.out.println("========================================");
-                    System.out.println("slot pos = " + additionalSlot.x + ", " + additionalSlot.y);
-                    System.out.println("index = " + additionalSlot.getSlotIndex());
-                    System.out.println("page = " + ((IHasSlotType)additionalSlot).getPage());
-
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Slot copySlot(Slot slot, int slotOffset)
-    {
-        return new Slot(slot.container, slot.getSlotIndex() + slotOffset, slot.x, slot.y);
+        setType(slot);
     }
 
 
@@ -107,7 +108,7 @@ public abstract class ContainerMenuMixin {
             if(targetSlot.getSlotIndex() >= 9 && targetSlot.getSlotIndex() < 36)
             {
                 ((IHasSlotType)targetSlot).setType(SlotType.INVENTORY);
-                ((IHasSlotType)targetSlot).setPage(0);
+                ((IHasSlotPage)targetSlot).setPage(0);
             }
             if(targetSlot.getSlotIndex() >= 36 && targetSlot.getSlotIndex() < 40)
             {
