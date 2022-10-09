@@ -89,15 +89,29 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage {
     }
 
 
+    @Inject(method = "initialize(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
+    public void onInitialize(ItemStack p_40240_, CallbackInfo ci)
+    {
+        if(this.type == SlotType.INVENTORY && page>0)
+        {
+            if(this.slot + 27*page < ((IStorageChangable)container).getSize())
+            {
+                System.out.println("set item to " + (this.slot + 27*page + 5) + " name " + p_40240_);
+                this.container.setItem(this.slot + 27*page + 5, p_40240_);
+                this.setChanged();
+                ci.cancel();
+            }
+        }
+    }
+
     @Inject(method = "set(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
     public void onSetItem(ItemStack p_40240_, CallbackInfo ci)
     {
-        if(this.type == SlotType.INVENTORY)
+        if(this.type == SlotType.INVENTORY && page>0)
         {
-            System.out.println(this.slot + 27*page + " : " + ((IStorageChangable)container).getSize());
             if(this.slot + 27*page < ((IStorageChangable)container).getSize())
             {
-                this.container.setItem(this.slot + 27*page, p_40240_);
+                this.container.setItem(this.slot + 27*page + 5, p_40240_);
                 this.setChanged();
                 ci.cancel();
             }
@@ -107,11 +121,12 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage {
     @Inject(method = "getItem()Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
     public void onGetItem(CallbackInfoReturnable<ItemStack> cir)
     {
-        if(this.type == SlotType.INVENTORY)
+        if(this.type == SlotType.INVENTORY && page>0)
         {
             if(this.slot + 27*page < ((IStorageChangable)container).getSize())
             {
-                cir.setReturnValue(this.container.getItem(this.slot + 27*page));
+                System.out.println("set item to " +  (this.slot + 27*page + 5) + " name " + this.container.getItem(this.slot + 27*page + 5));
+                cir.setReturnValue(this.container.getItem(this.slot + 27*page + 5));
             }
         }
     }

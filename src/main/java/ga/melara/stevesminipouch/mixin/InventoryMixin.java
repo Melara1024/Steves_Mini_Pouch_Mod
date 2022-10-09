@@ -59,13 +59,13 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
         items = NonNullList.withSize(36, ItemStack.EMPTY);
         armor = NonNullList.withSize(4, ItemStack.EMPTY);
         offhand = NonNullList.withSize(1, ItemStack.EMPTY);
-        compartments.add(items);
-        compartments.add(armor);
-        compartments.add(offhand);
+        compartments.add(0, items);
+        compartments.add(1, armor);
+        compartments.add(2, offhand);
 
         compartments.remove(items);
         items = NonNullList.withSize(90, ItemStack.EMPTY);
-        compartments.add(items);
+        compartments.add(0, items);
     }
 
     @Override
@@ -119,77 +119,158 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
     }
 
     @Inject(method = "save(Lnet/minecraft/nbt/ListTag;)Lnet/minecraft/nbt/ListTag;", at = @At(value = "HEAD"), cancellable = true)
-    public void onSave(ListTag p_36027_, CallbackInfoReturnable<ListTag> cir)
+    public void onSave(ListTag tags, CallbackInfoReturnable<ListTag> cir)
     {
-        System.out.println("armor id " + this.armor);
-        for(ItemStack i : items)
-        {
-            //System.out.println(i.getDisplayName());
-        }
+//        System.out.println("armor id " + armor);
+//        for(ItemStack i : items)
+//        {
+//            System.out.println(i.getDisplayName());
+//        }
         for(int i = 0; i < 36; ++i) {
-            if (!this.items.get(i).isEmpty()) {
-                System.out.println(items.get(i).getDisplayName());
+            if (!items.get(i).isEmpty()) {
                 CompoundTag compoundtag = new CompoundTag();
                 compoundtag.putByte("Slot", (byte)i);
-                this.items.get(i).save(compoundtag);
-                p_36027_.add(compoundtag);
+                items.get(i).save(compoundtag);
+                tags.add(compoundtag);
             }
         }
 
         for(int j = 0; j < this.armor.size(); ++j) {
-            if (!this.armor.get(j).isEmpty()) {
+            if (!armor.get(j).isEmpty()) {
                 CompoundTag compoundtag1 = new CompoundTag();
                 compoundtag1.putByte("Slot", (byte)(j + 100));
-                this.armor.get(j).save(compoundtag1);
-                p_36027_.add(compoundtag1);
+                armor.get(j).save(compoundtag1);
+                tags.add(compoundtag1);
             }
         }
 
         for(int k = 0; k < this.offhand.size(); ++k) {
-            if (!this.offhand.get(k).isEmpty()) {
+            if (!offhand.get(k).isEmpty()) {
                 CompoundTag compoundtag2 = new CompoundTag();
                 compoundtag2.putByte("Slot", (byte)(k + 150));
-                this.offhand.get(k).save(compoundtag2);
-                p_36027_.add(compoundtag2);
+                offhand.get(k).save(compoundtag2);
+                tags.add(compoundtag2);
             }
         }
 
-        cir.setReturnValue(p_36027_);
+        cir.setReturnValue(tags);
     }
 
     @Inject(method = "load(Lnet/minecraft/nbt/ListTag;)V", at = @At(value = "HEAD"), cancellable = true)
-    public void onLoad(ListTag p_36036_, CallbackInfo ci)
+    public void onLoad(ListTag tags, CallbackInfo ci)
     {
-        this.items.clear();
-        this.armor.clear();
-        this.offhand.clear();
+        items.clear();
+        armor.clear();
+        offhand.clear();
 
-        for(int i = 0; i < p_36036_.size(); ++i) {
-            CompoundTag compoundtag = p_36036_.getCompound(i);
+        for(int i = 0; i < tags.size(); ++i) {
+            CompoundTag compoundtag = tags.getCompound(i);
             int j = compoundtag.getByte("Slot") & 255;
             ItemStack itemstack = ItemStack.of(compoundtag);
             if (!itemstack.isEmpty()) {
-                if (j >= 0 && j < this.items.size()) {
-                    this.items.set(j, itemstack);
-                } else if (j >= 100 && j < this.armor.size() + 100) {
-                    this.armor.set(j - 100, itemstack);
-                } else if (j >= 150 && j < this.offhand.size() + 150) {
-                    this.offhand.set(j - 150, itemstack);
+                if (j >= 0 && j < 36) {
+                    items.set(j, itemstack);
+                } else if (j >= 100 && j < armor.size() + 100) {
+                    armor.set(j - 100, itemstack);
+                } else if (j >= 150 && j < offhand.size() + 150) {
+                    offhand.set(j - 150, itemstack);
                 }
             }
         }
+
+        items.forEach(System.out::println);
         ci.cancel();
+    }
+
+    @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At(value = "HEAD"), cancellable = true)
+    public void onSetItem(int id, ItemStack p_36000_, CallbackInfo ci) {
+
+        //vanilla inventory
+        if(id < 36)
+        {
+            if (items != null) {
+                items.set(id, p_36000_);
+            }
+            ci.cancel();
+        }
+
+        //armor
+        if(id >= 36 && id < 40)
+        {
+            if (armor != null) {
+                armor.set(id - 36, p_36000_);
+            }
+            ci.cancel();
+        }
+
+        //offhand
+        if(id == 40)
+        {
+            if (offhand != null) {
+                offhand.set(id -40, p_36000_);
+            }
+            ci.cancel();
+        }
+
+        //minipouch
+        if(id > 40)
+        {
+            if (items != null) {
+                items.set(id-5, p_36000_);
+            }
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "getItem(I)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "HEAD"), cancellable = true)
+    public void onGetItem(int id, CallbackInfoReturnable<ItemStack> cir)
+    {
+
+        //vanilla inventory
+        if(id < 36)
+        {
+            if (items != null) {
+                cir.setReturnValue(items.get(id));
+            }
+        }
+
+        //armor
+        if(id >= 36 && id < 40)
+        {
+            if (armor != null) {
+                cir.setReturnValue(armor.get(id - 36));
+            }
+        }
+
+        //offhand
+        if(id == 40)
+        {
+            if (offhand != null) {
+                cir.setReturnValue(offhand.get(id - 40));
+            }
+        }
+
+        //minipouch
+        if(id > 40)
+        {
+            if (items != null) {
+                cir.setReturnValue(items.get(id-5));
+            }
+        }
     }
 
     @Override
     public ListTag saveAdditional(ListTag tag) {
 
-        for(int i = 36; i < this.items.size(); ++i) {
+        //Todo セーブ関連がなんかおかしい
+
+        //itemsの35番までは無視
+        for(int i = 36; i < items.size(); ++i) {
             //System.out.println("saveAdditional " + i);
-            if (!this.items.get(i).isEmpty()) {
+            if (!items.get(i).isEmpty()) {
                 CompoundTag compoundtag = new CompoundTag();
                 compoundtag.putInt("Slot", i);
-                this.items.get(i).save(compoundtag);
+                items.get(i).save(compoundtag);
                 tag.add(compoundtag);
             }
         }
@@ -199,15 +280,17 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
 
     @Override
     public void loadAdditional(ListTag tag) {
+        //タグは全部読むので0からでOK
         for(int i = 0; i < tag.size(); ++i) {
             CompoundTag compoundtag = tag.getCompound(i);
             int j = compoundtag.getInt("Slot");
             ItemStack itemstack = ItemStack.of(compoundtag);
             if (!itemstack.isEmpty()) {
-                if (j >= 0 && j < this.items.size()) {
-                    this.items.set(j, itemstack);
+                if (j < items.size()) {
+                    items.set(j, itemstack);
                 }
             }
         }
+        items.forEach(System.out::println);
     }
 }

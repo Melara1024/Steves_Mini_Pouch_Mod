@@ -32,6 +32,7 @@ public class Messager {
         net.messageBuilder(PageChangedPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(PageChangedPacket::new)
                 .encoder(PageChangedPacket::toBytes)
+                //.consumerMainThread(PageChangedPacket::handle)
                 .consumer(PageChangedPacket::handle)
                 .add();
     }
