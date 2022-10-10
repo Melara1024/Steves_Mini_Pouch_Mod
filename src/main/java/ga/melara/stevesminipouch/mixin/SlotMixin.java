@@ -19,6 +19,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Optional;
+
 @Mixin(Slot.class)
 public class SlotMixin implements IHasSlotType, IHasSlotPage {
     /*
@@ -92,11 +94,12 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage {
     @Inject(method = "initialize(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
     public void onInitialize(ItemStack p_40240_, CallbackInfo ci)
     {
+        //ページを捲る前にinitializeが呼ばれてしまっている？
         if(this.type == SlotType.INVENTORY && page>0)
         {
             if(this.slot + 27*page < ((IStorageChangable)container).getSize())
             {
-                System.out.println("set item to " + (this.slot + 27*page + 5) + " name " + p_40240_);
+                //System.out.println("set item to " + (this.slot + 27*page + 5) + " name " + p_40240_);
                 this.container.setItem(this.slot + 27*page + 5, p_40240_);
                 this.setChanged();
                 ci.cancel();
@@ -121,11 +124,12 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage {
     @Inject(method = "getItem()Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
     public void onGetItem(CallbackInfoReturnable<ItemStack> cir)
     {
+        //System.out.println("called slot is " + (this.slot + 27*page + 5));
         if(this.type == SlotType.INVENTORY && page>0)
         {
             if(this.slot + 27*page < ((IStorageChangable)container).getSize())
             {
-                System.out.println("set item to " +  (this.slot + 27*page + 5) + " name " + this.container.getItem(this.slot + 27*page + 5));
+                //System.out.println("set item to " +  (this.slot + 27*page + 5) + " name " + this.container.getItem(this.slot + 27*page + 5));
                 cir.setReturnValue(this.container.getItem(this.slot + 27*page + 5));
             }
         }
@@ -134,13 +138,19 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage {
     @Inject(method = "remove(I)Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
     public void onRemoveItem(int p_40227_, CallbackInfoReturnable<ItemStack> cir)
     {
-        if(this.type == SlotType.INVENTORY)
+        if(this.type == SlotType.INVENTORY && page>0)
         {
             if(this.slot + 27*page < ((IStorageChangable)container).getSize())
             {
-                cir.setReturnValue(this.container.removeItem(this.slot + 27*page, p_40227_));
+                cir.setReturnValue(this.container.removeItem(this.slot + 27*page + 5, p_40227_));
             }
         }
+    }
+
+    @Inject(method = "tryRemove(IILnet/minecraft/world/entity/player/Player;)Ljava/util/Optional;", at = @At("HEAD"), cancellable = true)
+    public void onTryRemoveItem(int p_150642_, int p_150643_, Player p_150644_, CallbackInfoReturnable<Optional<ItemStack>> cir)
+    {
+        System.out.println("try remove on " + (this.slot + this.page*27) );
     }
 
 }

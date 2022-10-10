@@ -3,6 +3,7 @@ package ga.melara.stevesminipouch.mixin;
 import ga.melara.stevesminipouch.util.IAdditionalStorage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -14,6 +15,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.OptionalInt;
 
 @Mixin(Player.class)
 public class PlayerMixin {
@@ -27,7 +31,7 @@ public class PlayerMixin {
     @Inject(method = "readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"), cancellable = true)
     public void onReadData(CompoundTag p_36215_, CallbackInfo ci)
     {
-        System.out.println("minipouch read");
+        //System.out.println("minipouch read");
         ListTag listtag = p_36215_.getList("MiniPouch", 10);
         ((IAdditionalStorage)this.inventory).loadAdditional(listtag);
     }
@@ -35,7 +39,7 @@ public class PlayerMixin {
     @Inject(method = "addAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"), cancellable = true)
     public void onAddData(CompoundTag p_36265_, CallbackInfo ci)
     {
-        System.out.println("minipouch add");
+        //System.out.println("minipouch add");
         p_36265_.put("MiniPouch", ((IAdditionalStorage)this.inventory).saveAdditional(new ListTag()));
     }
 }

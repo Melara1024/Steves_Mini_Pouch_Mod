@@ -19,6 +19,7 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraftforge.client.event.RenderTooltipEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -56,6 +57,11 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
 
     @Shadow T menu;
 
+
+    Button upButton;
+    Button downButton;
+    Button pageIndicator;
+
     //dummy
     protected ContainerScreenMixin(Component p_96550_) {
         super(p_96550_);
@@ -64,7 +70,10 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
     @Inject(method = "renderSlot(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/inventory/Slot;)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSlotRender(PoseStack poseStack, Slot slot, CallbackInfo ci)
     {
-        ((IHasSlotPage)slot).setPage(page);
+        if(((IHasSlotPage)slot).getPage() != page)((IHasSlotPage)slot).setPage(page);
+
+        //System.out.println(page);
+        //if(page > 0 && ((IHasSlotType)slot).getType() == SlotType.INVENTORY)slot.initialize(slot.container.getItem(slot.getSlotIndex() + page*27 + 5));
         //ページから該当するもののみを表示する
         //System.out.println(((IHasSlotType)(Object)slot).getType());
         //System.out.println(slot.container.toString());
@@ -134,29 +143,32 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
     @Inject(method = "init()V", at = @At(value = "RETURN"), cancellable = true)
     public void oninitRender(CallbackInfo ci)
     {
+        Messager.sendToServer(new PageChangedPacket(page));
         this.setBlitOffset(100);
         this.itemRenderer.blitOffset = 100.0F;
 
-        this.addRenderableWidget(new Button(this.leftPos+this.inventoryLabelX+this.imageWidth-5, this.topPos+this.inventoryLabelY+18, 18, 18,
+        upButton = new Button(this.leftPos+this.inventoryLabelX+this.imageWidth-5, this.topPos+this.inventoryLabelY+18, 18, 18,
                 Component.literal("▲"), (p_96337_) -> {
-
-            //上ボタンの処理
-
             previousPage();
             Messager.sendToServer(new PageChangedPacket(page));
+        });
 
-
-            //System.out.println("now page is" + page);
-        }));
-
-        this.addRenderableWidget(new Button(this.leftPos+this.inventoryLabelX+this.imageWidth-5, this.topPos+this.inventoryLabelY+24+18, 18, 18,
+        downButton = new Button(this.leftPos+this.inventoryLabelX+this.imageWidth-5, this.topPos+this.inventoryLabelY+54, 18, 18,
                 Component.literal("▼"), (p_96337_) -> {
-
             nextPage();
             Messager.sendToServer(new PageChangedPacket(page));
+        });
 
-            //System.out.println("now page is" + page);
-        }));
+        pageIndicator = new Button(this.leftPos+this.inventoryLabelX+this.imageWidth-5, this.topPos+this.inventoryLabelY+36, 18, 18,
+                Component.literal(String.valueOf(page+1)), (p_96337_) -> {
+        });
+        pageIndicator.active = false;
+
+        this.addRenderableWidget(upButton);
+
+        this.addRenderableWidget(pageIndicator);
+
+        this.addRenderableWidget(downButton);
 
         this.itemRenderer.blitOffset = 0.0F;
         this.setBlitOffset(0);
@@ -175,6 +187,11 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;IIF)V", at = @At(value = "RETURN"), cancellable = true)
     public void onRender(PoseStack poseStack, int mouseX, int mouseY, float partialTick, CallbackInfo ci)
     {
-        this.renderables.forEach(button -> button.render(poseStack, mouseX, mouseY, partialTick));
+        //this.renderables.forEach(button -> button.render(poseStack, mouseX, mouseY, partialTick));
+        upButton.renderButton(poseStack, mouseX, mouseY, partialTick);
+        downButton.renderButton(poseStack, mouseX, mouseY, partialTick);
+        pageIndicator.setMessage(Component.literal(String.valueOf(page+1)));
+        pageIndicator.renderButton(poseStack, mouseX, mouseY, partialTick);
+        //this.font.draw(poseStack, Component.literal(String.valueOf(page)), (float) this.leftPos+this.inventoryLabelX+this.imageWidth, this.topPos+this.inventoryLabelY+40, 0xFFFFFF);
     }
 }

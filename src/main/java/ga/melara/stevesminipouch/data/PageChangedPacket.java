@@ -30,7 +30,7 @@ public class PageChangedPacket {
         ctx.enqueueWork(() -> {
             //サーバーのプレイヤーを手に入れてインベントリのページ変数を変更
             //ctx.getSender().inventoryMenu.
-            System.out.println("received value is" + page);
+            //System.out.println("received value is" + page);
             MinecraftForge.EVENT_BUS.post(new PageChangeEvent(page));
 //            System.out.println(ctx.getSender().getName());
 //            System.out.println(ctx.getDirection().toString());

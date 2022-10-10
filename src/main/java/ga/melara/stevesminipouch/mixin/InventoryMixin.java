@@ -7,6 +7,7 @@ import ga.melara.stevesminipouch.util.IStorageChangable;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -68,6 +69,8 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
         compartments.add(0, items);
     }
 
+
+
     @Override
     public void changeStorageSize(int change, Level level, LivingEntity entity)
     {
@@ -126,6 +129,7 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
 //        {
 //            System.out.println(i.getDisplayName());
 //        }
+
         for(int i = 0; i < 36; ++i) {
             if (!items.get(i).isEmpty()) {
                 CompoundTag compoundtag = new CompoundTag();
@@ -183,48 +187,55 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
     }
 
     @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At(value = "HEAD"), cancellable = true)
-    public void onSetItem(int id, ItemStack p_36000_, CallbackInfo ci) {
+    public void onSetItem(int id, ItemStack itemStack, CallbackInfo ci) {
 
         //vanilla inventory
         if(id < 36)
         {
             if (items != null) {
-                items.set(id, p_36000_);
+                items.set(id, itemStack);
             }
             ci.cancel();
         }
 
         //armor
-        if(id >= 36 && id < 40)
+        else if(id >= 36 && id < 40)
         {
             if (armor != null) {
-                armor.set(id - 36, p_36000_);
+                armor.set(id - 36, itemStack);
             }
             ci.cancel();
         }
 
         //offhand
-        if(id == 40)
+        else if(id == 40)
         {
             if (offhand != null) {
-                offhand.set(id -40, p_36000_);
+                offhand.set(id - 40, itemStack);
             }
             ci.cancel();
         }
 
         //minipouch
-        if(id > 40)
+        else if(id > 40)
         {
             if (items != null) {
-                items.set(id-5, p_36000_);
+                items.set(id-5, itemStack);
             }
             ci.cancel();
         }
+
+        else {ci.cancel();}
+
     }
 
     @Inject(method = "getItem(I)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "HEAD"), cancellable = true)
     public void onGetItem(int id, CallbackInfoReturnable<ItemStack> cir)
     {
+
+        //Todo なぜか5スロット先のアイテムをgetしてしまう
+        //Todo レンダリングのときのgetは正しい
+        //Todo ホットバーは正しい(SlotType.Inventoryのスロットのみおかしい？)
 
         //vanilla inventory
         if(id < 36)
@@ -235,7 +246,7 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
         }
 
         //armor
-        if(id >= 36 && id < 40)
+        else if(id >= 36 && id < 40)
         {
             if (armor != null) {
                 cir.setReturnValue(armor.get(id - 36));
@@ -243,7 +254,7 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
         }
 
         //offhand
-        if(id == 40)
+        else if(id == 40)
         {
             if (offhand != null) {
                 cir.setReturnValue(offhand.get(id - 40));
@@ -251,18 +262,62 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
         }
 
         //minipouch
-        if(id > 40)
+        else if(id > 40)
         {
             if (items != null) {
                 cir.setReturnValue(items.get(id-5));
             }
         }
+
+        //System.out.println(cir.getReturnValue().toString());
+    }
+
+    @Inject(method = "removeItem(II)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "HEAD"), cancellable = true)
+    public void onRemoveItem(int id, int decrement, CallbackInfoReturnable<ItemStack> cir)
+    {
+        //vanilla inventory
+        if(id < 36)
+        {
+            if (items != null && !items.get(id).isEmpty()) {
+                cir.setReturnValue(ContainerHelper.removeItem(items, id, decrement));
+            }
+        }
+
+        //armor
+        else if(id >= 36 && id < 40)
+        {
+            if (armor != null && !armor.get(id - 36).isEmpty()) {
+                cir.setReturnValue(ContainerHelper.removeItem(armor, id - 36, decrement));
+            }
+        }
+
+        //offhand
+        else if(id == 40)
+        {
+            if (offhand != null && !offhand.get(id - 40).isEmpty()) {
+                cir.setReturnValue(ContainerHelper.removeItem(offhand, id - 40, decrement));
+            }
+        }
+
+        //minipouch
+        else if(id > 40)
+        {
+            if (items != null && !items.get(id -5).isEmpty()) {
+                cir.setReturnValue(ContainerHelper.removeItem(items, id - 5, decrement));
+            }
+        }
+
+        else {cir.setReturnValue(ItemStack.EMPTY);}
+
+        //System.out.println("tryremove from inventory!  id: " + id);
     }
 
     @Override
     public ListTag saveAdditional(ListTag tag) {
 
         //Todo セーブ関連がなんかおかしい
+        //Todo NBT関連は問題なし，Inventoryとスロット間の通信がうまく言っていない可能性がある
+        //Todo 単にスロットの初期化に失敗してただけだった
 
         //itemsの35番までは無視
         for(int i = 36; i < items.size(); ++i) {
@@ -291,6 +346,7 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
                 }
             }
         }
-        items.forEach(System.out::println);
+
+        //items.forEach(System.out::println);
     }
 }
