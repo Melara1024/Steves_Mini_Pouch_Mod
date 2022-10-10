@@ -70,7 +70,6 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
     @Inject(method = "renderSlot(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/inventory/Slot;)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSlotRender(PoseStack poseStack, Slot slot, CallbackInfo ci)
     {
-        if(((IHasSlotPage)slot).getPage() != page)((IHasSlotPage)slot).setPage(page);
 
         //System.out.println(page);
         //if(page > 0 && ((IHasSlotType)slot).getType() == SlotType.INVENTORY)slot.initialize(slot.container.getItem(slot.getSlotIndex() + page*27 + 5));
@@ -144,6 +143,8 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
     public void oninitRender(CallbackInfo ci)
     {
         Messager.sendToServer(new PageChangedPacket(page));
+        this.menu.slots.forEach(slot -> ((IHasSlotPage)slot).setPage(page));
+
         this.setBlitOffset(100);
         this.itemRenderer.blitOffset = 100.0F;
 
@@ -151,12 +152,14 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
                 Component.literal("▲"), (p_96337_) -> {
             previousPage();
             Messager.sendToServer(new PageChangedPacket(page));
+            this.menu.slots.forEach(slot -> ((IHasSlotPage)slot).setPage(page));
         });
 
         downButton = new Button(this.leftPos+this.inventoryLabelX+this.imageWidth-5, this.topPos+this.inventoryLabelY+54, 18, 18,
                 Component.literal("▼"), (p_96337_) -> {
             nextPage();
             Messager.sendToServer(new PageChangedPacket(page));
+            this.menu.slots.forEach(slot -> ((IHasSlotPage)slot).setPage(page));
         });
 
         pageIndicator = new Button(this.leftPos+this.inventoryLabelX+this.imageWidth-5, this.topPos+this.inventoryLabelY+36, 18, 18,
