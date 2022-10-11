@@ -32,6 +32,9 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
 
     /*
     Todo コマンド・インベントリ拡張アイテムの放つイベントに合わせてitemsやsizeを増減する
+
+
+    拾ってもちゃんとスロットに反映されない問題->Inventory.addのどこかがおかしい？
      */
 
     private int maxPage;
@@ -49,6 +52,12 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
     //こいつの参照だけは絶対に変更するな！！
     @Shadow
     public List<NonNullList<ItemStack>> compartments = new ArrayList<NonNullList<ItemStack>>();
+
+    @Shadow
+    private boolean hasRemainingSpaceForItem(ItemStack p_36015_, ItemStack p_36016_) {
+        System.out.println("???");
+        return false;
+    }
 
 
     @Inject(method = "<init>", at = @At(value = "RETURN"), cancellable = true)
@@ -68,6 +77,22 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
         items = NonNullList.withSize(90, ItemStack.EMPTY);
         compartments.add(0, items);
     }
+
+
+
+    @Inject(method = "getFreeSlot()I", at = @At(value = "RETURN"), cancellable = true)
+    public void onGetFreeSlot(CallbackInfoReturnable<Integer> cir)
+    {
+        //getSlotWithRemainingSpace, getFreeSlot双方が-1を返してしまっている
+        //空いているスロットがあるときでもなぜか36が返る？
+
+
+        System.out.println(cir.getReturnValue());
+//        for(int i = 0; i < this.items.size(); ++i) {
+//            System.out.printf("item%s : %s%n", i, this.items.get(i).toString());
+//        }
+    }
+
 
 
 
