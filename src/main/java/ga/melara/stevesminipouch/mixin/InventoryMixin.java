@@ -86,6 +86,16 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
         //getSlotWithRemainingSpace, getFreeSlot双方が-1を返してしまっている
         //空いているスロットがあるときでもなぜか36が返る？
 
+//        public int getFreeSlot() {
+//        for(int i = 0; i < this.items.size(); ++i) {
+//            if (this.items.get(i).isEmpty()) {
+//                return i;
+//            }
+//        }
+//
+//        return -1;
+//    }
+
 
         System.out.println(cir.getReturnValue());
 //        for(int i = 0; i < this.items.size(); ++i) {
