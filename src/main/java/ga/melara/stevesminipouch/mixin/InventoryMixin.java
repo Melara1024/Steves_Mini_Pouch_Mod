@@ -49,15 +49,23 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
     @Shadow
     public NonNullList<ItemStack> offhand;
 
+    @Shadow
+    public int selected;
+
     //こいつの参照だけは絶対に変更するな！！
     @Shadow
     public List<NonNullList<ItemStack>> compartments = new ArrayList<NonNullList<ItemStack>>();
 
     @Shadow
     private boolean hasRemainingSpaceForItem(ItemStack p_36015_, ItemStack p_36016_) {
-        System.out.println("???");
         return false;
     }
+
+    @Shadow
+    public ItemStack getItem(int id) {
+        return null;
+    }
+
 
 
     @Inject(method = "<init>", at = @At(value = "RETURN"), cancellable = true)
@@ -79,10 +87,36 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
     }
 
 
+    @Inject(method = "getSlotWithRemainingSpace(Lnet/minecraft/world/item/ItemStack;)I", at = @At(value = "HEAD"), cancellable = true)
+    public void onGetRemainingSpace(ItemStack p_36051_, CallbackInfoReturnable<Integer> cir)
+    {
+        if (this.hasRemainingSpaceForItem(this.getItem(this.selected), p_36051_)) {
+            cir.setReturnValue(this.selected);
+        } else if (this.hasRemainingSpaceForItem(this.getItem(40), p_36051_)) {
+            cir.setReturnValue(40);
+        } else {
+            for(int i = 0; i < this.items.size(); ++i) {
+                if (this.hasRemainingSpaceForItem(this.items.get(i), p_36051_)) {
+                    if(i<36) cir.setReturnValue(i);
+                    else cir.setReturnValue(i+5);
+                }
+            }
+        }
+        System.out.println("remaining");
+        //this.items.forEach(System.out::println);
+        System.out.println(cir.getReturnValue());
 
-    @Inject(method = "getFreeSlot()I", at = @At(value = "RETURN"), cancellable = true)
+    }
+
+    @Inject(method = "getFreeSlot()I", at = @At(value = "HEAD"), cancellable = true)
     public void onGetFreeSlot(CallbackInfoReturnable<Integer> cir)
     {
+        for(int i = 0; i < this.items.size(); ++i) {
+            if (this.items.get(i).isEmpty()) {
+                if(i<36) cir.setReturnValue(i);
+                else cir.setReturnValue(i+5);
+            }
+        }
         //getSlotWithRemainingSpace, getFreeSlot双方が-1を返してしまっている
         //空いているスロットがあるときでもなぜか36が返る？
 
@@ -97,6 +131,7 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
 //    }
 
 
+        System.out.println("free");
         System.out.println(cir.getReturnValue());
 //        for(int i = 0; i < this.items.size(); ++i) {
 //            System.out.printf("item%s : %s%n", i, this.items.get(i).toString());
@@ -224,6 +259,8 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
     @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSetItem(int id, ItemStack itemStack, CallbackInfo ci) {
 
+
+        System.out.printf("id is %s, item is %s%n", String.valueOf(id), itemStack.toString());
         //vanilla inventory
         if(id < 36)
         {
