@@ -36,6 +36,8 @@ public class StevesMiniPouch {
 
         Messager.register();
 
+        Registration.registerItems();
+
         IEventBus eventBus = MinecraftForge.EVENT_BUS;
 
         eventBus.addGenericListener(Entity.class, InventoryDataEvent::onAttachCapabilitiesPlayer);

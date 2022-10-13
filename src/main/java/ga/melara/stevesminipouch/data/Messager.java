@@ -33,7 +33,7 @@ public class Messager {
                 .decoder(PageChangedPacket::new)
                 .encoder(PageChangedPacket::toBytes)
                 //.consumerMainThread(PageChangedPacket::handle)
-                .consumer(PageChangedPacket::handle)
+                .consumerMainThread(PageChangedPacket::handle)
                 .add();
     }
 
