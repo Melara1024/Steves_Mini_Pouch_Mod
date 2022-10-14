@@ -2,23 +2,15 @@ package ga.melara.stevesminipouch;
 
 import com.mojang.logging.LogUtils;
 import ga.melara.stevesminipouch.data.*;
-import ga.melara.stevesminipouch.util.PageChangeEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerSetSpawnEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.util.thread.SidedThreadGroups;
 import org.slf4j.Logger;
 
 
@@ -30,13 +22,14 @@ public class StevesMiniPouch {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public StevesMiniPouch() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
         Config.register();
+        LOGGER.info("registered configs");
 
         Messager.register();
+        LOGGER.info("registered messager");
 
-        Registration.registerItems();
+        ModRegistry.registerItems();
+        LOGGER.info("registered items");
 
         IEventBus eventBus = MinecraftForge.EVENT_BUS;
 
@@ -46,8 +39,7 @@ public class StevesMiniPouch {
 
         MinecraftForge.EVENT_BUS.register(this);
 
-
-
+        LOGGER.info("steve's minipouch correctry registered!");
     }
 
 

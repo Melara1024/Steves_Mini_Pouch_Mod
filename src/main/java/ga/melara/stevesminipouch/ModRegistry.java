@@ -1,12 +1,7 @@
 package ga.melara.stevesminipouch;
 
 import ga.melara.stevesminipouch.items.*;
-import ga.melara.stevesminipouch.util.InventoryEffect;
-import ga.melara.stevesminipouch.util.MobEffectInstanceWithFunction;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
@@ -15,7 +10,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
-public class Registration
+public class ModRegistry
 {
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);

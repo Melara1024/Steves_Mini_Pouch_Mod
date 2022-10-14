@@ -13,7 +13,6 @@
     "SlotMixin"
   ],
   "client": [
-    "ClientPacketListenerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
