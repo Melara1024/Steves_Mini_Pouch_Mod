@@ -8,11 +8,11 @@
     "ContainerMenuMixin",
     "ContainerScreenMixin",
     "InventoryMixin",
+    "LivingEntityMixin",
     "PlayerMixin",
     "SlotMixin"
   ],
   "client": [
-    "ClientPacketListenerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

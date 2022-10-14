@@ -29,12 +29,7 @@ public abstract class ContainerMenuMixin{
     Todo 可能な限りイベントで実装したほうがよい(タイミングに合わせて変更できるので)
 
     Todo ページ変更イベントに合わせてslots, lastSlots, remoteSlots, dataSlotsなど各変数を一挙に更新する機能を実装
-
-
-
     Todo AbstractContainerMenu内のdoClickで触ったスロットのログを取ろう
-
-
 
     AbstractContainerMenuの変更点
     slotリストには変更なし
