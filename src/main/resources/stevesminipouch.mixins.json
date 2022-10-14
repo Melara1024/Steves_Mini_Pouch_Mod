@@ -8,6 +8,7 @@
     "ContainerMenuMixin",
     "ContainerScreenMixin",
     "InventoryMixin",
+    "LivingEntityMixin",
     "PlayerMixin",
     "SlotMixin"
   ],

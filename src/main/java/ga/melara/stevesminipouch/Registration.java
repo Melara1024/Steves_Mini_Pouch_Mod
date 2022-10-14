@@ -1,5 +1,6 @@
 package ga.melara.stevesminipouch;
 
+import ga.melara.stevesminipouch.items.*;
 import ga.melara.stevesminipouch.util.InventoryEffect;
 import ga.melara.stevesminipouch.util.MobEffectInstanceWithFunction;
 import net.minecraft.world.food.FoodProperties;
@@ -25,25 +26,17 @@ public class Registration
         ITEMS.register(eventBus);
     }
 
-    public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
-            .nutrition(4)
-            .saturationMod(2)
-            .effect(()-> new MobEffectInstanceWithFunction(InventoryEffect.ADD_SLOT, 1), 1)
-            .build();
-    public static final Item.Properties ITEM_PROPERTIES = new Item.Properties().tab(CreativeModeTab.TAB_FOOD).rarity(Rarity.EPIC).stacksTo(16).food(FOOD_PROPERTIES);
 
-
-
-    public static final RegistryObject<Item> INVENTORY_ACTIVATE_ITEM = ITEMS.register("berrinventory", () -> new Item(ITEM_PROPERTIES));
-    public static final RegistryObject<Item> CRAFT_ACTIVATE_ITEM = ITEMS.register("crafruit", () -> new Item(ITEM_PROPERTIES));
-    public static final RegistryObject<Item> ARMOR_ACTIVATE_ITEM = ITEMS.register("armorpple", () -> new Item(ITEM_PROPERTIES));
-    public static final RegistryObject<Item> OFFHAND_ACTIVATE_ITEM = ITEMS.register("offhandrian", () -> new Item(ITEM_PROPERTIES));
-    public static final RegistryObject<Item> SLOT_ADD_ITEM = ITEMS.register("edible_chest", () -> new Item(ITEM_PROPERTIES));
-    public static final RegistryObject<Item> SLOT_SHRINK_ITEM = ITEMS.register("edible_air", () -> new Item(ITEM_PROPERTIES));
-    public static final RegistryObject<Item> SLOT_ADD_ITEM_2 = ITEMS.register("edible_largechest", () -> new Item(ITEM_PROPERTIES));
-    public static final RegistryObject<Item> SLOT_SHRINK_ITEM_2 = ITEMS.register("edible_void", () -> new Item(ITEM_PROPERTIES));
-    public static final RegistryObject<Item> SLOT_ADD_ITEM_3 = ITEMS.register("edible_triplechest", () -> new Item(ITEM_PROPERTIES));
-    public static final RegistryObject<Item> SLOT_SHRINK_ITEM_3 = ITEMS.register("edible_null", () -> new Item(ITEM_PROPERTIES));
+    public static final RegistryObject<Item> INVENTORY_ACTIVATE_ITEM = ITEMS.register("berrinventory", InventoryActivateItem.build());
+    public static final RegistryObject<Item> CRAFT_ACTIVATE_ITEM = ITEMS.register("crafruit", CraftActivatItem.build());
+    public static final RegistryObject<Item> ARMOR_ACTIVATE_ITEM = ITEMS.register("armorpple", ArmorActivateItem.build());
+    public static final RegistryObject<Item> OFFHAND_ACTIVATE_ITEM = ITEMS.register("offhandrian", OffhandActivateItem.build());
+    public static final RegistryObject<Item> SLOT_ADD_ITEM = ITEMS.register("edible_chest", SlotItem.build(1));
+    public static final RegistryObject<Item> SLOT_SHRINK_ITEM = ITEMS.register("edible_air", SlotItem.build(-1));
+    public static final RegistryObject<Item> SLOT_ADD_ITEM_2 = ITEMS.register("edible_largechest", SlotItem.build(9));
+    public static final RegistryObject<Item> SLOT_SHRINK_ITEM_2 = ITEMS.register("edible_void", SlotItem.build(-9));
+    public static final RegistryObject<Item> SLOT_ADD_ITEM_3 = ITEMS.register("edible_triplechest", SlotItem.build(27));
+    public static final RegistryObject<Item> SLOT_SHRINK_ITEM_3 = ITEMS.register("edible_null", SlotItem.build(-27));
 
 
     //スロットが増える状態異常，エンチャントの導入
