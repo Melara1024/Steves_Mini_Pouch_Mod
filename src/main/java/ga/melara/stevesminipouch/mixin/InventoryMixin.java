@@ -7,6 +7,7 @@ import ga.melara.stevesminipouch.util.IStorageChangable;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -73,6 +74,8 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
         compartments.add(1, armor);
         compartments.add(2, offhand);
 
+        //Todo プレイヤーに紐付けられたスロット数を初期化で適用する
+
         compartments.remove(items);
         items = NonNullList.withSize(90, ItemStack.EMPTY);
         compartments.add(0, items);
@@ -110,6 +113,7 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
     public void changeStorageSize(int change, Level level, LivingEntity entity)
     {
         //Todo いちいちリセット+値のコピーを行う
+        entity.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
 //        if(change < 0)return;
 //
 //        maxPage = (int)(Math.ceil((change-9) / 27)*2);

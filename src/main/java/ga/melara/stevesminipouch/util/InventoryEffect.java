@@ -11,30 +11,35 @@ public enum InventoryEffect {
         @Override
         public void apply (Player player)
         {
+            ((IStorageChangable)player.getInventory()).changeStorageSize(1, player.getLevel(), player);
             player.sendSystemMessage(Component.literal("inventory activated!"));
         }
     },
     ACTIVATE_OFFHAND {
         @Override
         public void apply(Player player) {
+            ((IStorageChangable)player.getInventory()).changeStorageSize(2, player.getLevel(), player);
             player.sendSystemMessage(Component.literal("offhand activated!"));
         }
     },
     ACTIVATE_CRAFT {
         @Override
         public void apply(Player player) {
+            ((IStorageChangable)player.getInventory()).changeStorageSize(3, player.getLevel(), player);
             player.sendSystemMessage(Component.literal("craft activated!"));
         }
     },
     ACTIVATE_ARMOR {
         @Override
         public void apply(Player player) {
+            ((IStorageChangable)player.getInventory()).changeStorageSize(4, player.getLevel(), player);
             player.sendSystemMessage(Component.literal("armor activated!"));
         }
     },
     ADD_SLOT {
         @Override
         public void apply(Player player) {
+            ((IStorageChangable)player.getInventory()).changeStorageSize(5, player.getLevel(), player);
             player.sendSystemMessage(Component.literal("slot added!"));
         }
     };
