@@ -12,11 +12,15 @@ import java.util.function.Supplier;
 public class SlotItem extends Item {
 
     public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
-            .nutrition(4)
+            .nutrition(2)
             .saturationMod(2)
             .effect(()-> new MobEffectInstanceWithFunction(InventoryEffect.ADD_SLOT), 1)
             .build();
-    public static final Item.Properties ITEM_PROPERTIES = new Item.Properties().tab(CreativeModeTab.TAB_FOOD).rarity(Rarity.EPIC).stacksTo(16).food(FOOD_PROPERTIES);
+    public static final Item.Properties ITEM_PROPERTIES = new Item.Properties()
+            .tab(CreativeModeTab.TAB_FOOD)
+            .rarity(Rarity.EPIC)
+            .stacksTo(27)
+            .food(FOOD_PROPERTIES);
 
 
 

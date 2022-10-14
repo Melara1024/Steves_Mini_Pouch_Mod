@@ -16,7 +16,11 @@ public class CraftActivatItem extends Item {
             .saturationMod(2)
             .effect(()-> new MobEffectInstanceWithFunction(InventoryEffect.ACTIVATE_CRAFT), 1)
             .build();
-    public static final Item.Properties ITEM_PROPERTIES = new Item.Properties().tab(CreativeModeTab.TAB_FOOD).rarity(Rarity.EPIC).stacksTo(16).food(FOOD_PROPERTIES);
+    public static final Item.Properties ITEM_PROPERTIES = new Item.Properties()
+            .tab(CreativeModeTab.TAB_FOOD)
+            .rarity(Rarity.EPIC)
+            .stacksTo(1)
+            .food(FOOD_PROPERTIES);
 
 
     public CraftActivatItem() {
