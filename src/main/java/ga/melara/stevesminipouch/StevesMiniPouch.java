@@ -2,6 +2,8 @@ package ga.melara.stevesminipouch;
 
 import com.mojang.logging.LogUtils;
 import ga.melara.stevesminipouch.data.*;
+import ga.melara.stevesminipouch.data.InventoryDataEvent;
+import ga.melara.stevesminipouch.util.InventoryEffect;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -38,6 +40,8 @@ public class StevesMiniPouch {
         eventBus.addListener(InventoryDataEvent::onRegisterCapabilities);
 
         MinecraftForge.EVENT_BUS.register(this);
+
+        MinecraftForge.EVENT_BUS.register(InventoryEffect.class);
 
         LOGGER.info("steve's minipouch correctry registered!");
     }

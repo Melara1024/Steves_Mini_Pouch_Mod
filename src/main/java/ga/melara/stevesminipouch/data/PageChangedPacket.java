@@ -1,6 +1,6 @@
 package ga.melara.stevesminipouch.data;
 
-import ga.melara.stevesminipouch.util.PageChangeEvent;
+import ga.melara.stevesminipouch.event.PageChangeEvent;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkEvent;

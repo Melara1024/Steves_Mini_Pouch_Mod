@@ -1,5 +1,7 @@
 package ga.melara.stevesminipouch.data;
 
+import ga.melara.stevesminipouch.data.PlayerInventoryProvider;
+import ga.melara.stevesminipouch.data.PlayerInventorySizeData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;

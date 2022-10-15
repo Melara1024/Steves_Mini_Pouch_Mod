@@ -1,4 +1,4 @@
-package ga.melara.stevesminipouch.util;
+package ga.melara.stevesminipouch.event;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;

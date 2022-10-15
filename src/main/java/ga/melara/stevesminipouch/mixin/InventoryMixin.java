@@ -14,6 +14,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.fml.util.thread.SidedThreadGroups;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -72,6 +73,7 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
     @Inject(method = "<init>", at = @At(value = "RETURN"), cancellable = true)
     public void oninitRender(CallbackInfo ci)
     {
+
         maxPage = 2;
         inventorySize = 90;
 
@@ -144,10 +146,53 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
 
 
 
+
+
     @Override
-    public void changeStorageSize(int change, Level level, LivingEntity entity)
+    public void toggleInventory(LivingEntity entity)
     {
-        //Todo いちいちリセット+値のコピーを行う
+        //全部の無効化
+        //他の機能をまとめて起動するだけなので実装は後で
+        entity.sendSystemMessage(Component.literal("Inventory Toggled!"));
+
+    }
+
+
+    @Override
+    public void toggleCraft(LivingEntity entity)
+    {
+        //アイテムリストは持たないのでスロットの無効化のみ
+        //menu.slotsを回してSlotType.RESULTとSlotType.CRAFTを無効化・隠蔽処理有効化
+        entity.sendSystemMessage(Component.literal("Craft Toggled!"));
+
+    }
+
+    @Override
+    public void toggleArmor(LivingEntity entity)
+    {
+        //アーマーリストの無効化
+        //溢れたアイテムを撒き散らす
+        //menu.slotsを回してSlotType.ARMORを無効化・隠蔽処理有効化
+        entity.sendSystemMessage(Component.literal("Armor Toggled!"));
+
+    }
+
+    @Override
+    public void toggleOffhand(LivingEntity entity)
+    {
+        //オフハンドリストの無効化(というかダミーデータ挿入)
+        //溢れたアイテムを撒き散らす
+        //menu.slotsを回してSlotType.OFFHANDを無効化・隠蔽処理有効化
+        entity.sendSystemMessage(Component.literal("Offhand Toggled!"));
+
+    }
+
+    @Override
+    public void changeStorageSize(int change, LivingEntity entity)
+    {
+        //リストを再設定する
+        //溢れたアイテムを撒き散らす
+        //menu.slotsによる無効化は
         entity.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
 //        if(change < 0)return;
 //
