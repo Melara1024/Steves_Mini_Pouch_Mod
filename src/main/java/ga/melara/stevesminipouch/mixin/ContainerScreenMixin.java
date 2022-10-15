@@ -4,14 +4,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import ga.melara.stevesminipouch.data.Messager;
 import ga.melara.stevesminipouch.data.PageChangedPacket;
-import ga.melara.stevesminipouch.util.IHasSlotPage;
-import ga.melara.stevesminipouch.util.IHasSlotType;
-import ga.melara.stevesminipouch.util.IStorageChangable;
-import ga.melara.stevesminipouch.util.SlotType;
+import ga.melara.stevesminipouch.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -70,49 +68,10 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
     @Inject(method = "renderSlot(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/inventory/Slot;)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSlotRender(PoseStack poseStack, Slot slot, CallbackInfo ci)
     {
+        //Todo そもそもactive = trueを返さないものはレンダリングが動かない
+        //Todo renderメソッドそのものに表示非表示のロジックを埋め込む必要がある
 
-        //System.out.println(page);
-        //if(page > 0 && ((IHasSlotType)slot).getType() == SlotType.INVENTORY)slot.initialize(slot.container.getItem(slot.getSlotIndex() + page*27 + 5));
-        //ページから該当するもののみを表示する
-        //System.out.println(((IHasSlotType)(Object)slot).getType());
-        //System.out.println(slot.container.toString());
-        //System.out.println(slot.getSlotIndex());
-//        if(((IHasSlotType)(Object)slot).getType() == SlotType.INVENTORY)
-//        {
-//            //System.out.println(((IHasSlotType)(Object)slot).getPage());
-//            //System.out.println(this.page);
-//            //System.out.println(((IHasSlotType)(Object)slot).getVisiblity());
-//            if(((IHasSlotPage)(Object)slot).getPage() == this.page)
-//            {
-//                ((IHasSlotType)(Object)slot).show();
-//            }
-//            else
-//            {
-//                ((IHasSlotType)(Object)slot).hide();
-//            }
-//        }
-
-
-
-//        if(((IHasSlotType)slot).getType() != SlotType.INVENTORY){
-//            return;
-//        }
-//
-//        int availableSlot = 20;
-//        int x = slot.x;
-//        int y = slot.y;
-//
-//        this.setBlitOffset(100);
-//        this.itemRenderer.blitOffset = 100.0F;
-//
-//        RenderSystem.setShaderTexture(0, PATCH);
-//        RenderSystem.enableTexture();
-//        RenderSystem.enableDepthTest();
-//        this.blit(poseStack, x-1, y-1, this.getBlitOffset(), 18, 18, 21);
-//
-//
-//        this.itemRenderer.blitOffset = 0.0F;
-//        this.setBlitOffset(0);
+        //Todo ここはページによってスロットの色を変えるお楽しみ機能をつけるのくらいにしか使わないはず
     }
 
 
@@ -120,23 +79,6 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
     @Inject(method = "renderLabels(Lcom/mojang/blaze3d/vertex/PoseStack;II)V", at = @At(value = "RETURN"), cancellable = true)
     public void onLabelRender(PoseStack poseStack, int unUsed1, int unUsed2, CallbackInfo ci)
     {
-        //System.out.println(this.menu.getType().toString());
-
-
-        //MinecraftForge.EVENT_BUS.post(new PageChangeEvent(8, Minecraft.getInstance().level));
-
-
-        this.setBlitOffset(100);
-        this.itemRenderer.blitOffset = 100.0F;
-
-        RenderSystem.setShaderTexture(0, PATCH);
-        RenderSystem.enableTexture();
-        RenderSystem.enableDepthTest();
-        this.blit(poseStack, this.inventoryLabelX-1, this.inventoryLabelY-1, this.getBlitOffset(), 18, 18, 21);
-
-
-        this.itemRenderer.blitOffset = 0.0F;
-        this.setBlitOffset(0);
     }
 
     @Inject(method = "init()V", at = @At(value = "RETURN"), cancellable = true)
@@ -181,10 +123,12 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
     private void nextPage()
     {
         if(page < (((IStorageChangable) Minecraft.getInstance().player.getInventory()).getMaxPage()))page++;
+        //ここでもスロットの更新(表示，非表示の切り替え)をかける？
     }
     private void previousPage()
     {
         if(page > 0)page--;
+        //ここでもスロットの更新(表示，非表示の切り替え)をかける？
     }
 
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;IIF)V", at = @At(value = "RETURN"), cancellable = true)
@@ -196,5 +140,19 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
         pageIndicator.setMessage(Component.literal(String.valueOf(page+1)));
         pageIndicator.renderButton(poseStack, mouseX, mouseY, partialTick);
         //this.font.draw(poseStack, Component.literal(String.valueOf(page)), (float) this.leftPos+this.inventoryLabelX+this.imageWidth, this.topPos+this.inventoryLabelY+40, 0xFFFFFF);
+
+
+
+        for(int k = 0; k < this.menu.slots.size(); ++k) {
+            System.out.println("render");
+            Slot slot = this.menu.slots.get(k);
+            if(!((ISlotHidable)slot).isShowing())
+            {
+                RenderSystem.setShaderTexture(0, PATCH);
+                RenderSystem.enableTexture();
+                RenderSystem.enableDepthTest();
+                this.blit(poseStack, slot.x + leftPos -1, slot.y + topPos -1, this.getBlitOffset(), 18, 18, 21);
+            }
+        }
     }
 }

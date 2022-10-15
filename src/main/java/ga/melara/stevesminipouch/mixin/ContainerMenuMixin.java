@@ -4,6 +4,7 @@ import ga.melara.stevesminipouch.event.PageChangeEvent;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -18,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractContainerMenu.class)
-public abstract class ContainerMenuMixin{
+public abstract class ContainerMenuMixin implements IMenuChangable {
     /*
     Todo ページが変更されたときのイベント・メッセージを受け取ってページ変数を保持する
     Todo 可能な限りイベントで実装したほうがよい(タイミングに合わせて変更できるので)
@@ -99,6 +100,31 @@ public abstract class ContainerMenuMixin{
         //System.out.println("page flipped to " + e.getPage());
     }
 
+
+    @Override
+    public void toggleInventory(LivingEntity entity){
+        System.out.println("menu Toggled");
+    }
+
+    @Override
+    public void toggleArmor(LivingEntity entity){
+        System.out.println("menu Toggled");
+    }
+
+    @Override
+    public void toggleCraft(LivingEntity entity){
+        System.out.println("menu Toggled");
+    }
+
+    @Override
+    public void toggleOffhand(LivingEntity entity){
+        System.out.println("menu Toggled");
+    }
+
+    @Override
+    public void changeStorageSize(int change, LivingEntity entity){
+        System.out.println("menu Toggled");
+    }
 
 
 

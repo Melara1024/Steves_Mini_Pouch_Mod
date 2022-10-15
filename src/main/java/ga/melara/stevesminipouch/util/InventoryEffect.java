@@ -21,6 +21,7 @@ public enum InventoryEffect {
         public void apply (Player player)
         {
             ((IStorageChangable)player.getInventory()).toggleInventory(player);
+            ((IMenuChangable)player.inventoryMenu).toggleInventory(player);
             //menu側でslot更新
 
             syncToRemote(player, ACTIVATE_INVENTORY);
@@ -31,6 +32,7 @@ public enum InventoryEffect {
         @Override
         public void apply(Player player) {
             ((IStorageChangable)player.getInventory()).toggleOffhand(player);
+            ((IMenuChangable)player.inventoryMenu).toggleOffhand(player);
             //menu側でslot更新
 
             syncToRemote(player, ACTIVATE_OFFHAND);
@@ -39,7 +41,7 @@ public enum InventoryEffect {
     ACTIVATE_CRAFT {
         @Override
         public void apply(Player player) {
-            ((IStorageChangable)player.getInventory()).toggleCraft(player);
+            ((IMenuChangable)player.inventoryMenu).toggleCraft(player);
             //menu側でslot更新
 
             syncToRemote(player, ACTIVATE_CRAFT);
@@ -49,6 +51,7 @@ public enum InventoryEffect {
         @Override
         public void apply(Player player) {
             ((IStorageChangable)player.getInventory()).toggleArmor(player);
+            ((IMenuChangable)player.inventoryMenu).toggleArmor(player);
             //menu側でslot更新
 
             syncToRemote(player, ACTIVATE_ARMOR);
@@ -58,6 +61,7 @@ public enum InventoryEffect {
         @Override
         public void apply(Player player) {
             ((IStorageChangable)player.getInventory()).changeStorageSize(5, player);
+            ((IMenuChangable)player.inventoryMenu).changeStorageSize(5, player);
 
 
             syncToRemote(player, ADD_SLOT);

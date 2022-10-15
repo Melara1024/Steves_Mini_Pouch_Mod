@@ -74,8 +74,8 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
     public void oninitRender(CallbackInfo ci)
     {
 
-        maxPage = 2;
-        inventorySize = 90;
+        maxPage = 5;
+        inventorySize = 86;
 
         items = NonNullList.withSize(36, ItemStack.EMPTY);
         armor = NonNullList.withSize(4, ItemStack.EMPTY);
@@ -87,7 +87,7 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
         //Todo プレイヤーに紐付けられたスロット数を初期化で適用する
 
         compartments.remove(items);
-        items = NonNullList.withSize(90, ItemStack.EMPTY);
+        items = NonNullList.withSize(inventorySize, ItemStack.EMPTY);
         compartments.add(0, items);
     }
 
@@ -159,15 +159,6 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
 
 
     @Override
-    public void toggleCraft(LivingEntity entity)
-    {
-        //アイテムリストは持たないのでスロットの無効化のみ
-        //menu.slotsを回してSlotType.RESULTとSlotType.CRAFTを無効化・隠蔽処理有効化
-        entity.sendSystemMessage(Component.literal("Craft Toggled!"));
-
-    }
-
-    @Override
     public void toggleArmor(LivingEntity entity)
     {
         //アーマーリストの無効化
@@ -175,6 +166,22 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
         //menu.slotsを回してSlotType.ARMORを無効化・隠蔽処理有効化
         entity.sendSystemMessage(Component.literal("Armor Toggled!"));
 
+//        if(armor.size() == 0)
+//        {
+//            compartments.remove(armor);
+//            armor = NonNullList.withSize(4, ItemStack.EMPTY);
+//            compartments.add(1, armor);
+//        }
+//        else
+//        {
+//            for(ItemStack item: armor)
+//            {
+//                //ぶちまけ
+//            }
+//            compartments.remove(armor);
+//            armor = NonNullList.withSize(0, ItemStack.EMPTY);
+//            compartments.add(1, armor);
+//        }
     }
 
     @Override
@@ -185,6 +192,13 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
         //menu.slotsを回してSlotType.OFFHANDを無効化・隠蔽処理有効化
         entity.sendSystemMessage(Component.literal("Offhand Toggled!"));
 
+//        for(ItemStack item: armor)
+//        {
+//            //ぶちまけ
+//        }
+//        compartments.remove(armor);
+//        armor = NonNullList.withSize(0, ItemStack.EMPTY);
+//        compartments.add(1, armor);
     }
 
     @Override
@@ -226,6 +240,20 @@ public class InventoryMixin implements IStorageChangable, IAdditionalStorage {
 //                level.addFreshEntity(itementity);
 //            }
 //        }
+
+//        for(ItemStack item: armor)
+//        {
+//            for(int j= newList.size(); j< items.size(); j++)
+//            {
+//                ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), items.get(j));
+//                itementity.setDefaultPickUpDelay();
+//                itementity.setThrower(entity.getUUID());
+//                level.addFreshEntity(itementity);
+//            }
+//        }
+//        compartments.remove(armor);
+//        armor = NonNullList.withSize(0, ItemStack.EMPTY);
+//        compartments.add(1, armor);
     }
 
     @Override

@@ -1,13 +1,8 @@
 package ga.melara.stevesminipouch.mixin;
 
-import ga.melara.stevesminipouch.util.IHasSlotPage;
-import ga.melara.stevesminipouch.util.IHasSlotType;
-import ga.melara.stevesminipouch.util.IStorageChangable;
-import ga.melara.stevesminipouch.util.SlotType;
+import ga.melara.stevesminipouch.util.*;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
@@ -22,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Optional;
 
 @Mixin(Slot.class)
-public class SlotMixin implements IHasSlotType, IHasSlotPage {
+public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
     /*
     Todo スロットのアクティブ状態を変更できるようにする，新変数closedSlotを追加，これによって閉じられたスロットを表現する
 
@@ -63,7 +58,7 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage {
     @Shadow
     public void setChanged() {}
 
-    private boolean isHiding = false;
+    private boolean isShowing = true;
 
 
     @Override
@@ -82,12 +77,59 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage {
     public void setPage(int page)
     {
         this.page = page;
+        if(this.type == SlotType.INVENTORY) {
+            if(this.slot + 27 * page < ((IStorageChangable) container).getSize()) {
+                show();
+            }
+            else
+            {
+                hide();
+            }
+        }
+
     }
 
     @Override
     public int getPage()
     {
         return this.page;
+    }
+
+
+    @Override
+    public void hide()
+    {
+        isShowing = false;
+    }
+
+    @Override
+    public void show()
+    {
+        isShowing = true;
+    }
+
+    @Override
+    public boolean isShowing()
+    {
+        return this.isShowing;
+    }
+
+    @Inject(method = "<init>", at = @At("RETURN"), cancellable = true)
+    public void onInit(Container p_40223_, int p_40224_, int p_40225_, int p_40226_, CallbackInfo ci)
+    {
+
+    }
+
+    @Inject(method = "isActive()Z", at = @At("HEAD"), cancellable = true)
+    public void onCallIsActive(CallbackInfoReturnable<Boolean> cir)
+    {
+        if(!this.isShowing()) cir.setReturnValue(false);
+    }
+
+    @Inject(method = "mayPlace(Lnet/minecraft/world/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
+    public void onCallMayPlace(CallbackInfoReturnable<Boolean> cir)
+    {
+        if(!this.isShowing()) cir.setReturnValue(false);
     }
 
 
@@ -99,9 +141,16 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage {
         {
             if(this.slot + 27*page < ((IStorageChangable)container).getSize())
             {
+                this.show();
                 //System.out.println("set item to " + (this.slot + 27*page + 5) + " name " + p_40240_);
                 this.container.setItem(this.slot + 27*page + 5, p_40240_);
                 this.setChanged();
+                ci.cancel();
+            }
+            else
+            {
+                //スロットが指す位置のアイテムがそもそも範囲外だった場合
+                this.hide();
                 ci.cancel();
             }
         }
@@ -114,8 +163,15 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage {
         {
             if(this.slot + 27*page < ((IStorageChangable)container).getSize())
             {
+                this.show();
                 this.container.setItem(this.slot + 27*page + 5, p_40240_);
                 this.setChanged();
+                ci.cancel();
+            }
+            else
+            {
+                //スロットが指す位置のアイテムがそもそも範囲外だった場合
+                this.hide();
                 ci.cancel();
             }
         }
@@ -129,8 +185,15 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage {
         {
             if(this.slot + 27*page < ((IStorageChangable)container).getSize())
             {
+                this.show();
                 //System.out.println("set item to " +  (this.slot + 27*page + 5) + " name " + this.container.getItem(this.slot + 27*page + 5));
                 cir.setReturnValue(this.container.getItem(this.slot + 27*page + 5));
+            }
+            else
+            {
+                //スロットが指す位置のアイテムがそもそも範囲外だった場合
+                this.hide();
+                cir.setReturnValue(ItemStack.EMPTY);
             }
         }
     }
@@ -142,7 +205,14 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage {
         {
             if(this.slot + 27*page < ((IStorageChangable)container).getSize())
             {
+                this.show();
                 cir.setReturnValue(this.container.removeItem(this.slot + 27*page + 5, p_40227_));
+            }
+            else
+            {
+                //スロットが指す位置のアイテムがそもそも範囲外だった場合
+                this.hide();
+                cir.setReturnValue(ItemStack.EMPTY);
             }
         }
     }
