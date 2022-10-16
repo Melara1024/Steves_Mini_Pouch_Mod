@@ -1,10 +1,13 @@
 package ga.melara.stevesminipouch.mixin;
 
 import com.mojang.datafixers.util.Pair;
+import ga.melara.stevesminipouch.util.IStorageChangable;
 import ga.melara.stevesminipouch.util.InventoryEffect;
 import ga.melara.stevesminipouch.util.MobEffectInstanceWithFunction;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -13,8 +16,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Map;
+
 @Mixin(LivingEntity.class)
-public class LivingEntityMixin {
+public class LivingEntityMixin
+{
 
     @Inject(method = "addEatEffect(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;)V", at = @At("HEAD"))
     public void onAddEatEffect(ItemStack p_21064_, Level p_21065_, LivingEntity p_21066_, CallbackInfo ci)

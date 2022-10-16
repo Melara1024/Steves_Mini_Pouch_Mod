@@ -33,6 +33,10 @@ public class ModRegistry
     public static final RegistryObject<Item> SLOT_ADD_ITEM_3 = ITEMS.register("edible_triplechest", SlotItem.build(27));
     public static final RegistryObject<Item> SLOT_SHRINK_ITEM_3 = ITEMS.register("edible_null", SlotItem.build(-27));
 
+    public static final RegistryObject<Item> DUMMY_ITEM = ITEMS.register("dummy", DummyItem.build());
+
+
+
 
     //スロットが増える状態異常，エンチャントの導入
     //エンチャント盆の追加，ポーションの追加もあとでやる

@@ -72,6 +72,8 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
         //Todo renderメソッドそのものに表示非表示のロジックを埋め込む必要がある
 
         //Todo ここはページによってスロットの色を変えるお楽しみ機能をつけるのくらいにしか使わないはず
+
+        
     }
 
 
@@ -144,7 +146,6 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
 
 
         for(int k = 0; k < this.menu.slots.size(); ++k) {
-            System.out.println("render");
             Slot slot = this.menu.slots.get(k);
             if(!((ISlotHidable)slot).isShowing())
             {

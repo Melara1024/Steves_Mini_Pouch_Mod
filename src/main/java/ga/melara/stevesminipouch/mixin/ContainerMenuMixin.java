@@ -1,5 +1,6 @@
 package ga.melara.stevesminipouch.mixin;
 
+import ga.melara.stevesminipouch.ModRegistry;
 import ga.melara.stevesminipouch.event.PageChangeEvent;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.core.NonNullList;
@@ -66,6 +67,9 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
     {
         //ここでスロットの初期設定をする？
         System.out.println("initialize Contents");
+
+
+
     }
 
     @Inject(method = "doClick(IILnet/minecraft/world/inventory/ClickType;Lnet/minecraft/world/entity/player/Player;)V", at = @At("RETURN"), cancellable = true)
@@ -90,6 +94,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
             //スロットに対してページ変更を報告
             ((IHasSlotPage)s).setPage(e.getPage());
 
+
             //スロットを再度初期化
             //if(e.getPage() > 0)s.initialize(s.container.getItem(s.getSlotIndex() + e.getPage()*27 + 5));
             //System.out.println(s.getItem().getDisplayName().toString());
@@ -102,27 +107,43 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
 
 
     @Override
-    public void toggleInventory(LivingEntity entity){
+    public void toggleInventory(Player player){
         System.out.println("menu Toggled");
     }
 
     @Override
-    public void toggleArmor(LivingEntity entity){
+    public void toggleArmor(Player player){
+
+        for(Slot slot: this.slots)
+        {
+            if(((IHasSlotType)slot).getType() == SlotType.ARMOR)
+            {
+                ((ISlotHidable)slot).show();
+            }
+        }
         System.out.println("menu Toggled");
     }
 
     @Override
-    public void toggleCraft(LivingEntity entity){
+    public void toggleCraft(Player player){
         System.out.println("menu Toggled");
     }
 
     @Override
-    public void toggleOffhand(LivingEntity entity){
+    public void toggleOffhand(Player player){
+
+        for(Slot slot: this.slots)
+        {
+            if(((IHasSlotType)slot).getType() == SlotType.OFFHAND)
+            {
+                ((ISlotHidable)slot).show();
+            }
+        }
         System.out.println("menu Toggled");
     }
 
     @Override
-    public void changeStorageSize(int change, LivingEntity entity){
+    public void changeStorageSize(int change, Player player){
         System.out.println("menu Toggled");
     }
 

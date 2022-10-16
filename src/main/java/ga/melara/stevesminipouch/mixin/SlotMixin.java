@@ -2,6 +2,7 @@ package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -86,7 +87,6 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
                 hide();
             }
         }
-
     }
 
     @Override
@@ -154,6 +154,28 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
                 ci.cancel();
             }
         }
+        if(this.type == SlotType.ARMOR)
+        {
+            if(((IStorageChangable)container).isActiveArmor()) {
+                this.show();
+            }
+            else this.hide();
+        }
+        if(this.type == SlotType.OFFHAND)
+        {
+            if(((IStorageChangable)container).isActiveOffhand()) {
+                this.show();
+            }
+            else this.hide();
+        }
+        if(this.type == SlotType.CRAFT)
+        {
+
+        }
+        if(this.type == SlotType.RESULT)
+        {
+
+        }
     }
 
     @Inject(method = "set(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
@@ -174,6 +196,14 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
                 this.hide();
                 ci.cancel();
             }
+        }
+        if(this.type == SlotType.ARMOR)
+        {
+
+        }
+        if(this.type == SlotType.OFFHAND)
+        {
+
         }
     }
 
@@ -196,6 +226,14 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
                 cir.setReturnValue(ItemStack.EMPTY);
             }
         }
+        if(this.type == SlotType.ARMOR)
+        {
+
+        }
+        if(this.type == SlotType.OFFHAND)
+        {
+
+        }
     }
 
     @Inject(method = "remove(I)Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
@@ -214,6 +252,14 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
                 this.hide();
                 cir.setReturnValue(ItemStack.EMPTY);
             }
+        }
+        if(this.type == SlotType.ARMOR)
+        {
+
+        }
+        if(this.type == SlotType.OFFHAND)
+        {
+
         }
     }
 
