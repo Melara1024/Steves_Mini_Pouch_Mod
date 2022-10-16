@@ -5,6 +5,7 @@ import ga.melara.stevesminipouch.util.MobEffectInstanceWithFunction;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 
 import java.util.function.Supplier;
@@ -14,6 +15,7 @@ public class ArmorActivateItem extends Item {
     public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
             .nutrition(4)
             .saturationMod(2)
+            .alwaysEat()
             .effect(()-> new MobEffectInstanceWithFunction(InventoryEffect.ACTIVATE_ARMOR), 1)
             .build();
     public static final Item.Properties ITEM_PROPERTIES = new Item.Properties()

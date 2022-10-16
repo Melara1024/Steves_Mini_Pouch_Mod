@@ -14,6 +14,7 @@ public class SlotItem extends Item {
     public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
             .nutrition(2)
             .saturationMod(2)
+            .alwaysEat()
             .effect(()-> new MobEffectInstanceWithFunction(InventoryEffect.ADD_SLOT), 1)
             .build();
     public static final Item.Properties ITEM_PROPERTIES = new Item.Properties()

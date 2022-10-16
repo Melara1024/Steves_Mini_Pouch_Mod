@@ -14,6 +14,7 @@ public class InventoryActivateItem extends Item {
     public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
             .nutrition(10)
             .saturationMod(10)
+            .alwaysEat()
             .effect(()-> new MobEffectInstanceWithFunction(InventoryEffect.ACTIVATE_INVENTORY), 1)
             .build();
     public static final Item.Properties ITEM_PROPERTIES = new Item.Properties()

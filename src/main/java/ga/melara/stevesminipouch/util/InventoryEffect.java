@@ -20,8 +20,10 @@ public enum InventoryEffect {
         @Override
         public void apply (Player player)
         {
-            ((IStorageChangable)player.getInventory()).toggleInventory(player);
+            //インベントリ状態を保持するのはinventoryなのでmenuを先に持ってくる
             ((IMenuChangable)player.inventoryMenu).toggleInventory(player);
+            ((IStorageChangable)player.getInventory()).toggleInventory(player);
+
             //menu側でslot更新
 
             syncToRemote(player, ACTIVATE_INVENTORY);
@@ -31,8 +33,9 @@ public enum InventoryEffect {
     ACTIVATE_OFFHAND {
         @Override
         public void apply(Player player) {
-            ((IStorageChangable)player.getInventory()).toggleOffhand(player);
             ((IMenuChangable)player.inventoryMenu).toggleOffhand(player);
+            ((IStorageChangable)player.getInventory()).toggleOffhand(player);
+
             //menu側でslot更新
 
             syncToRemote(player, ACTIVATE_OFFHAND);
@@ -50,8 +53,9 @@ public enum InventoryEffect {
     ACTIVATE_ARMOR {
         @Override
         public void apply(Player player) {
-            ((IStorageChangable)player.getInventory()).toggleArmor(player);
             ((IMenuChangable)player.inventoryMenu).toggleArmor(player);
+            ((IStorageChangable)player.getInventory()).toggleArmor(player);
+
             //menu側でslot更新
 
             syncToRemote(player, ACTIVATE_ARMOR);
@@ -60,8 +64,9 @@ public enum InventoryEffect {
     ADD_SLOT {
         @Override
         public void apply(Player player) {
-            ((IStorageChangable)player.getInventory()).changeStorageSize(5, player);
             ((IMenuChangable)player.inventoryMenu).changeStorageSize(5, player);
+            ((IStorageChangable)player.getInventory()).changeStorageSize(5, player);
+
 
 
             syncToRemote(player, ADD_SLOT);

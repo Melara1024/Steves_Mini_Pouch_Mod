@@ -114,14 +114,27 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
     @Override
     public void toggleArmor(Player player){
 
-        for(Slot slot: this.slots)
+        if(((IStorageChangable)player.getInventory()).isActiveArmor())
         {
-            if(((IHasSlotType)slot).getType() == SlotType.ARMOR)
+            for(Slot slot: this.slots)
             {
-                ((ISlotHidable)slot).show();
+                if(((IHasSlotType)slot).getType() == SlotType.ARMOR)
+                {
+                    ((ISlotHidable)slot).hide();
+                }
+            }
+            return;
+        }
+        else
+        {
+            for(Slot slot: this.slots)
+            {
+                if(((IHasSlotType)slot).getType() == SlotType.ARMOR)
+                {
+                    ((ISlotHidable)slot).show();
+                }
             }
         }
-        System.out.println("menu Toggled");
     }
 
     @Override
@@ -132,14 +145,27 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
     @Override
     public void toggleOffhand(Player player){
 
-        for(Slot slot: this.slots)
+        if(((IStorageChangable)player.getInventory()).isActiveOffhand())
         {
-            if(((IHasSlotType)slot).getType() == SlotType.OFFHAND)
+            for(Slot slot: this.slots)
             {
-                ((ISlotHidable)slot).show();
+                if(((IHasSlotType)slot).getType() == SlotType.OFFHAND)
+                {
+                    ((ISlotHidable)slot).hide();
+                }
+            }
+            return;
+        }
+        else
+        {
+            for(Slot slot: this.slots)
+            {
+                if(((IHasSlotType)slot).getType() == SlotType.OFFHAND)
+                {
+                    ((ISlotHidable)slot).show();
+                }
             }
         }
-        System.out.println("menu Toggled");
     }
 
     @Override

@@ -14,6 +14,7 @@ public class OffhandActivateItem extends Item {
     public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
             .nutrition(4)
             .saturationMod(2)
+            .alwaysEat()
             .effect(()-> new MobEffectInstanceWithFunction(InventoryEffect.ACTIVATE_OFFHAND), 1)
             .build();
     public static final Item.Properties ITEM_PROPERTIES = new Item.Properties()

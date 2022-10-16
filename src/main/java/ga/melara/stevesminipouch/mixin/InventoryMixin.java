@@ -199,9 +199,19 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 itementity.setThrower(player.getUUID());
                 level.addFreshEntity(itementity);
             }
+
+            compartments.remove(armor);
+            armor = LockableItemStackList.withSize(4, (Inventory)(Object)this,true);
+            compartments.add(1, armor);
+
             this.isActiveArmor = false;
             return;
         }
+
+        compartments.remove(armor);
+        armor = LockableItemStackList.withSize(4, (Inventory)(Object)this,false);
+        compartments.add(1, armor);
+
         this.isActiveArmor = true;
 
 
@@ -240,9 +250,19 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 itementity.setThrower(player.getUUID());
                 level.addFreshEntity(itementity);
             }
+
+            compartments.remove(offhand);
+            offhand = LockableItemStackList.withSize(1, (Inventory)(Object)this,true);
+            compartments.add(2, offhand);
+
             this.isActiveOffhand = false;
             return;
         }
+
+        compartments.remove(offhand);
+        offhand = LockableItemStackList.withSize(1, (Inventory)(Object)this,false);
+        compartments.add(2, offhand);
+
         this.isActiveOffhand = true;
         //オフハンドリストの無効化(というかダミーデータ挿入)
         //溢れたアイテムを撒き散らす
