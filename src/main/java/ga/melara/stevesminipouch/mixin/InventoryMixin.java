@@ -45,7 +45,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
      */
 
     private int maxPage;
+
     private int inventorySize;
+    private int temporalySize;
 
 
     private boolean isActiveInventory = Config.DEFAULT_INVENTORY.get();
@@ -104,7 +106,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //Todo プレイヤーに紐付けられたスロット数を初期化で適用する
 
         compartments.remove(items);
-        items = LockableItemStackList.withSize(inventorySize, (Inventory)(Object)this,false);
+        items = LockableItemStackList.withSize(inventorySize + temporalySize, (Inventory)(Object)this,false);
         compartments.add(0, items);
 
         isActiveOffhand = false;
@@ -297,58 +299,69 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     }
 
     @Override
-    public void changeStorageSize(int change, Player player)
+    public void changeStorageSize(int change, Player player, boolean temporaly)
     {
-        //リストを再設定する
-        //溢れたアイテムを撒き散らす
-        //menu.slotsによる無効化は
-        player.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
-//        if(change < 0)return;
-//
-//        maxPage = (int)(Math.ceil((change-9) / 27)*2);
-//
-//        System.out.println("storagesize changed to " + maxPage);
-//        //大きくなる方向ならEMPTYを増やす
-//        NonNullList<ItemStack> newList = NonNullList.withSize(maxPage, ItemStack.EMPTY);
-//
-//        if(change >= maxPage)
-//        {
-//            for(int i=0; i<items.size(); i++)
-//            {
-//                newList.set(i, items.get(i));
-//            }
-//        }
-//        //小さくなる方向なら引数Levelのentityがいる位置にアイテムエンティティを召喚
-//        else
-//        {
-//            for(int i=0; i< newList.size(); i++)
-//            {
-//                newList.set(i, items.get(i));
-//            }
-//
-//            for(int j= newList.size(); j< items.size(); j++)
-//            {
-//                //items.get(j).
-//                ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), items.get(j));
-//                itementity.setDefaultPickUpDelay();
-//                itementity.setThrower(entity.getUUID());
-//                level.addFreshEntity(itementity);
-//            }
-//        }
+        if(temporaly)
+        {
+            temporalySize += change;
+        }
+        else
+        {
+            inventorySize += change;
+        }
 
-//        for(ItemStack item: armor)
-//        {
-//            for(int j= newList.size(); j< items.size(); j++)
-//            {
-//                ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), items.get(j));
-//                itementity.setDefaultPickUpDelay();
-//                itementity.setThrower(entity.getUUID());
-//                level.addFreshEntity(itementity);
-//            }
-//        }
-//        compartments.remove(armor);
-//        armor = NonNullList.withSize(0, ItemStack.EMPTY);
-//        compartments.add(1, armor);
+
+        //減るとき
+        if(change < 0)
+        {
+
+            //まず新しいアイテムリストを生成
+            compartments.remove(items);
+            items = LockableItemStackList.withSize(inventorySize + temporalySize, (Inventory)(Object)this,false);
+            compartments.add(0, items);
+
+            //次にアイテムを新リストに移し替えていく，新リストは必ず旧リストより小さくなる，なので新リスト側のサイズで回す？
+            //最初に通常部分
+            for(int i=0; i<inventorySize; i++)
+            {
+
+            }
+
+
+
+            //次に追加部分
+
+
+
+            //移し替え後にリスト内に残留しているアイテムをすべて吐き出す
+            for(ItemStack item: items)
+            {
+                Level level = player.level;
+                ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
+                itementity.setDefaultPickUpDelay();
+                itementity.setThrower(player.getUUID());
+                level.addFreshEntity(itementity);
+            }
+
+
+            return;
+        }
+        else if(change > 0)
+        {
+            //まず新しいアイテムリストを生成
+            compartments.remove(items);
+            items = LockableItemStackList.withSize(inventorySize + temporalySize, (Inventory)(Object)this,false);
+            compartments.add(0, items);
+
+            //次にアイテムを新リストに移し替えていく
+            //最初に通常部分
+
+            //次に追加部分
+
+
+        }
+
+        player.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
     }
 
     @Override
@@ -366,12 +379,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Inject(method = "save(Lnet/minecraft/nbt/ListTag;)Lnet/minecraft/nbt/ListTag;", at = @At(value = "HEAD"), cancellable = true)
     public void onSave(ListTag tags, CallbackInfoReturnable<ListTag> cir)
     {
-//        System.out.println("armor id " + armor);
-//        for(ItemStack i : items)
-//        {
-//            System.out.println(i.getDisplayName());
-//        }
-
         for(int i = 0; i < 36; ++i)
         {
             if(!items.get(i).isEmpty())
@@ -442,10 +449,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSetItem(int id, ItemStack itemStack, CallbackInfo ci)
     {
-
-
-        System.out.printf("id is %s, item is %s%n", String.valueOf(id), itemStack.toString());
-        //vanilla inventory
         if(id < 36)
         {
             if(id + 1 > items.size()) ci.cancel();
@@ -498,12 +501,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Inject(method = "getItem(I)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "HEAD"), cancellable = true)
     public void onGetItem(int id, CallbackInfoReturnable<ItemStack> cir)
     {
-
-        //Todo なぜか5スロット先のアイテムをgetしてしまう
-        //Todo レンダリングのときのgetは正しい
-        //Todo ホットバーは正しい(SlotType.Inventoryのスロットのみおかしい？)
-
-        //vanilla inventory
         if(id < 36)
         {
             if(id + 1 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
@@ -591,19 +588,11 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         {
             cir.setReturnValue(ItemStack.EMPTY);
         }
-
-        //System.out.println("tryremove from inventory!  id: " + id);
     }
 
     @Override
     public ListTag saveAdditional(ListTag tag)
     {
-
-        //Todo セーブ関連がなんかおかしい
-        //Todo NBT関連は問題なし，Inventoryとスロット間の通信がうまく言っていない可能性がある
-        //Todo 単にスロットの初期化に失敗してただけだった
-
-        //itemsの35番までは無視
         for(int i = 36; i < items.size(); ++i)
         {
             //System.out.println("saveAdditional " + i);
@@ -615,14 +604,12 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 tag.add(compoundtag);
             }
         }
-
         return tag;
     }
 
     @Override
     public void loadAdditional(ListTag tag)
     {
-        //タグは全部読むので0からでOK
         for(int i = 0; i < tag.size(); ++i)
         {
             CompoundTag compoundtag = tag.getCompound(i);
@@ -636,7 +623,5 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 }
             }
         }
-
-        //items.forEach(System.out::println);
     }
 }

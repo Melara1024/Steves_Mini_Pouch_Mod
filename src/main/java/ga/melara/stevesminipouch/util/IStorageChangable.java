@@ -17,7 +17,7 @@ public interface IStorageChangable {
 
     abstract boolean isActiveOffhand();
 
-    abstract void changeStorageSize(int change, Player player);
+    abstract void changeStorageSize(int change, Player player, boolean temporaly);
 
     abstract int getMaxPage();
 
