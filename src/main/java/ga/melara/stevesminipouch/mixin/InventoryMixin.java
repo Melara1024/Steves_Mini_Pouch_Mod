@@ -257,12 +257,19 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //Todo やっぱり一時スロットを別にするのはやめる
         //Todo 正直処理が重くなるし意味がない
 
-        //Fixme なぜか増えたスロットの位置が5個ずれている
-        //Fixme どこかで無駄な+5代入が含まれている可能性が高いので探す
 
-        //数はあっているようなので単にスロット閉鎖判定が出ている
-        //isValid関数などが怪しい？
-        //アーマーとオフハンドをオフにした状態なのでisValidがfalseを返しているかも
+        //ゼロスロットを下回るとゲームが落ちる
+        //->これに関してはインデックスがマイナスを下回ってるだけ
+        //0止めロジックを記述すれば解決するはず
+
+
+        //なんかマイナス方向に小さくしたときにアイテムが消滅する？
+        //ホットバーの奇数スロットに入れたアイテムがもれなく消滅している
+        //たぶん拾ったときに一番スロットにものが入ってそのまま消滅という流れ
+        //アイテムリストがsetを拒絶している？
+        //しかもスロット数をへらすたびに偶数奇数が入れ替わっている？
+        //そしてなぜか一つスロットに入れただけなのに27個に増える
+
 
         inventorySize += change;
         LockableItemStackList newItems = LockableItemStackList.withSize(inventorySize, (Inventory)(Object)this,false);
