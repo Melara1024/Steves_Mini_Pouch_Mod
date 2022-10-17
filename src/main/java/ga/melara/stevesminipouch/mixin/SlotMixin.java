@@ -136,10 +136,14 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
     @Inject(method = "initialize(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
     public void onInitialize(ItemStack p_40240_, CallbackInfo ci)
     {
+        //todo なんとかしてスロットからインベントリのロック状態を取得
+        //containerはinventoryなので，inventorymixin内にクエリ用メソッドを作る？
+        //自身のthis.slotの値をつかってisSlotVaridを呼ぶ？
         //ページを捲る前にinitializeが呼ばれてしまっている？
         if(this.type == SlotType.INVENTORY && page>0)
         {
-            if(this.slot + 27*page < ((IStorageChangable)container).getSize())
+            if(this.slot + 27*page < ((IStorageChangable)container).getSize()
+            && ((IStorageChangable)container).isValidSlot(this.slot + 27*page))
             {
                 this.show();
                 //System.out.println("set item to " + (this.slot + 27*page + 5) + " name " + p_40240_);
@@ -183,7 +187,8 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
     {
         if(this.type == SlotType.INVENTORY && page>0)
         {
-            if(this.slot + 27*page < ((IStorageChangable)container).getSize())
+            if(this.slot + 27*page < ((IStorageChangable)container).getSize()
+                    && ((IStorageChangable)container).isValidSlot(this.slot + 27*page))
             {
                 this.show();
                 this.container.setItem(this.slot + 27*page + 5, p_40240_);
@@ -213,7 +218,8 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
         //System.out.println("called slot is " + (this.slot + 27*page + 5));
         if(this.type == SlotType.INVENTORY && page>0)
         {
-            if(this.slot + 27*page < ((IStorageChangable)container).getSize())
+            if(this.slot + 27*page < ((IStorageChangable)container).getSize()
+                    && ((IStorageChangable)container).isValidSlot(this.slot + 27*page))
             {
                 this.show();
                 //System.out.println("set item to " +  (this.slot + 27*page + 5) + " name " + this.container.getItem(this.slot + 27*page + 5));
@@ -241,7 +247,8 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
     {
         if(this.type == SlotType.INVENTORY && page>0)
         {
-            if(this.slot + 27*page < ((IStorageChangable)container).getSize())
+            if(this.slot + 27*page < ((IStorageChangable)container).getSize()
+                    && ((IStorageChangable)container).isValidSlot(this.slot + 27*page))
             {
                 this.show();
                 cir.setReturnValue(this.container.removeItem(this.slot + 27*page + 5, p_40227_));

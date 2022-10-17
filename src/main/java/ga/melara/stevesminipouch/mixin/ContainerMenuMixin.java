@@ -175,6 +175,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
         {
             //36スロットより少ないとき，slots内のSlotType.INVENTORYを後ろから無効化
 
+            //……しようかなとおもったけど面倒なのでitemsのlockリストをスロット側から入手する
         }
         System.out.println("menu Toggled");
     }

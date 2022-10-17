@@ -12,16 +12,13 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class LockableItemStackList extends NonNullList<ItemStack>
 {
     //インベントリ枠をロックするためのブール値リスト
     //主にインベントリのスロット数が36を切ったときに使用
-    public List<Boolean> lockList;
+    public List<Boolean> lockList = new ArrayList<Boolean>();
 
     //Todo 変更可能リストを使って追加，削除をもうちょっと自在にやる
     private List<ItemStack> mutableList;

@@ -19,6 +19,8 @@ public interface IStorageChangable {
 
     abstract void changeStorageSize(int change, Player player);
 
+    abstract boolean isValidSlot(int id);
+
     abstract int getMaxPage();
 
     abstract int getSize();

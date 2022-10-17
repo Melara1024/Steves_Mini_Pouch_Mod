@@ -96,7 +96,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         maxPage = 5;
         //もとの数より減らしてはいけない……
-        inventorySize = 39;
+        inventorySize = 92;
 
         items = LockableItemStackList.withSize(inventorySize, (Inventory)(Object)this , false);
         armor = LockableItemStackList.withSize(4, (Inventory)(Object)this,true);
@@ -257,6 +257,13 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //Todo やっぱり一時スロットを別にするのはやめる
         //Todo 正直処理が重くなるし意味がない
 
+        //Fixme なぜか増えたスロットの位置が5個ずれている
+        //Fixme どこかで無駄な+5代入が含まれている可能性が高いので探す
+
+        //数はあっているようなので単にスロット閉鎖判定が出ている
+        //isValid関数などが怪しい？
+        //アーマーとオフハンドをオフにした状態なのでisValidがfalseを返しているかも
+
         inventorySize += change;
         LockableItemStackList newItems = LockableItemStackList.withSize(inventorySize, (Inventory)(Object)this,false);
         //とりあえずLockableItemStackListとして宣言してから挿入する？
@@ -307,6 +314,31 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         compartments.add(0, items);
 
         player.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
+    }
+
+    @Override
+    public boolean isValidSlot(int id)
+    {
+        if(id < 36)
+        {
+            return !((LockableItemStackList)items).lockList.get(id);
+        }
+        //armor
+        else if(id >= 36 && id < 40)
+        {
+            return !((LockableItemStackList)armor).lockList.get(id-36);
+        }
+        //offhand
+        else if(id == 40)
+        {
+            return !((LockableItemStackList)offhand).lockList.get(id-40);
+        }
+        //minipouch
+        else if(id > 40)
+        {
+            return !((LockableItemStackList)items).lockList.get(id-5);
+        }
+        return true;
     }
 
     @Override
@@ -487,6 +519,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         //System.out.println(cir.getReturnValue().toString());
     }
+
+
 
     @Inject(method = "removeItem(II)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "HEAD"), cancellable = true)
     public void onRemoveItem(int id, int decrement, CallbackInfoReturnable<ItemStack> cir)
