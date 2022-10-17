@@ -143,7 +143,7 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
         if(this.type == SlotType.INVENTORY && page>0)
         {
             if(this.slot + 27*page < ((IStorageChangable)container).getSize()
-            && ((IStorageChangable)container).isValidSlot(this.slot + 27*page))
+            && ((IStorageChangable)container).isValidSlot(this.slot + 27*page + 5))
             {
                 this.show();
                 //System.out.println("set item to " + (this.slot + 27*page + 5) + " name " + p_40240_);
@@ -188,7 +188,7 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
         if(this.type == SlotType.INVENTORY && page>0)
         {
             if(this.slot + 27*page < ((IStorageChangable)container).getSize()
-                    && ((IStorageChangable)container).isValidSlot(this.slot + 27*page))
+                    && ((IStorageChangable)container).isValidSlot(this.slot + 27*page + 5))
             {
                 this.show();
                 this.container.setItem(this.slot + 27*page + 5, p_40240_);
@@ -219,7 +219,7 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
         if(this.type == SlotType.INVENTORY && page>0)
         {
             if(this.slot + 27*page < ((IStorageChangable)container).getSize()
-                    && ((IStorageChangable)container).isValidSlot(this.slot + 27*page))
+                    && ((IStorageChangable)container).isValidSlot(this.slot + 27*page + 5))
             {
                 this.show();
                 //System.out.println("set item to " +  (this.slot + 27*page + 5) + " name " + this.container.getItem(this.slot + 27*page + 5));
@@ -248,7 +248,7 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
         if(this.type == SlotType.INVENTORY && page>0)
         {
             if(this.slot + 27*page < ((IStorageChangable)container).getSize()
-                    && ((IStorageChangable)container).isValidSlot(this.slot + 27*page))
+                    && ((IStorageChangable)container).isValidSlot(this.slot + 27*page + 5))
             {
                 this.show();
                 cir.setReturnValue(this.container.removeItem(this.slot + 27*page + 5, p_40227_));
