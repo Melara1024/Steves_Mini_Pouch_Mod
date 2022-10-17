@@ -13,10 +13,18 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 public class LockableItemStackList extends NonNullList<ItemStack>
 {
+    //インベントリ枠をロックするためのブール値リスト
+    //主にインベントリのスロット数が36を切ったときに使用
+    public List<Boolean> lockList;
+
+    //Todo 変更可能リストを使って追加，削除をもうちょっと自在にやる
+    private List<ItemStack> mutableList;
 
     //Todo inventory<36のとき用に要素ごとにアクセスを制限可能にする
     //Todo メソッドのオーバーロードでアクセスを指定できるようにする
@@ -57,20 +65,25 @@ public class LockableItemStackList extends NonNullList<ItemStack>
         super(p_122777_, defaultItem);
         this.inventory = inventory;
         this.stopper = stopper;
+
+        for(ItemStack item: p_122777_)
+        {
+            lockList.add(stopper);
+        }
     }
 
     @Override
     @Nonnull
     public ItemStack get(int p_122791_)
     {
-        if(stopper) return defaultItem;
+        if(stopper || lockList.get(p_122791_)) return defaultItem;
         return super.get(p_122791_);
     }
 
     @Override
     public ItemStack set(int p_122795_, ItemStack p_122796_)
     {
-        if(stopper)
+        if(stopper || lockList.get(p_122795_))
         {
             Level level = inventory.player.level;
             Player entity = inventory.player;
@@ -86,7 +99,27 @@ public class LockableItemStackList extends NonNullList<ItemStack>
     @Override
     public ItemStack remove(int p_122793_)
     {
-        if(stopper) return defaultItem;
+        if(stopper || lockList.get(p_122793_)) return defaultItem;
         return super.remove(p_122793_);
+    }
+
+
+    //リストを逆順で取得するためのユーティリティ
+    //ロックを有効化するとき，スロットの追加分を読むときなどに使える
+    public static <T> Iterator<T> descendingIteratorOf(List<T> list) {
+        return new Iterator<T>() {
+
+            private final ListIterator<T> irt = list.listIterator(list.size());
+
+            @Override
+            public boolean hasNext() {
+                return irt.hasPrevious();
+            }
+
+            @Override
+            public T next() {
+                return irt.previous();
+            }
+        };
     }
 }

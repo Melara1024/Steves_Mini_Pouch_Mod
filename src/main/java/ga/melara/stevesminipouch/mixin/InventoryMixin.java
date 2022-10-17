@@ -30,6 +30,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -97,7 +98,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //もとの数より減らしてはいけない……
         inventorySize = 39;
 
-        items = LockableItemStackList.withSize(36, (Inventory)(Object)this , false);
+        items = LockableItemStackList.withSize(inventorySize, (Inventory)(Object)this , false);
         armor = LockableItemStackList.withSize(4, (Inventory)(Object)this,true);
         offhand = LockableItemStackList.withSize(1, (Inventory)(Object)this,true);
         compartments.add(0, items);
@@ -105,10 +106,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         compartments.add(2, offhand);
 
         //Todo プレイヤーに紐付けられたスロット数を初期化で適用する
-
-        compartments.remove(items);
-        items = LockableItemStackList.withSize(inventorySize, (Inventory)(Object)this,false);
-        compartments.add(0, items);
 
         isActiveOffhand = false;
         isActiveArmor = false;
@@ -260,13 +257,22 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //Todo やっぱり一時スロットを別にするのはやめる
         //Todo 正直処理が重くなるし意味がない
 
+        inventorySize += change;
         LockableItemStackList newItems = LockableItemStackList.withSize(inventorySize, (Inventory)(Object)this,false);
+        //とりあえずLockableItemStackListとして宣言してから挿入する？
 
-
-        if(inventorySize + change < 36)
+        if(inventorySize< 36)
         {
             //36以内になってしまう場合にはスロットは36固定
             newItems = LockableItemStackList.withSize(36, (Inventory)(Object)this,false);
+
+            for(int i=0; i< (36-inventorySize) ; i++)
+            {
+                //まず頭から順にtrueにしていく
+                newItems.lockList.set(i, true);
+                //最後に対応を合わせるために逆順にする
+                Collections.reverse(newItems.lockList);
+            }
 
             //減らすべき分の要素のstopperをtrueにしていく
             //置き換えのときのsetで弾かれて自動で放り投げられるのでほかはそのままでOK?
@@ -276,7 +282,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             newItems = LockableItemStackList.withSize(inventorySize, (Inventory)(Object)this,false);
         }
 
-        inventorySize += change;
+
 
         //置き換え
         for(int i=0; i<(change>0?items:newItems).size(); i++)

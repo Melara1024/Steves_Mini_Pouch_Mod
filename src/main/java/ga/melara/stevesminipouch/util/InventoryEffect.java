@@ -62,6 +62,8 @@ public enum InventoryEffect {
         }
     },
     ADD_SLOT {
+
+        //Todo スロット追加数を指定可能なようにapplyのオーバーロードを追加する
         @Override
         public void apply(Player player) {
             ((IMenuChangable)player.inventoryMenu).changeStorageSize(1, player);
