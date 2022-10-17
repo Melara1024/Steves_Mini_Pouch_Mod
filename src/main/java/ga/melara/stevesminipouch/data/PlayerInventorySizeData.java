@@ -122,6 +122,6 @@ public class PlayerInventorySizeData {
         LazyOptional<PlayerInventorySizeData> l = e.getEntity().getCapability(PlayerInventoryProvider.DATA);
         PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
 
-        ((IStorageChangable)(Object)Inventory.class).changeStorageSize(slot, e.getEntity(),false);
+        ((IStorageChangable)(Object)Inventory.class).changeStorageSize(slot, e.getEntity());
     }
 }

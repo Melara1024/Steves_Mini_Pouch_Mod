@@ -18,6 +18,9 @@ import java.util.List;
 public class LockableItemStackList extends NonNullList<ItemStack>
 {
 
+    //Todo inventory<36のとき用に要素ごとにアクセスを制限可能にする
+    //Todo メソッドのオーバーロードでアクセスを指定できるようにする
+
     private boolean stopper = false;
 
     //ロックされているときにアイテムをぶちまけるため，自身の所属するインベントリの参照を持っておく

@@ -170,6 +170,12 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
 
     @Override
     public void changeStorageSize(int change, Player player){
+        //itemsリストの大きさで自動的に決まるので36スロット以上のときは何もしない
+        if((player.getInventory()).getContainerSize() + change < 36)
+        {
+            //36スロットより少ないとき，slots内のSlotType.INVENTORYを後ろから無効化
+
+        }
         System.out.println("menu Toggled");
     }
 

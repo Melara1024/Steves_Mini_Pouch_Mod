@@ -64,8 +64,8 @@ public enum InventoryEffect {
     ADD_SLOT {
         @Override
         public void apply(Player player) {
-            ((IMenuChangable)player.inventoryMenu).changeStorageSize(5, player);
-            ((IStorageChangable)player.getInventory()).changeStorageSize(5, player, false);
+            ((IMenuChangable)player.inventoryMenu).changeStorageSize(1, player);
+            ((IStorageChangable)player.getInventory()).changeStorageSize(1, player);
 
             syncToRemote(player, ADD_SLOT);
         }

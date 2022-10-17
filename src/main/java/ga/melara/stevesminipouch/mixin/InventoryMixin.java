@@ -14,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.util.thread.SidedThreadGroups;
@@ -47,7 +48,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     private int maxPage;
 
     private int inventorySize;
-    private int temporalySize;
+
 
 
     private boolean isActiveInventory = Config.DEFAULT_INVENTORY.get();
@@ -106,7 +107,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //Todo プレイヤーに紐付けられたスロット数を初期化で適用する
 
         compartments.remove(items);
-        items = LockableItemStackList.withSize(inventorySize + temporalySize, (Inventory)(Object)this,false);
+        items = LockableItemStackList.withSize(inventorySize, (Inventory)(Object)this,false);
         compartments.add(0, items);
 
         isActiveOffhand = false;
@@ -152,25 +153,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 else cir.setReturnValue(i + 5);
             }
         }
-        //getSlotWithRemainingSpace, getFreeSlot双方が-1を返してしまっている
-        //空いているスロットがあるときでもなぜか36が返る？
-
-//        public int getFreeSlot() {
-//        for(int i = 0; i < this.items.size(); ++i) {
-//            if (this.items.get(i).isEmpty()) {
-//                return i;
-//            }
-//        }
-//
-//        return -1;
-//    }
-
 
         System.out.println("free");
         System.out.println(cir.getReturnValue());
-//        for(int i = 0; i < this.items.size(); ++i) {
-//            System.out.printf("item%s : %s%n", i, this.items.get(i).toString());
-//        }
     }
 
 
@@ -216,27 +201,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         this.isActiveArmor = true;
 
-
-
         player.sendSystemMessage(Component.literal("Armor Toggled!"));
-
-
-//        if(armor.size() == 0)
-//        {
-//            compartments.remove(armor);
-//            armor = NonNullList.withSize(4, ItemStack.EMPTY);
-//            compartments.add(1, armor);
-//        }
-//        else
-//        {
-//            for(ItemStack item: armor)
-//            {
-//                //ぶちまけ
-//            }
-//            compartments.remove(armor);
-//            armor = NonNullList.withSize(0, ItemStack.EMPTY);
-//            compartments.add(1, armor);
-//        }
     }
 
     @Override
@@ -266,18 +231,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         compartments.add(2, offhand);
 
         this.isActiveOffhand = true;
-        //オフハンドリストの無効化(というかダミーデータ挿入)
-        //溢れたアイテムを撒き散らす
-        //menu.slotsを回してSlotType.OFFHANDを無効化・隠蔽処理有効化
-        player.sendSystemMessage(Component.literal("Offhand Toggled!"));
 
-//        for(ItemStack item: armor)
-//        {
-//            //ぶちまけ
-//        }
-//        compartments.remove(armor);
-//        armor = NonNullList.withSize(0, ItemStack.EMPTY);
-//        compartments.add(1, armor);
+        player.sendSystemMessage(Component.literal("Offhand Toggled!"));
     }
 
     @Override
@@ -299,67 +254,51 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     }
 
     @Override
-    public void changeStorageSize(int change, Player player, boolean temporaly)
+    public void changeStorageSize(int change, Player player)
     {
-        if(temporaly)
+        //永続スロットの追加
+        //Todo やっぱり一時スロットを別にするのはやめる
+        //Todo 正直処理が重くなるし意味がない
+
+        LockableItemStackList newItems = LockableItemStackList.withSize(inventorySize, (Inventory)(Object)this,false);
+
+
+        if(inventorySize + change < 36)
         {
-            temporalySize += change;
+            //36以内になってしまう場合にはスロットは36固定
+            newItems = LockableItemStackList.withSize(36, (Inventory)(Object)this,false);
+
+            //減らすべき分の要素のstopperをtrueにしていく
+            //置き換えのときのsetで弾かれて自動で放り投げられるのでほかはそのままでOK?
         }
         else
         {
-            inventorySize += change;
+            newItems = LockableItemStackList.withSize(inventorySize, (Inventory)(Object)this,false);
         }
 
+        inventorySize += change;
 
-        //減るとき
-        if(change < 0)
+        //置き換え
+        for(int i=0; i<(change>0?items:newItems).size(); i++)
         {
-
-            //まず新しいアイテムリストを生成
-            compartments.remove(items);
-            items = LockableItemStackList.withSize(inventorySize + temporalySize, (Inventory)(Object)this,false);
-            compartments.add(0, items);
-
-            //次にアイテムを新リストに移し替えていく，新リストは必ず旧リストより小さくなる，なので新リスト側のサイズで回す？
-            //最初に通常部分
-            for(int i=0; i<inventorySize; i++)
-            {
-
-            }
-
-
-
-            //次に追加部分
-
-
-
-            //移し替え後にリスト内に残留しているアイテムをすべて吐き出す
-            for(ItemStack item: items)
-            {
-                Level level = player.level;
-                ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
-                itementity.setDefaultPickUpDelay();
-                itementity.setThrower(player.getUUID());
-                level.addFreshEntity(itementity);
-            }
-
-
-            return;
+            newItems.set(i, items.get(i));
+            items.set(i, ItemStack.EMPTY);
         }
-        else if(change > 0)
+
+        //ぶちまけ
+        for(ItemStack item: items)
         {
-            //まず新しいアイテムリストを生成
-            compartments.remove(items);
-            items = LockableItemStackList.withSize(inventorySize + temporalySize, (Inventory)(Object)this,false);
-            compartments.add(0, items);
-
-            //次にアイテムを新リストに移し替えていく
-            //最初に通常部分
-
-            //次に追加部分
-
-
+            Level level = player.level;
+            ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
+            itementity.setDefaultPickUpDelay();
+            itementity.setThrower(player.getUUID());
+            level.addFreshEntity(itementity);
         }
+
+        //最後にitemsを更新，参照をcompartmentsに挿入して終了
+        compartments.remove(items);
+        items = newItems;
+        compartments.add(0, items);
 
         player.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
     }
