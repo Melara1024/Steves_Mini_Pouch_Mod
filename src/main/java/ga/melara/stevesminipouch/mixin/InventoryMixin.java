@@ -270,10 +270,35 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //しかもスロット数をへらすたびに偶数奇数が入れ替わっている？
         //そしてなぜか一つスロットに入れただけなのに27個に増える
 
+        //多分正しくロックがかかっていない
+        //setしたときの同期
+
+
+
+
+        //Todo SlotTypeがINVENTORYではなくHOTBARになっているためにバグっている？
+
+        //Todo とりあえず通常インベントリの減少がうまく行ったら一段落
+        //Todo InventoryEffectのapplyに新しいオーバーロードを追加，引数でスロット変更数を変えられるようにする．
+
+        //Todo InventoryActivateFoodの作成，常に減らす方向
+
+        //Todo 2x2クラフトの無効化ロジックを実装する
+        //Todo craftingcontainerクラスを書き換える必要があるかも
+        //Todo craftingcontainer内のitemsにアイテムが格納されたら問答無用でその場に吐き出す
+        //craftingcontainerはplayer.getInventory().getCraftingSlotsで参照可能
+
+        //Todo 不使用ホットバースロットの除去・非表示機能の実装
+        //Todo インベントリ・スロット・スクリーン全部を書き換える必要がある
+        //Todo HUDの表示クラスを見つける必要がある(TinyInvを参考にする？)
+
 
         inventorySize += change;
-        LockableItemStackList newItems = LockableItemStackList.withSize(inventorySize, (Inventory)(Object)this,false);
+        LockableItemStackList newItems;
         //とりあえずLockableItemStackListとして宣言してから挿入する？
+
+
+        if(inventorySize < 0)inventorySize = 0;
 
         if(inventorySize< 36)
         {
@@ -286,6 +311,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 newItems.lockList.set(i, true);
                 //最後に対応を合わせるために逆順にする
                 Collections.reverse(newItems.lockList);
+
+
+                int j = 0;
+                newItems.lockList.forEach((b)->{System.out.println(" val is "+ b);});
             }
 
             //減らすべき分の要素のstopperをtrueにしていく
