@@ -279,6 +279,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //Todo SlotTypeがINVENTORYではなくHOTBARになっているためにバグっている？
 
         //Todo とりあえず通常インベントリの減少がうまく行ったら一段落
+        //Todo 消費した食べ物がアイテムスロット補充されない->数はあっているのでアップデート処理が行われていないかも？
+        //Todo 食べ物はサーバー上ではちゃんと消費されているし補充もされているがクライアント側に同期されていない
+        //Todo 36スロットを下回ってすぐに歯抜け現象が起こる，はじめにホットバーから使い物にならなくなる
+        //Todo 増殖とかはしない模様，単にスロットのアクセスと同期，validslotメソッドが悪さしている
         //Todo InventoryEffectのapplyに新しいオーバーロードを追加，引数でスロット変更数を変えられるようにする．
 
         //Todo InventoryActivateFoodの作成，常に減らす方向
