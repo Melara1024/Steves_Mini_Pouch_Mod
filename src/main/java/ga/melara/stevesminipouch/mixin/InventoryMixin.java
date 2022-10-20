@@ -36,8 +36,7 @@ import java.util.List;
 
 //こいつはサーバー側
 @Mixin(Inventory.class)
-public abstract class InventoryMixin implements IStorageChangable, IAdditionalStorage
-{
+public abstract class InventoryMixin implements IStorageChangable, IAdditionalStorage {
 
     /*
     Todo コマンド・インベントリ拡張アイテムの放つイベントに合わせてitemsやsizeを増減する
@@ -51,10 +50,11 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     private int inventorySize;
 
 
-
     private boolean isActiveInventory = Config.DEFAULT_INVENTORY.get();
     private boolean isActiveArmor = Config.DEFAULT_ARMOR.get();
     private boolean isActiveOffhand = Config.DEFAULT_OFFHAND.get();
+
+    private boolean isActiveCraft = Config.DEFAULT_CRAFT.get();
 
     @Shadow
     public NonNullList<ItemStack> items;
@@ -73,14 +73,12 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public List<NonNullList<ItemStack>> compartments = new ArrayList<NonNullList<ItemStack>>();
 
     @Shadow
-    private boolean hasRemainingSpaceForItem(ItemStack p_36015_, ItemStack p_36016_)
-    {
+    private boolean hasRemainingSpaceForItem(ItemStack p_36015_, ItemStack p_36016_) {
         return false;
     }
 
     @Shadow
-    public ItemStack getItem(int id)
-    {
+    public ItemStack getItem(int id) {
         return null;
     }
 
@@ -88,19 +86,20 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Shadow
     public abstract void tick();
 
-    @Shadow @Final public Player player;
+    @Shadow
+    @Final
+    public Player player;
 
     @Inject(method = "<init>", at = @At(value = "RETURN"), cancellable = true)
-    public void oninitRender(CallbackInfo ci)
-    {
+    public void oninitRender(CallbackInfo ci) {
 
         maxPage = 5;
         //もとの数より減らしてはいけない……
         inventorySize = 92;
 
-        items = LockableItemStackList.withSize(inventorySize, (Inventory)(Object)this , false);
-        armor = LockableItemStackList.withSize(4, (Inventory)(Object)this,true);
-        offhand = LockableItemStackList.withSize(1, (Inventory)(Object)this,true);
+        items = LockableItemStackList.withSize(inventorySize, (Inventory) (Object) this, false);
+        armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, true);
+        offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, true);
         compartments.add(0, items);
         compartments.add(1, armor);
         compartments.add(2, offhand);
@@ -113,21 +112,15 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
 
     @Inject(method = "getSlotWithRemainingSpace(Lnet/minecraft/world/item/ItemStack;)I", at = @At(value = "HEAD"), cancellable = true)
-    public void onGetRemainingSpace(ItemStack p_36051_, CallbackInfoReturnable<Integer> cir)
-    {
-        if(this.hasRemainingSpaceForItem(this.getItem(this.selected), p_36051_))
-        {
+    public void onGetRemainingSpace(ItemStack p_36051_, CallbackInfoReturnable<Integer> cir) {
+        if (this.hasRemainingSpaceForItem(this.getItem(this.selected), p_36051_)) {
             cir.setReturnValue(this.selected);
-        } else if(this.hasRemainingSpaceForItem(this.getItem(40), p_36051_))
-        {
+        } else if (this.hasRemainingSpaceForItem(this.getItem(40), p_36051_)) {
             cir.setReturnValue(40);
-        } else
-        {
-            for(int i = 0; i < this.items.size(); ++i)
-            {
-                if(this.hasRemainingSpaceForItem(this.items.get(i), p_36051_))
-                {
-                    if(i < 36) cir.setReturnValue(i);
+        } else {
+            for (int i = 0; i < this.items.size(); ++i) {
+                if (this.hasRemainingSpaceForItem(this.items.get(i), p_36051_)) {
+                    if (i < 36) cir.setReturnValue(i);
                     else cir.setReturnValue(i + 5);
                 }
             }
@@ -140,13 +133,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     }
 
     @Inject(method = "getFreeSlot()I", at = @At(value = "HEAD"), cancellable = true)
-    public void onGetFreeSlot(CallbackInfoReturnable<Integer> cir)
-    {
-        for(int i = 0; i < this.items.size(); ++i)
-        {
-            if(this.items.get(i).isEmpty())
-            {
-                if(i < 36) cir.setReturnValue(i);
+    public void onGetFreeSlot(CallbackInfoReturnable<Integer> cir) {
+        for (int i = 0; i < this.items.size(); ++i) {
+            if (this.items.get(i).isEmpty()) {
+                if (i < 36) cir.setReturnValue(i);
                 else cir.setReturnValue(i + 5);
             }
         }
@@ -157,26 +147,30 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
 
     @Override
-    public void toggleInventory(Player player)
-    {
+    public void toggleInventory(Player player) {
         //全部の無効化
         //他の機能をまとめて起動するだけなので実装は後で
-        player.sendSystemMessage(Component.literal("Inventory Toggled!"));
 
+        changeStorageSize(1, player);
+        isActiveArmor = true;
+        toggleArmor(player);
+        isActiveOffhand = true;
+        toggleOffhand(player);
+
+        //クラフトはここから操作する必要なし
+
+        player.sendSystemMessage(Component.literal("Inventory Toggled!"));
     }
 
 
     @Override
-    public void toggleArmor(Player player)
-    {
+    public void toggleArmor(Player player) {
         //アーマーリストの無効化
         //溢れたアイテムを撒き散らす
         //menu.slotsを回してSlotType.ARMORを無効化・隠蔽処理有効化
 
-        if(this.isActiveArmor)
-        {
-            for(ItemStack item: armor)
-            {
+        if (this.isActiveArmor) {
+            for (ItemStack item : armor) {
                 Level level = player.level;
                 ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
                 itementity.setDefaultPickUpDelay();
@@ -185,7 +179,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             }
 
             compartments.remove(armor);
-            armor = LockableItemStackList.withSize(4, (Inventory)(Object)this,true);
+            armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, true);
             compartments.add(1, armor);
 
             this.isActiveArmor = false;
@@ -193,7 +187,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         }
 
         compartments.remove(armor);
-        armor = LockableItemStackList.withSize(4, (Inventory)(Object)this,false);
+        armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, false);
         compartments.add(1, armor);
 
         this.isActiveArmor = true;
@@ -202,12 +196,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     }
 
     @Override
-    public void toggleOffhand(Player player)
-    {
-        if(this.isActiveOffhand)
-        {
-            for(ItemStack item: offhand)
-            {
+    public void toggleOffhand(Player player) {
+        if (this.isActiveOffhand) {
+            for (ItemStack item : offhand) {
                 Level level = player.level;
                 ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
                 itementity.setDefaultPickUpDelay();
@@ -216,7 +207,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             }
 
             compartments.remove(offhand);
-            offhand = LockableItemStackList.withSize(1, (Inventory)(Object)this,true);
+            offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, true);
             compartments.add(2, offhand);
 
             this.isActiveOffhand = false;
@@ -224,12 +215,19 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         }
 
         compartments.remove(offhand);
-        offhand = LockableItemStackList.withSize(1, (Inventory)(Object)this,false);
+        offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, false);
         compartments.add(2, offhand);
 
         this.isActiveOffhand = true;
 
         player.sendSystemMessage(Component.literal("Offhand Toggled!"));
+    }
+
+    @Override
+    public void toggleCraft(Player player)
+    {
+        //Todo アイテムリストに対しての操作はしないがisActiveCraftのトグル操作のみ行う部分
+        isActiveCraft = !isActiveCraft;
     }
 
     @Override
@@ -251,24 +249,24 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     }
 
     @Override
+    public boolean isActiveCraft()
+    {
+        return this.isActiveCraft;
+    }
+
+    @Override
     public void changeStorageSize(int change, Player player)
     {
-        //永続スロットの追加
         //Todo やっぱり一時スロットを別にするのはやめる
         //Todo 正直処理が重くなるし意味がない
-
-
-        //ゼロスロットを下回るとゲームが落ちる
-        //->これに関してはインデックスがマイナスを下回ってるだけ
-        //0止めロジックを記述すれば解決するはず
-
 
         //なんかマイナス方向に小さくしたときにアイテムが消滅する？
         //ホットバーの奇数スロットに入れたアイテムがもれなく消滅している
         //たぶん拾ったときに一番スロットにものが入ってそのまま消滅という流れ
+        //スロットは利用可能だがリストは利用不能という状態に陥っていた
         //アイテムリストがsetを拒絶している？
         //しかもスロット数をへらすたびに偶数奇数が入れ替わっている？
-        //そしてなぜか一つスロットに入れただけなのに27個に増える
+        //そしてなぜか一つスロットに入れただけなのに27個に増える->ただの同期問題
 
         //多分正しくロックがかかっていない
         //setしたときの同期
@@ -280,17 +278,26 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         //Todo とりあえず通常インベントリの減少がうまく行ったら一段落
         //Todo 消費した食べ物がアイテムスロット補充されない->数はあっているのでアップデート処理が行われていないかも？
-        //Todo 食べ物はサーバー上ではちゃんと消費されているし補充もされているがクライアント側に同期されていない
-        //Todo 36スロットを下回ってすぐに歯抜け現象が起こる，はじめにホットバーから使い物にならなくなる
+        //Todo 食べ物はサーバー上ではちゃんと消費されているし補充もされているがクライアント側に同期されていない->見えなくなっていたスロットに入っていた可能性がある
+        //Todo 36スロットを下回ってすぐに歯抜け現象が起こる，はじめにホットバーから使い物にならなくなる->リストの逆転が不必要な位置で繰り返されていたのが原因
         //Todo 増殖とかはしない模様，単にスロットのアクセスと同期，validslotメソッドが悪さしている
         //Todo InventoryEffectのapplyに新しいオーバーロードを追加，引数でスロット変更数を変えられるようにする．
 
         //Todo InventoryActivateFoodの作成，常に減らす方向
 
+
+
+
         //Todo 2x2クラフトの無効化ロジックを実装する
+
+
+
+
         //Todo craftingcontainerクラスを書き換える必要があるかも
         //Todo craftingcontainer内のitemsにアイテムが格納されたら問答無用でその場に吐き出す
         //craftingcontainerはplayer.getInventory().getCraftingSlotsで参照可能
+
+        //Todo 結果スロットのみ少し大きいのでカバー絵を変更可能なようにする
 
         //Todo 不使用ホットバースロットの除去・非表示機能の実装
         //Todo インベントリ・スロット・スクリーン全部を書き換える必要がある
@@ -302,7 +309,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //とりあえずLockableItemStackListとして宣言してから挿入する？
 
 
-        if(inventorySize < 0)inventorySize = 0;
+        //インベントリは必ず1スロット残す
+        //インベントリをゼロスロットにするオプションはコマンドとして実装する
+        if(inventorySize < 1)inventorySize = 1;
 
         if(inventorySize< 36)
         {
@@ -314,13 +323,13 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 //まず頭から順にtrueにしていく
                 newItems.lockList.set(i, true);
                 //最後に対応を合わせるために逆順にする
-                Collections.reverse(newItems.lockList);
-
-
                 int j = 0;
                 newItems.lockList.forEach((b)->{System.out.println(" val is "+ b);});
             }
 
+            //for内でひっくり返していたので歯抜けになっている
+
+            Collections.reverse(newItems.lockList);
             //減らすべき分の要素のstopperをtrueにしていく
             //置き換えのときのsetで弾かれて自動で放り投げられるのでほかはそのままでOK?
         }

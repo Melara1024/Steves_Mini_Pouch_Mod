@@ -11,11 +11,15 @@ public interface IStorageChangable {
 
     abstract void toggleOffhand(Player player);
 
+    abstract void toggleCraft(Player player);
+
     abstract boolean isActiveInventory();
 
     abstract boolean isActiveArmor();
 
     abstract boolean isActiveOffhand();
+
+    abstract boolean isActiveCraft();
 
     abstract void changeStorageSize(int change, Player player);
 

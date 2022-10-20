@@ -108,6 +108,18 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
 
     @Override
     public void toggleInventory(Player player){
+        for(Slot slot: this.slots)
+        {
+            //メインハンド以外のすべてのスロットを使用不可にする
+            if(slot.getSlotIndex() == 0 && ((IHasSlotType)slot).getType() == SlotType.HOTBAR)
+            {
+                ((ISlotHidable)slot).show();
+            }
+            else
+            {
+                ((ISlotHidable)slot).hide();
+            }
+        }
         System.out.println("menu Toggled");
     }
 
@@ -139,7 +151,29 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
 
     @Override
     public void toggleCraft(Player player){
-        System.out.println("menu Toggled");
+
+        if(((IStorageChangable)player.getInventory()).isActiveCraft())
+        {
+            for(Slot slot: this.slots)
+            {
+                if(((IHasSlotType)slot).getType() == SlotType.CRAFT || ((IHasSlotType)slot).getType() == SlotType.RESULT)
+                {
+                    ((ISlotHidable)slot).hide();
+                }
+            }
+            return;
+        }
+        else
+        {
+            for(Slot slot: this.slots)
+            {
+                if(((IHasSlotType)slot).getType() == SlotType.ARMOR || ((IHasSlotType)slot).getType() == SlotType.RESULT)
+                {
+                    ((ISlotHidable)slot).show();
+                }
+            }
+        }
+        System.out.println("crafting Toggled");
     }
 
     @Override

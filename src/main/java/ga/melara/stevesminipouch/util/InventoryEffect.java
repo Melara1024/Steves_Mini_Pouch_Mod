@@ -45,6 +45,8 @@ public enum InventoryEffect {
         @Override
         public void apply(Player player) {
             ((IMenuChangable)player.inventoryMenu).toggleCraft(player);
+            ((IStorageChangable)player.getInventory()).toggleCraft(player);
+            ((ICraftingContainerChangable)player.inventoryMenu.getCraftSlots()).toggleCraft(player);
             //menu側でslot更新
 
             syncToRemote(player, ACTIVATE_CRAFT);
@@ -66,16 +68,23 @@ public enum InventoryEffect {
         //Todo スロット追加数を指定可能なようにapplyのオーバーロードを追加する
         @Override
         public void apply(Player player) {
-            ((IMenuChangable)player.inventoryMenu).changeStorageSize(-1, player);
-            ((IStorageChangable)player.getInventory()).changeStorageSize(-1, player);
+            apply(player, 1);
+        }
 
-            syncToRemote(player, ADD_SLOT);
+        @Override
+        public void apply(Player player, int change)
+        {
+            ((IMenuChangable)player.inventoryMenu).changeStorageSize(change, player);
+            ((IStorageChangable)player.getInventory()).changeStorageSize(change, player);
+
+            syncToRemote(player, ADD_SLOT, change);
         }
     };
 
 
 
     public abstract void apply(Player player);
+    public void apply(Player player, int change){};
 
     public void syncToRemote(Player player, InventoryEffect inventoryEffect)
     {
@@ -83,11 +92,24 @@ public enum InventoryEffect {
             Messager.sendToPlayer(new InventoryChangedPacket(inventoryEffect, player.getUUID()), (ServerPlayer) player);
     }
 
+    public void syncToRemote(Player player, InventoryEffect inventoryEffect, int change)
+    {
+        if(!player.getLevel().isClientSide())
+            Messager.sendToPlayer(new InventoryChangedPacket(inventoryEffect, change, player.getUUID()), (ServerPlayer) player);
+    }
+
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void callThisFromClient(InventoryChangeEvent e)
     {
-        InventoryEffect.getById(e.getInventoryEffect()).apply(Minecraft.getInstance().player);
+        if(InventoryEffect.getById(e.getInventoryEffect()) == InventoryEffect.ADD_SLOT)
+        {
+            InventoryEffect.getById(e.getInventoryEffect()).apply(Minecraft.getInstance().player, e.getSlotChange());
+        }
+        else
+        {
+            InventoryEffect.getById(e.getInventoryEffect()).apply(Minecraft.getInstance().player);
+        }
     }
 
     public static InventoryEffect getById(int id)

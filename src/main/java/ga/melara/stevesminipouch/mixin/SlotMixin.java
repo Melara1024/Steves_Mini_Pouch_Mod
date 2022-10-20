@@ -158,6 +158,13 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
                 ci.cancel();
             }
         }
+        if(this.type == SlotType.HOTBAR)
+        {
+            if(((IStorageChangable)container).isValidSlot(this.slot)) {
+                this.show();
+            }
+            else this.hide();
+        }
         if(this.type == SlotType.ARMOR)
         {
             if(((IStorageChangable)container).isActiveArmor()) {
@@ -202,6 +209,13 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
                 ci.cancel();
             }
         }
+        if(this.type == SlotType.HOTBAR)
+        {
+            if(((IStorageChangable)container).isValidSlot(this.slot)) {
+                this.show();
+            }
+            else this.hide();
+        }
         if(this.type == SlotType.ARMOR)
         {
 
@@ -232,6 +246,13 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
                 cir.setReturnValue(ItemStack.EMPTY);
             }
         }
+        if(this.type == SlotType.HOTBAR)
+        {
+            if(((IStorageChangable)container).isValidSlot(this.slot)) {
+                this.show();
+            }
+            else this.hide();
+        }
         if(this.type == SlotType.ARMOR)
         {
 
@@ -259,6 +280,13 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
                 this.hide();
                 cir.setReturnValue(ItemStack.EMPTY);
             }
+        }
+        if(this.type == SlotType.HOTBAR)
+        {
+            if(((IStorageChangable)container).isValidSlot(this.slot)) {
+                this.show();
+            }
+            else this.hide();
         }
         if(this.type == SlotType.ARMOR)
         {

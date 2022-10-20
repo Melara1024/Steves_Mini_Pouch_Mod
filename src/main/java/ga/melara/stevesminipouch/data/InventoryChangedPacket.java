@@ -12,11 +12,19 @@ import java.util.function.Supplier;
 
 public class InventoryChangedPacket {
     private int inventoryEffect;
+
+    private int change;
     private UUID senderUUID;
 
 
     public InventoryChangedPacket(InventoryEffect inventoryEffect, UUID senderUUID) {
         this.inventoryEffect = InventoryEffect.getByType(inventoryEffect);
+        this.senderUUID = senderUUID;
+    }
+
+    public InventoryChangedPacket(InventoryEffect inventoryEffect, int change, UUID senderUUID) {
+        this.inventoryEffect = InventoryEffect.getByType(inventoryEffect);
+        this.change = change;
         this.senderUUID = senderUUID;
     }
 
