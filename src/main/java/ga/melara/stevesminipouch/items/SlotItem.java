@@ -40,20 +40,5 @@ public class SlotItem extends FunctionFoodItem {
         else System.out.println("here is server side");
         ((IMenuChangable)player.inventoryMenu).changeStorageSize(changeValue, player);
         ((IStorageChangable)player.getInventory()).changeStorageSize(changeValue, player);
-
-        //syncToRemote(player);
-    }
-
-    public void syncToRemote(Player target)
-    {
-        if(!target.getLevel().isClientSide())
-        Messager.sendToPlayer(new InventoryChangedPacket(InventoryEffect.ADD_SLOT, target.getUUID()), (ServerPlayer) target);
-    }
-
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public void callThisFromClient(InventoryChangeEvent e)
-    {
-        onEat(Minecraft.getInstance().player);
     }
 }
