@@ -285,9 +285,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         //Todo InventoryActivateFoodの作成，常に減らす方向
 
-
-
-
         //Todo 2x2クラフトの無効化ロジックを実装する
 
 
@@ -297,11 +294,49 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //Todo craftingcontainer内のitemsにアイテムが格納されたら問答無用でその場に吐き出す
         //craftingcontainerはplayer.getInventory().getCraftingSlotsで参照可能
 
+
         //Todo 結果スロットのみ少し大きいのでカバー絵を変更可能なようにする
+
+
+
+        //ここまでやった
+
+        //はじめにホイール選択できないようにする
+        //マウスの動きはnet.minecraft.client.MouseHandlerクラスによって定義されている
+        //変更するとすればonScroll,ただMath.signumから符号(チルト方向)のみを入手しているので変更不要か
+
+        //Inventory内のメソッド
+        //isHobarSlot，9以内の番号を返すとtrueになる
+        //swapPaint,これはたぶんスロット位置を9->1や1->9に飛ばすための部分？
+        //getSuitableHotbarSlot
+        //geteSelectionSizeがホットバーのサイズをちゃんと返すように
+
+        //AbstractContainerScreen内のメソッド
+        //checkHotbarMouseClicked
+
+        //ホットバーの動きはホイール駆動->abstractContainerScreen->Inventoryの順に発火されるのでこれだけでokか？
+        //selected格納時に手持ちアイテムがサーバーに送られる？
+        //とりあえずサーバー側は手持ちアイテムを把握しているはずなのでどこかで送られている
+
+
+
+
+        //拾わないかの確認
+        //inventory.itemsリストが正しく閉鎖されていればアイテムは格納されないはず
+
+
+        //次にレンダリング
+        //Guiクラス内に存在するrenderHotbarメソッドの書き換えを行う
+        //renderHotbar自体がたぶん9回呼ばれている？ とりあえず絵の場所を確認すべき
 
         //Todo 不使用ホットバースロットの除去・非表示機能の実装
         //Todo インベントリ・スロット・スクリーン全部を書き換える必要がある
         //Todo HUDの表示クラスを見つける必要がある(TinyInvを参考にする？)
+
+
+        //Gui.javaのrenderHotbar内でレンダリングが行われている
+        //マウスホイールによる選択はどこか？
+        //MouseHandlerクラス内で処理内容が決定されている
 
 
         inventorySize += change;

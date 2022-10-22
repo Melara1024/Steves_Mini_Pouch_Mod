@@ -38,7 +38,10 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
     Todo スロットが上記のような状態だったときに灰色の絵で隠せるようにrenderメソッドに対してMixinを適用
      */
 
+    //patch for common slot
     private static final ResourceLocation PATCH = new ResourceLocation(MODID,"textures/gui/patch.png");
+    //patch for RESULT slot
+    private static final ResourceLocation PATCH_LARGE = new ResourceLocation(MODID,"textures/gui/patch.png");
 
     private int page = 0;
 
@@ -149,11 +152,25 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
             Slot slot = this.menu.slots.get(k);
             if(!((ISlotHidable)slot).isShowing())
             {
-                RenderSystem.setShaderTexture(0, PATCH);
-                RenderSystem.enableTexture();
-                RenderSystem.enableDepthTest();
-                this.blit(poseStack, slot.x + leftPos -1, slot.y + topPos -1, this.getBlitOffset(), 18, 18, 21);
+                patchSlot(((IHasSlotType)slot).getType(), poseStack, slot);
             }
         }
+    }
+
+    private void patchSlot(SlotType type, PoseStack poseStack, Slot slot)
+    {
+        ResourceLocation patchImage;
+        int offset;
+        int imageSize;
+
+        switch(type){
+            case RESULT ->  {patchImage = PATCH_LARGE; offset = 4; imageSize = 24;}
+            default -> {patchImage = PATCH; offset = 1; imageSize = 18;}
+        }
+
+        RenderSystem.setShaderTexture(0, patchImage);
+        RenderSystem.enableTexture();
+        RenderSystem.enableDepthTest();
+        this.blit(poseStack, slot.x + leftPos -offset, slot.y + topPos - offset, this.getBlitOffset(), imageSize, imageSize, 21);
     }
 }
