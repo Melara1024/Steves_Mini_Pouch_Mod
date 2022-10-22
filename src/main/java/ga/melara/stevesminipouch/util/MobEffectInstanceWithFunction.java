@@ -20,6 +20,13 @@ public class MobEffectInstanceWithFunction extends MobEffectInstance {
         this.inventoryEffect = e;
     }
 
+    public MobEffectInstanceWithFunction(InventoryEffect e, int value)
+    {
+        super(MobEffects.BLINDNESS,20, 5);
+        this.inventoryEffect = e;
+    }
+
+
     public void applyInventoryEffect(LivingEntity entity)
     {
         if(entity instanceof Player)this.inventoryEffect.apply((Player)entity);

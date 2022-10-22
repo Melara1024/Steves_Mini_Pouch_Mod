@@ -1,6 +1,7 @@
 package ga.melara.stevesminipouch;
 
 import ga.melara.stevesminipouch.items.*;
+import ga.melara.stevesminipouch.items.slotitems.*;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -26,12 +27,14 @@ public class ModRegistry
     public static final RegistryObject<Item> CRAFT_ACTIVATE_ITEM = ITEMS.register("crafruit", CraftActivatItem.build());
     public static final RegistryObject<Item> ARMOR_ACTIVATE_ITEM = ITEMS.register("armorpple", ArmorActivateItem.build());
     public static final RegistryObject<Item> OFFHAND_ACTIVATE_ITEM = ITEMS.register("offhandrian", OffhandActivateItem.build());
-    public static final RegistryObject<Item> SLOT_ADD_ITEM = ITEMS.register("edible_chest", SlotItem.build(1));
-    public static final RegistryObject<Item> SLOT_SHRINK_ITEM = ITEMS.register("edible_air", SlotItem.build(-1));
-    public static final RegistryObject<Item> SLOT_ADD_ITEM_2 = ITEMS.register("edible_largechest", SlotItem.build(9));
-    public static final RegistryObject<Item> SLOT_SHRINK_ITEM_2 = ITEMS.register("edible_void", SlotItem.build(-9));
-    public static final RegistryObject<Item> SLOT_ADD_ITEM_3 = ITEMS.register("edible_triplechest", SlotItem.build(27));
-    public static final RegistryObject<Item> SLOT_SHRINK_ITEM_3 = ITEMS.register("edible_null", SlotItem.build(-27));
+
+    public static final RegistryObject<Item> SLOT_ADD1_ITEM  = Add1SlotItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> SLOT_ADD9_ITEM = Add9SlotItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> SLOT_ADD27_ITEM = Add27SlotItem.buildInTo(ITEMS);
+
+    public static final RegistryObject<Item> SLOT_SHRINK1_ITEM = Sub1SlotItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> SLOT_SHRINK9_ITEM = Sub9SlotItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> SLOT_SHRINK27_ITEM = Sub27SlotItem.buildInTo(ITEMS);
 
     public static final RegistryObject<Item> DUMMY_ITEM = ITEMS.register("dummy", DummyItem.build());
 

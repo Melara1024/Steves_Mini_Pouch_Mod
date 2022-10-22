@@ -1,36 +1,59 @@
 package ga.melara.stevesminipouch.items;
 
+import ga.melara.stevesminipouch.data.InventoryChangedPacket;
+import ga.melara.stevesminipouch.data.Messager;
+import ga.melara.stevesminipouch.event.InventoryChangeEvent;
+import ga.melara.stevesminipouch.util.IMenuChangable;
+import ga.melara.stevesminipouch.util.IStorageChangable;
 import ga.melara.stevesminipouch.util.InventoryEffect;
 import ga.melara.stevesminipouch.util.MobEffectInstanceWithFunction;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.function.Supplier;
 
-public class SlotItem extends Item {
+public class SlotItem extends FunctionFoodItem {
+    
+    public int changeValue = 0;
 
-    public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
-            .nutrition(2)
-            .saturationMod(2)
-            .alwaysEat()
-            .effect(()-> new MobEffectInstanceWithFunction(InventoryEffect.ADD_SLOT), 1)
-            .build();
-    public static final Item.Properties ITEM_PROPERTIES = new Item.Properties()
-            .tab(CreativeModeTab.TAB_FOOD)
-            .rarity(Rarity.EPIC)
-            .stacksTo(27)
-            .food(FOOD_PROPERTIES);
-
-
-
-    public SlotItem(int value) {
-        super(ITEM_PROPERTIES);
+    public SlotItem(Item.Properties properties) {
+        super(properties);
     }
 
-    public static Supplier<? extends Item> build(int value)
+    @Override
+    public void onEat(LivingEntity entity)
     {
-        return () -> new SlotItem(value);
+        if(!(entity instanceof Player))return;
+
+        Player player = (Player)entity;
+        if(player.getLevel().isClientSide())System.out.println("here is client side!");
+        else System.out.println("here is server side");
+        ((IMenuChangable)player.inventoryMenu).changeStorageSize(changeValue, player);
+        ((IStorageChangable)player.getInventory()).changeStorageSize(changeValue, player);
+
+        //syncToRemote(player);
+    }
+
+    public void syncToRemote(Player target)
+    {
+        if(!target.getLevel().isClientSide())
+        Messager.sendToPlayer(new InventoryChangedPacket(InventoryEffect.ADD_SLOT, target.getUUID()), (ServerPlayer) target);
+    }
+
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
+    public void callThisFromClient(InventoryChangeEvent e)
+    {
+        onEat(Minecraft.getInstance().player);
     }
 }

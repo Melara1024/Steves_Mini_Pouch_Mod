@@ -397,7 +397,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         items = newItems;
         compartments.add(0, items);
 
-        player.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
+        if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
     }
 
     @Override

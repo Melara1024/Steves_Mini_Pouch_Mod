@@ -211,7 +211,6 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
 
             //……しようかなとおもったけど面倒なのでitemsのlockリストをスロット側から入手する
         }
-        System.out.println("menu Toggled");
     }
 
 

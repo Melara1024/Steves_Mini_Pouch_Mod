@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 public class InventoryChangedPacket {
     private int inventoryEffect;
 
-    private int change;
+    private int change = 0;
     private UUID senderUUID;
 
 
@@ -30,11 +30,13 @@ public class InventoryChangedPacket {
 
     public InventoryChangedPacket(FriendlyByteBuf buf) {
         this.inventoryEffect = buf.readInt();
+        this.change = buf.readInt();
         this.senderUUID = buf.readUUID();
     }
 
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeInt(this.inventoryEffect);
+        buf.writeInt(this.change);
         buf.writeUUID(this.senderUUID);
     }
 
@@ -46,7 +48,7 @@ public class InventoryChangedPacket {
             //クライアント側プレイヤークラスにアクセスする必要がある
             //ただしMinecraft.getInstance()は使えない
             //イベントを飛ばしてプレイヤーを保持するクラスから実行する
-            MinecraftForge.EVENT_BUS.post(new InventoryChangeEvent(inventoryEffect));
+            MinecraftForge.EVENT_BUS.post(new InventoryChangeEvent(inventoryEffect, change));
             System.out.println("direction is "+ ctx.getDirection());
             ctx.setPacketHandled(true);
         });

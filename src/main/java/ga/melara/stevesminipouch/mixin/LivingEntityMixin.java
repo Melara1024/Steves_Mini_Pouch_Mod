@@ -1,6 +1,7 @@
 package ga.melara.stevesminipouch.mixin;
 
 import com.mojang.datafixers.util.Pair;
+import ga.melara.stevesminipouch.items.FunctionFoodItem;
 import ga.melara.stevesminipouch.util.IStorageChangable;
 import ga.melara.stevesminipouch.util.InventoryEffect;
 import ga.melara.stevesminipouch.util.MobEffectInstanceWithFunction;
@@ -26,14 +27,8 @@ public class LivingEntityMixin
     public void onAddEatEffect(ItemStack p_21064_, Level p_21065_, LivingEntity p_21066_, CallbackInfo ci)
     {
         Item item = p_21064_.getItem();
-        if (item.isEdible()) {
-            for(Pair<MobEffectInstance, Float> pair : p_21064_.getFoodProperties((LivingEntity)(Object)this).getEffects()) {
-                if (!p_21065_.isClientSide && pair.getFirst() != null
-                        && p_21065_.random.nextFloat() < pair.getSecond()
-                        && pair.getFirst() instanceof MobEffectInstanceWithFunction) {
-                    ((MobEffectInstanceWithFunction)pair.getFirst()).applyInventoryEffect(p_21066_);
-                }
-            }
+        if (item instanceof FunctionFoodItem) {
+            ((FunctionFoodItem)item).onEat(p_21066_);
         }
     }
 }
