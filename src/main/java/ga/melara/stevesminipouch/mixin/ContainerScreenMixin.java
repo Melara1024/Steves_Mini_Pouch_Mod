@@ -40,8 +40,6 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
 
     //patch for common slot
     private static final ResourceLocation PATCH = new ResourceLocation(MODID,"textures/gui/patch.png");
-    //patch for RESULT slot
-    private static final ResourceLocation PATCH_LARGE = new ResourceLocation(MODID,"textures/gui/patch.png");
 
     private int page = 0;
 
@@ -159,18 +157,9 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
 
     private void patchSlot(SlotType type, PoseStack poseStack, Slot slot)
     {
-        ResourceLocation patchImage;
-        int offset;
-        int imageSize;
-
-        switch(type){
-            case RESULT ->  {patchImage = PATCH_LARGE; offset = 4; imageSize = 24;}
-            default -> {patchImage = PATCH; offset = 1; imageSize = 18;}
-        }
-
-        RenderSystem.setShaderTexture(0, patchImage);
+        RenderSystem.setShaderTexture(0, PATCH);
         RenderSystem.enableTexture();
         RenderSystem.enableDepthTest();
-        this.blit(poseStack, slot.x + leftPos -offset, slot.y + topPos - offset, this.getBlitOffset(), imageSize, imageSize, 21);
+        this.blit(poseStack, slot.x + leftPos -1, slot.y + topPos - 1, this.getBlitOffset(), 18, 18, 21);
     }
 }

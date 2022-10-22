@@ -167,7 +167,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
         {
             for(Slot slot: this.slots)
             {
-                if(((IHasSlotType)slot).getType() == SlotType.ARMOR || ((IHasSlotType)slot).getType() == SlotType.RESULT)
+                if(((IHasSlotType)slot).getType() == SlotType.CRAFT || ((IHasSlotType)slot).getType() == SlotType.RESULT)
                 {
                     ((ISlotHidable)slot).show();
                 }
