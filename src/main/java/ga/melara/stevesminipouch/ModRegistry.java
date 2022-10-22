@@ -2,17 +2,50 @@ package ga.melara.stevesminipouch;
 
 import ga.melara.stevesminipouch.items.*;
 import ga.melara.stevesminipouch.items.slotitems.*;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.Comparator;
+
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
 public class ModRegistry
 {
+    public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab("steves_mini_pouch") {
+        @Override
+        public ItemStack makeIcon() {
+            return new ItemStack(Items.BUNDLE);
+        }
+
+        @Override
+        public void fillItemList(NonNullList<ItemStack> pItems) {
+            for(Item item : Registry.ITEM) {
+                pItems.sort(new Comparator<ItemStack>()
+                {
+                    @Override
+                    public int compare(ItemStack o1, ItemStack o2)
+                    {
+                        return String.CASE_INSENSITIVE_ORDER.compare(o1.getDisplayName().getString(), o2.getDisplayName().getString());
+                    }
+                });
+
+                item.fillItemCategory(this, pItems);
+            }
+
+            pItems.forEach((i)->{System.out.println(i.getItem());});
+        }
+    };
+
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 
@@ -23,10 +56,10 @@ public class ModRegistry
     }
 
 
-    public static final RegistryObject<Item> INVENTORY_ACTIVATE_ITEM = ITEMS.register("berrinventory", InventoryActivateItem.build());
-    public static final RegistryObject<Item> CRAFT_ACTIVATE_ITEM = ITEMS.register("crafruit", CraftActivatItem.build());
-    public static final RegistryObject<Item> ARMOR_ACTIVATE_ITEM = ITEMS.register("armorpple", ArmorActivateItem.build());
-    public static final RegistryObject<Item> OFFHAND_ACTIVATE_ITEM = ITEMS.register("offhandrian", OffhandActivateItem.build());
+    public static final RegistryObject<Item> INVENTORY_ACTIVATE_ITEM = InventoryActivateItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> CRAFT_ACTIVATE_ITEM = CraftActivatItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> ARMOR_ACTIVATE_ITEM = ArmorActivateItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> OFFHAND_ACTIVATE_ITEM = OffhandActivateItem.buildInTo(ITEMS);
 
     public static final RegistryObject<Item> SLOT_ADD1_ITEM  = Add1SlotItem.buildInTo(ITEMS);
     public static final RegistryObject<Item> SLOT_ADD9_ITEM = Add9SlotItem.buildInTo(ITEMS);
@@ -36,7 +69,6 @@ public class ModRegistry
     public static final RegistryObject<Item> SLOT_SHRINK9_ITEM = Sub9SlotItem.buildInTo(ITEMS);
     public static final RegistryObject<Item> SLOT_SHRINK27_ITEM = Sub27SlotItem.buildInTo(ITEMS);
 
-    public static final RegistryObject<Item> DUMMY_ITEM = ITEMS.register("dummy", DummyItem.build());
 
 
 
