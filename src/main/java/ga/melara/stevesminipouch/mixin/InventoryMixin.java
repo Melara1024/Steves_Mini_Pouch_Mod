@@ -48,6 +48,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     private int maxPage;
 
     private int inventorySize;
+    private int hotbarSize;
 
 
     private boolean isActiveInventory = Config.DEFAULT_INVENTORY.get();
@@ -96,6 +97,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         maxPage = 5;
         //もとの数より減らしてはいけない……
         inventorySize = 92;
+        hotbarSize = 9;
 
         items = LockableItemStackList.withSize(inventorySize, (Inventory) (Object) this, false);
         armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, true);
@@ -348,6 +350,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //インベントリをゼロスロットにするオプションはコマンドとして実装する
         if(inventorySize < 1)inventorySize = 1;
 
+        hotbarSize = 9;
         if(inventorySize< 36)
         {
             //36以内になってしまう場合にはスロットは36固定
@@ -357,7 +360,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             {
                 //まず頭から順にtrueにしていく
                 newItems.lockList.set(i, true);
-                //最後に対応を合わせるために逆順にする
+
                 int j = 0;
                 newItems.lockList.forEach((b)->{System.out.println(" val is "+ b);});
             }
@@ -367,6 +370,11 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             Collections.reverse(newItems.lockList);
             //減らすべき分の要素のstopperをtrueにしていく
             //置き換えのときのsetで弾かれて自動で放り投げられるのでほかはそのままでOK?
+            if(inventorySize < 9)
+            {
+                hotbarSize = inventorySize;
+                if(selected > inventorySize-1)selected = inventorySize-1;
+            }
         }
         else
         {
@@ -397,6 +405,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         items = newItems;
         compartments.add(0, items);
 
+        items.forEach(System.out::println);
+
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
     }
 
@@ -425,6 +435,44 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         return true;
     }
 
+
+    @Inject(method = "isHotbarSlot(I)Z", at = @At(value = "HEAD"), cancellable = true)
+    private static void onDetectHotbarSlot(int p_36046_, CallbackInfoReturnable<Boolean> cir)
+    {
+        //単にスロットをホットバーとして認識しなくなるだけ，とくにいらないかも？
+        //とりあえずホットバーの最大値はここで指定する
+        cir.setReturnValue(p_36046_ >= 0 && p_36046_ <9);
+    }
+
+    @Inject(method = "swapPaint(D)V", at = @At(value = "HEAD"), cancellable = true)
+    public void onSwapaint(double p_35989_, CallbackInfo ci)
+    {
+        //こいついじると選択不能になる！！ ただしマウスのみ
+        int i = (int)Math.signum(p_35989_);
+
+        for(this.selected -= i; this.selected < 0; this.selected += hotbarSize) {
+        }
+
+        while(this.selected >= hotbarSize) {
+            this.selected -= hotbarSize;
+        }
+
+        ci.cancel();
+    }
+
+    @Inject(method = "getSuitableHotbarSlot()I", at = @At(value = "HEAD"), cancellable = true)
+    public void onGetSuitableHotbarSlot(CallbackInfoReturnable<Integer> cir)
+    {
+
+    }
+
+    @Inject(method = "getSelectionSize()I", at = @At(value = "HEAD"), cancellable = true)
+    private static void onGetSelectionSize(CallbackInfoReturnable<Integer> cir)
+    {
+
+    }
+
+
     @Override
     public int getMaxPage()
     {
@@ -432,9 +480,15 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     }
 
     @Override
-    public int getSize()
+    public int getInventorySize()
     {
         return inventorySize;
+    }
+
+    @Override
+    public int getHotbarSize()
+    {
+        return hotbarSize;
     }
 
     @Inject(method = "save(Lnet/minecraft/nbt/ListTag;)Lnet/minecraft/nbt/ListTag;", at = @At(value = "HEAD"), cancellable = true)

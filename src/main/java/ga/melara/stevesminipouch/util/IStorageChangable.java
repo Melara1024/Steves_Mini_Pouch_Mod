@@ -1,8 +1,6 @@
 package ga.melara.stevesminipouch.util;
 
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 
 public interface IStorageChangable {
     abstract void toggleInventory(Player player);
@@ -27,5 +25,7 @@ public interface IStorageChangable {
 
     abstract int getMaxPage();
 
-    abstract int getSize();
+    abstract int getInventorySize();
+
+    abstract int getHotbarSize();
 }

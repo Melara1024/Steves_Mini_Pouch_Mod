@@ -2,7 +2,6 @@ package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -79,7 +78,7 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
     {
         this.page = page;
         if(this.type == SlotType.INVENTORY) {
-            if(this.slot + 27 * page < ((IStorageChangable) container).getSize()) {
+            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()) {
                 show();
             }
             else
@@ -142,7 +141,7 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
         //ページを捲る前にinitializeが呼ばれてしまっている？
         if(this.type == SlotType.INVENTORY && page>0)
         {
-            if(this.slot + 27*page < ((IStorageChangable)container).getSize()
+            if(this.slot + 27*page < ((IStorageChangable)container).getInventorySize()
             && ((IStorageChangable)container).isValidSlot(this.slot + 27*page + 5))
             {
                 this.show();
@@ -194,7 +193,7 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
     {
         if(this.type == SlotType.INVENTORY && page>0)
         {
-            if(this.slot + 27*page < ((IStorageChangable)container).getSize()
+            if(this.slot + 27*page < ((IStorageChangable)container).getInventorySize()
                     && ((IStorageChangable)container).isValidSlot(this.slot + 27*page + 5))
             {
                 this.show();
@@ -232,7 +231,7 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
         //System.out.println("called slot is " + (this.slot + 27*page + 5));
         if(this.type == SlotType.INVENTORY && page>0)
         {
-            if(this.slot + 27*page < ((IStorageChangable)container).getSize()
+            if(this.slot + 27*page < ((IStorageChangable)container).getInventorySize()
                     && ((IStorageChangable)container).isValidSlot(this.slot + 27*page + 5))
             {
                 this.show();
@@ -268,7 +267,7 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
     {
         if(this.type == SlotType.INVENTORY && page>0)
         {
-            if(this.slot + 27*page < ((IStorageChangable)container).getSize()
+            if(this.slot + 27*page < ((IStorageChangable)container).getInventorySize()
                     && ((IStorageChangable)container).isValidSlot(this.slot + 27*page + 5))
             {
                 this.show();
