@@ -2,6 +2,8 @@ package ga.melara.stevesminipouch.mixin;
 
 import com.google.common.collect.ImmutableList;
 import ga.melara.stevesminipouch.Config;
+import ga.melara.stevesminipouch.data.PlayerInventoryProvider;
+import ga.melara.stevesminipouch.data.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.util.IAdditionalStorage;
 import ga.melara.stevesminipouch.util.IStorageChangable;
 import ga.melara.stevesminipouch.util.LockableItemStackList;
@@ -17,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.util.thread.SidedThreadGroups;
 import org.apache.commons.lang3.Validate;
 import org.spongepowered.asm.mixin.Final;
@@ -90,10 +93,16 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Shadow
     @Final
+    @Mutable
     public Player player;
 
-    @Inject(method = "<init>", at = @At(value = "RETURN"), cancellable = true)
-    public void oninitRender(CallbackInfo ci) {
+
+    @Inject(method = "<init>", at = @At(value = "TAIL"))
+    public void oninit(Player p_35983_, CallbackInfo ci) {
+
+        //System.out.println(p_35983_);
+
+
 
         maxPage = 5;
         //もとの数より減らしてはいけない……
@@ -149,6 +158,16 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public void toggleInventory(Player player) {
         //全部の無効化
         //他の機能をまとめて起動するだけなので実装は後で
+
+        LazyOptional<PlayerInventorySizeData> l = player.getCapability(PlayerInventoryProvider.DATA);
+        PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
+
+        System.out.println("inventory init!");
+        System.out.println(p.getSlot());
+        System.out.println(p.isActiveInventory());
+        System.out.println(p.isEquippable());
+        System.out.println(p.isActiveOffhand());
+        System.out.println(p.isCraftable());
 
         changeStorageSize(1, player);
         isActiveArmor = true;
@@ -479,6 +498,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Inject(method = "swapPaint(D)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSwapaint(double p_35989_, CallbackInfo ci)
     {
+
+
         //こいついじると選択不能になる！！ ただしマウスのみ
         int i = (int)Math.signum(p_35989_);
 

@@ -69,12 +69,12 @@ public class PlayerInventorySizeData {
         compound.putBoolean("craftable", isCraftable);
         compound.putBoolean("equippable", isEquippable);
 
-        System.out.println("saveNBTData");
-        System.out.println(slot);
-        System.out.println(isActiveInventory);
-        System.out.println(isEquippable);
-        System.out.println(isActiveOffhand);
-        System.out.println(isCraftable);
+//        System.out.println("saveNBTData");
+//        System.out.println(slot);
+//        System.out.println(isActiveInventory);
+//        System.out.println(isEquippable);
+//        System.out.println(isActiveOffhand);
+//        System.out.println(isCraftable);
     }
 
     public void loadNBTData(CompoundTag compound) {

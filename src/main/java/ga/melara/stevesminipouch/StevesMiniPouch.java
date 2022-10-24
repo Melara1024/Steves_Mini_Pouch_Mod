@@ -53,6 +53,15 @@ public class StevesMiniPouch {
         LazyOptional<PlayerInventorySizeData> l = e.getEntity().getCapability(PlayerInventoryProvider.DATA);
         PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
 
+        System.out.println("setspawn");
+        System.out.println(p.getSlot());
+        System.out.println(p.isActiveInventory());
+        System.out.println(p.isEquippable());
+        System.out.println(p.isActiveOffhand());
+        System.out.println(p.isCraftable());
+
+
+
         if(e.getEntity() instanceof ServerPlayer serverPlayer) {
             Messager.sendToPlayer(new InventorySyncPacket(p), serverPlayer);
             //System.out.println("hello client! from server.");
