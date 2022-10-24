@@ -343,7 +343,14 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         //ここまでやった
 
+        //Todo クリエイティブモードのメニューの修正
+        //Todo たぶんクリエメニューのみスロットの追加時の動作がおかしいのでSlotTypeが効いていない？
 
+        //Todo CreativeModeInventoryScreen内の491行目のところでインベントリの初期化を行っている
+        //Todo addSlotメソッドを使っていない
+
+        //Todo Containermenuを介していないので対応不能，Screen側でSlotのチェック機能をつける？
+        //Todo SlotTypeにUndefinedを作る
 
 
         inventorySize += change;

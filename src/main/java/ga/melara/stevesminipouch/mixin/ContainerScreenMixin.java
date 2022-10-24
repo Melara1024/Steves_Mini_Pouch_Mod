@@ -74,7 +74,8 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
 
         //Todo ここはページによってスロットの色を変えるお楽しみ機能をつけるのくらいにしか使わないはず
 
-        
+
+
     }
 
 
@@ -146,8 +147,21 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
 
 
 
+
         for(int k = 0; k < this.menu.slots.size(); ++k) {
             Slot slot = this.menu.slots.get(k);
+
+            if(((IHasSlotType)slot).getType() == SlotType.UNDEFINED)
+            {
+                SlotType.setType(slot);
+                SlotType.setHiding(slot);
+            }
+            //ARMOR,OFFHANDのhide設定がなされていない？
+            //initializeはAbstractContainerMenu内のメソッド，なのでCreativeScreenからは呼ばれない！
+
+            System.out.println("slotType -> " + ((IHasSlotType)slot).getType());
+            System.out.println("slotCont -> " + slot.container);
+
             if(!((ISlotHidable)slot).isShowing())
             {
                 patchSlot(((IHasSlotType)slot).getType(), poseStack, slot);

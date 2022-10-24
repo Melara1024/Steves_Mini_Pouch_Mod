@@ -33,7 +33,7 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
     カーソルのホバーに関してはレンダラーで対応可能
      */
 
-    public SlotType type = SlotType.OTHER;
+    public SlotType type = SlotType.UNDEFINED;
     public int page = 0;
 
     @Final
@@ -135,6 +135,7 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
     @Inject(method = "initialize(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
     public void onInitialize(ItemStack p_40240_, CallbackInfo ci)
     {
+
         //todo なんとかしてスロットからインベントリのロック状態を取得
         //containerはinventoryなので，inventorymixin内にクエリ用メソッドを作る？
         //自身のthis.slotの値をつかってisSlotVaridを呼ぶ？

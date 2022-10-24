@@ -107,7 +107,7 @@ public class GuiMixin extends GuiComponent implements IGuiChangable
     protected static ResourceLocation WIDGETS_LOCATION = new ResourceLocation(StevesMiniPouch.MODID,"textures/gui/widgets.png");
 
 
-    protected static ResourceLocation HOTBARS_LOCATION = new ResourceLocation(StevesMiniPouch.MODID, "textures/gui/hotbars.png");
+    private static ResourceLocation HOTBARS_LOCATION = new ResourceLocation(StevesMiniPouch.MODID, "textures/gui/hotbars.png");
     public boolean isVanillaHotbar;
 
 
