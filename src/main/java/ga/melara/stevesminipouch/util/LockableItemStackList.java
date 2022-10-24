@@ -80,6 +80,7 @@ public class LockableItemStackList extends NonNullList<ItemStack>
     @Override
     public ItemStack set(int p_122795_, ItemStack p_122796_)
     {
+        //System.out.println("set to " + p_122795_ + " item " + p_122796_ + " locklist " + lockList.get(p_122795_));
         if(stopper || lockList.get(p_122795_))
         {
             Level level = inventory.player.level;

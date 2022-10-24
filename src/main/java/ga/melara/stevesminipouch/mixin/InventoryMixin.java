@@ -32,6 +32,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 
 //こいつはサーバー側
@@ -127,25 +128,21 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 }
             }
         }
-
-        System.out.println("remaining");
-        //this.items.forEach(System.out::println);
-        System.out.println(cir.getReturnValue());
-
     }
 
     @Inject(method = "getFreeSlot()I", at = @At(value = "HEAD"), cancellable = true)
     public void onGetFreeSlot(CallbackInfoReturnable<Integer> cir) {
+        //35番にアイテムが入る問題はここのせい，空きスロットなのでEMPTYを返してしまう
         for (int i = 0; i < this.items.size(); ++i) {
-            if (this.items.get(i).isEmpty()) {
+            if (this.items.get(i).isEmpty() && !((LockableItemStackList)items).lockList.get(i)) {
                 if (i < 36) cir.setReturnValue(i);
                 else cir.setReturnValue(i + 5);
             }
         }
-
-        System.out.println("free");
-        System.out.println(cir.getReturnValue());
+        if(Objects.isNull(cir.getReturnValue()))cir.setReturnValue(-1);
     }
+
+
 
 
     @Override
@@ -435,7 +432,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         items = newItems;
         compartments.add(0, items);
 
-        items.forEach(System.out::println);
+        //items.forEach(System.out::println);
 
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
     }
@@ -490,10 +487,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         ci.cancel();
     }
 
-    @Inject(method = "getSuitableHotbarSlot()I", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "getSuitableHotbarSlot()I", at = @At(value = "RETURN"), cancellable = true)
     public void onGetSuitableHotbarSlot(CallbackInfoReturnable<Integer> cir)
     {
-
+        System.out.println("suitableHotbar" + cir.getReturnValue());
     }
 
     @Inject(method = "getSelectionSize()I", at = @At(value = "HEAD"), cancellable = true)
