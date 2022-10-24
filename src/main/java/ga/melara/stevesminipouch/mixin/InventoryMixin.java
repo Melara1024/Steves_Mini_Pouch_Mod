@@ -162,7 +162,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         //何故かプレイヤーの参照を正しく得られない？
         //プレイヤー自体は得られている？
-        //
+        //Todo クライアント側のみ初期化が遅れている，NBTの読み込みからクライアントへの動機までが初期設定部分で行えていない
+        //Todo データそのものはサーバーに保存されるので最初に初期化パケットを送るのが必要，その後は多分同期しなくてOK
 
         System.out.println(player.getDisplayName());
 
