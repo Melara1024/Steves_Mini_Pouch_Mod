@@ -9,7 +9,6 @@
     "ContainerScreenMixin",
     "CraftingContainerMixin",
     "InventoryMixin",
-    "ItemEntityMixin",
     "LivingEntityMixin",
     "PlayerMixin",
     "SlotMixin"

@@ -159,10 +159,17 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //全部の無効化
         //他の機能をまとめて起動するだけなので実装は後で
 
+
+        //何故かプレイヤーの参照を正しく得られない？
+        //プレイヤー自体は得られている？
+        //
+
+        System.out.println(player.getDisplayName());
+
         LazyOptional<PlayerInventorySizeData> l = player.getCapability(PlayerInventoryProvider.DATA);
         PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
 
-        System.out.println("inventory init!");
+        System.out.println("inventory init!  from " + (player.getLevel().isClientSide? "client" : "server"));
         System.out.println(p.getSlot());
         System.out.println(p.isActiveInventory());
         System.out.println(p.isEquippable());
