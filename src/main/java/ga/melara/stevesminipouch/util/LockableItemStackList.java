@@ -99,24 +99,4 @@ public class LockableItemStackList extends NonNullList<ItemStack>
         if(stopper || lockList.get(p_122793_)) return defaultItem;
         return super.remove(p_122793_);
     }
-
-
-    //リストを逆順で取得するためのユーティリティ
-    //ロックを有効化するとき，スロットの追加分を読むときなどに使える
-    public static <T> Iterator<T> descendingIteratorOf(List<T> list) {
-        return new Iterator<T>() {
-
-            private final ListIterator<T> irt = list.listIterator(list.size());
-
-            @Override
-            public boolean hasNext() {
-                return irt.hasPrevious();
-            }
-
-            @Override
-            public T next() {
-                return irt.previous();
-            }
-        };
-    }
 }

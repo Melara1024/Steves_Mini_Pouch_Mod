@@ -120,6 +120,7 @@ public class GuiMixin extends GuiComponent implements IGuiChangable
     public void onRenderHotbar(float p_93010_, PoseStack p_93011_, CallbackInfo ci)
     {
         int hotbarSize = ((IStorageChangable)Minecraft.getInstance().player.getInventory()).getHotbarSize();
+        Player player = Minecraft.getInstance().player;
         //もしホットバーが9スロット未満だったら
         //スロットのサイズに合わせてsmp/tex/gui/hotbarsを表示する
         if(!isVanillaHotbar && (hotbarSize == 9))
@@ -145,7 +146,8 @@ public class GuiMixin extends GuiComponent implements IGuiChangable
             int i = this.screenWidth / 2;
 
             this.blit(p_93011_, i - 91, this.screenHeight - 22, 0, (8 - hotbarSize)*22, 182, (8 - hotbarSize)*22 + 22);
-            //this.blit(p_93011_, i - 91 - 1 + player.getInventory().selected * 20, this.screenHeight - 22 - 1, 0, 22, 24, 22);
+            RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
+            this.blit(p_93011_, i - 91 - 1 + player.getInventory().selected * 20, this.screenHeight - 22 - 1, 0, 22, 24, 22);
 
             this.setBlitOffset(j);
         }

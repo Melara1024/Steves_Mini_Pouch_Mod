@@ -355,6 +355,27 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //Todo SlotTypeにUndefinedを作る
 
 
+        //ここまでやった
+
+        //Todo なんかサバイバルモードにして拾っても個数が増えない
+        //Todo どこかのスロットがfalseになっていない？
+        //Todo 36スロット以上存在するときは正常に機能しているっぽい
+        //Todo 予想だけどたぶん空きスロット調査メソッドがスロットのfalse状態を認識していない
+        //Todo 35番スロットを空きスロットとしてご認識している様子が見受けられる
+
+        //Todo ひとまずLockList側のsetメソッドを監視
+        //Todo 空きスロット探索メソッドの書き換えも必要ならば行うべき
+        //Todo for文の定義ズレが発生していただけか
+
+
+        //Todo 保存系の処理の実装
+        //NBTにインベントリの開放状態を保存する
+        //インベントリ変更系メソッド全てに保存メソッドの呼び出しを追加
+        //インベントリ・メニューの初期化時にNBTから状態を読み込む
+        //もし特に保存されている情報がなければConfigからデフォルト設定を読み出して適用
+        //PlayerMixin内のonAddDataより新たな値を追加？
+        //PlayerInventorySizeDataですでに管理されている
+
         inventorySize += change;
         LockableItemStackList newItems;
         //とりあえずLockableItemStackListとして宣言してから挿入する？
@@ -373,15 +394,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             for(int i=0; i< (36-inventorySize) ; i++)
             {
                 //まず頭から順にtrueにしていく
-                newItems.lockList.set(i, true);
-
-                int j = 0;
+                newItems.lockList.set(35-i, true);
                 newItems.lockList.forEach((b)->{System.out.println(" val is "+ b);});
             }
 
-            //for内でひっくり返していたので歯抜けになっている
-
-            Collections.reverse(newItems.lockList);
             //減らすべき分の要素のstopperをtrueにしていく
             //置き換えのときのsetで弾かれて自動で放り投げられるのでほかはそのままでOK?
             if(inventorySize < 9)
@@ -578,6 +594,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSetItem(int id, ItemStack itemStack, CallbackInfo ci)
     {
+        //System.out.println("setItem");
+        //System.out.printf("%s, %s%n", String.valueOf(id), itemStack.toString());
+
+
         if(id < 36)
         {
             if(id + 1 > items.size()) ci.cancel();
