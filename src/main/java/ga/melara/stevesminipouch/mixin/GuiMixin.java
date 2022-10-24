@@ -107,11 +107,48 @@ public class GuiMixin extends GuiComponent implements IGuiChangable
     protected static ResourceLocation WIDGETS_LOCATION = new ResourceLocation(StevesMiniPouch.MODID,"textures/gui/widgets.png");
 
 
+    protected static ResourceLocation HOTBARS_LOCATION = new ResourceLocation(StevesMiniPouch.MODID, "textures/gui/hotbars.png");
+    public boolean isVanillaHotbar;
+
+
+    @Shadow
+    protected int screenWidth;
+    @Shadow
+    protected int screenHeight;
+
     @Inject(method = "renderHotbar", at = @At(value = "RETURN"), cancellable = true)
-    public void onReturnGetSuitableHotbarSlot(float p_93010_, PoseStack p_93011_, CallbackInfo ci)
+    public void onRenderHotbar(float p_93010_, PoseStack p_93011_, CallbackInfo ci)
     {
+        int hotbarSize = ((IStorageChangable)Minecraft.getInstance().player.getInventory()).getHotbarSize();
         //もしホットバーが9スロット未満だったら
         //スロットのサイズに合わせてsmp/tex/gui/hotbarsを表示する
+        if(!isVanillaHotbar && (hotbarSize == 9))
+        {
+            isVanillaHotbar = true;
+            enableVanillaWidget();
+        }
+        else if(isVanillaHotbar)
+        {
+            isVanillaHotbar = false;
+            disableVanillaWidget();
+        }
+
+        if(!isVanillaHotbar)
+        {
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderTexture(0, HOTBARS_LOCATION);
+
+            int j = this.getBlitOffset();
+            this.setBlitOffset(-90);
+
+            int i = this.screenWidth / 2;
+
+            this.blit(p_93011_, i - 91, this.screenHeight - 22, 0, (8 - hotbarSize)*22, 182, (8 - hotbarSize)*22 + 22);
+            //this.blit(p_93011_, i - 91 - 1 + player.getInventory().selected * 20, this.screenHeight - 22 - 1, 0, 22, 24, 22);
+
+            this.setBlitOffset(j);
+        }
     }
 
 

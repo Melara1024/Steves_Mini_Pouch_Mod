@@ -341,6 +341,11 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //MouseHandlerクラス内で処理内容が決定されている
 
 
+        //ここまでやった
+
+
+
+
         inventorySize += change;
         LockableItemStackList newItems;
         //とりあえずLockableItemStackListとして宣言してから挿入する？
