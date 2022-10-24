@@ -374,7 +374,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //インベントリ・メニューの初期化時にNBTから状態を読み込む
         //もし特に保存されている情報がなければConfigからデフォルト設定を読み出して適用
         //PlayerMixin内のonAddDataより新たな値を追加？
-        //PlayerInventorySizeDataですでに管理されている
+        //PlayerInventorySizeDataですでに管理されている,取得はClientInventoryDataからstaticメソッドより入手可
 
         inventorySize += change;
         LockableItemStackList newItems;

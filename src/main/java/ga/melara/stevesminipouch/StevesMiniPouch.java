@@ -49,16 +49,10 @@ public class StevesMiniPouch {
     //パケット送信の例
     @SubscribeEvent
     public void a(PlayerSetSpawnEvent e) {
-        System.out.println(e.getEntity().getLevel().isClientSide());
-
-
-
         LazyOptional<PlayerInventorySizeData> l = e.getEntity().getCapability(PlayerInventoryProvider.DATA);
         PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
         p.increaseSlot(1);
         System.out.println("got data is... " + p.getSlot());
-
-
 
         if(e.getEntity() instanceof ServerPlayer serverPlayer) {
             //Messager.sendToPlayer(new PacketSync(p), serverPlayer);
@@ -79,5 +73,7 @@ public class StevesMiniPouch {
         System.out.println("I got data! ->" + ClientInventoryData.isActiveOffhand());
         System.out.println("I got data! ->" + ClientInventoryData.isCraftable());
         System.out.println("I got data! ->" + ClientInventoryData.isEquippable());
+
+
     }
 }
