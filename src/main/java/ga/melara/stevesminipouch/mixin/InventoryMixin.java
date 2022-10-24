@@ -161,7 +161,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         //クラフトはここから操作する必要なし
 
-        player.sendSystemMessage(Component.literal("Inventory Toggled!"));
+        if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Inventory Toggled!"));
     }
 
 
@@ -194,7 +194,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         this.isActiveArmor = true;
 
-        player.sendSystemMessage(Component.literal("Armor Toggled!"));
+        if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Armor Toggled!"));
     }
 
     @Override
@@ -222,7 +222,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         this.isActiveOffhand = true;
 
-        player.sendSystemMessage(Component.literal("Offhand Toggled!"));
+        if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Offhand Toggled!"));
     }
 
     @Override
@@ -230,6 +230,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     {
         //Todo アイテムリストに対しての操作はしないがisActiveCraftのトグル操作のみ行う部分
         isActiveCraft = !isActiveCraft;
+
+        if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Craft Toggled!"));
     }
 
     @Override
