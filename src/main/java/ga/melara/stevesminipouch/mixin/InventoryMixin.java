@@ -373,6 +373,11 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //PlayerMixin内のonAddDataより新たな値を追加？
         //PlayerInventorySizeDataですでに管理されている,取得はClientInventoryDataからstaticメソッドより入手可
 
+
+        //ここまでやった
+        //toggle機能しか無いので指定の状態にすることが不可能？
+        //toggleメソッドとsetメソッドを逆にする必要あり->toggleからそれぞれの状態に応じたsetを呼び出す形式にする
+
         inventorySize += change;
         LockableItemStackList newItems;
         //とりあえずLockableItemStackListとして宣言してから挿入する？
