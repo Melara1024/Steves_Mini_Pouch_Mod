@@ -1,6 +1,8 @@
 package ga.melara.stevesminipouch.items;
 
 import ga.melara.stevesminipouch.ModRegistry;
+import ga.melara.stevesminipouch.data.PlayerInventoryProvider;
+import ga.melara.stevesminipouch.data.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.items.slotitems.Add1SlotItem;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.world.entity.LivingEntity;
@@ -9,6 +11,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -36,6 +39,11 @@ public class CraftActivatItem extends FunctionFoodItem {
         ((IMenuChangable)player.inventoryMenu).toggleCraft(player);
         ((IStorageChangable)player.getInventory()).toggleCraft(player);
         ((ICraftingContainerChangable)player.inventoryMenu.getCraftSlots()).toggleCraft(player);
+
+        //保存
+        LazyOptional<PlayerInventorySizeData> l = player.getCapability(PlayerInventoryProvider.DATA);
+        PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
+        p.setCraftable(((IStorageChangable) player.getInventory()).isActiveCraft());
     }
 
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS)

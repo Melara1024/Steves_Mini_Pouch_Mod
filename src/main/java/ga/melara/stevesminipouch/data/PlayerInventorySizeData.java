@@ -27,41 +27,30 @@ public class PlayerInventorySizeData {
     private boolean isCraftable;
     private boolean isEquippable;
 
-    public void toggleInventory()
+
+    public void setActiveInventory(boolean activeInventory)
     {
-        this.isActiveInventory = !this.isActiveInventory;
-        if(this.isActiveInventory == false)
-        {
-            this.isActiveOffhand = false;
-            this.isCraftable = false;
-            this.isEquippable = false;
-            return;
-        }
+        isActiveInventory = activeInventory;
     }
 
-    public void toggleOffhand()
+    public void setActiveOffhand(boolean activeOffhand)
     {
-        this.isActiveOffhand = !this.isActiveOffhand;
+        isActiveOffhand = activeOffhand;
     }
 
-    public void toggleCraftable()
+    public void setCraftable(boolean craftable)
     {
-        this.isCraftable = !this.isCraftable;
+        isCraftable = craftable;
     }
 
-    public void toggleEquippable()
+    public void setEquippable(boolean equippable)
     {
-        this.isEquippable = !this.isEquippable;
+        isEquippable = equippable;
     }
 
-    public void increaseSlot(int i)
+    public void setSlot(int slot)
     {
-        if(this.slot+i < Integer.MAX_VALUE)this.slot = this.slot+i;
-    }
-
-    public void decreaseSlot(int d)
-    {
-        if(this.slot-d > 0)this.slot= this.slot-d;
+        this.slot = slot;
     }
 
     public void copyFrom(PlayerInventorySizeData source) {
@@ -79,12 +68,20 @@ public class PlayerInventorySizeData {
         compound.putBoolean("activateoffhand", isActiveOffhand);
         compound.putBoolean("craftable", isCraftable);
         compound.putBoolean("equippable", isEquippable);
+
+        System.out.println("saveNBTData");
+        System.out.println(slot);
+        System.out.println(isActiveInventory);
+        System.out.println(isEquippable);
+        System.out.println(isActiveOffhand);
+        System.out.println(isCraftable);
     }
 
     public void loadNBTData(CompoundTag compound) {
 //        if(compound.contains("inventorysize"))slot = compound.getInt("inventorysize");
 //        else slot = Config.DEFAULT_SIZE.get();
-        slot = 63;
+        if(compound.contains("inventorysize"))slot = compound.getInt("inventorysize");
+        else slot = Config.DEFAULT_SIZE.get();
         if(compound.contains("activateinventory"))isActiveInventory = compound.getBoolean("activateinventory");
         else isActiveInventory = Config.DEFAULT_INVENTORY.get();
         if(compound.contains("activateoffhand"))isActiveOffhand = compound.getBoolean("activateoffhand");
@@ -93,6 +90,17 @@ public class PlayerInventorySizeData {
         else isCraftable = Config.DEFAULT_CRAFT.get();
         if(compound.contains("equippable"))isEquippable = compound.getBoolean("equippable");
         else isEquippable = Config.DEFAULT_ARMOR.get();
+
+
+
+        System.out.println("loadNBTData");
+        System.out.println(slot);
+        System.out.println(isActiveInventory);
+        System.out.println(isEquippable);
+        System.out.println(isActiveOffhand);
+        System.out.println(isCraftable);
+
+
     }
 
 
@@ -116,12 +124,4 @@ public class PlayerInventorySizeData {
         return slot;
     }
 
-    @SubscribeEvent
-    public void onLogin(PlayerEvent.PlayerLoggedInEvent e)
-    {
-        LazyOptional<PlayerInventorySizeData> l = e.getEntity().getCapability(PlayerInventoryProvider.DATA);
-        PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
-
-        ((IStorageChangable)(Object)Inventory.class).changeStorageSize(slot, e.getEntity());
-    }
 }

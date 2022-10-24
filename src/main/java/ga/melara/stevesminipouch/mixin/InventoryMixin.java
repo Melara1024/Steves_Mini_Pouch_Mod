@@ -584,7 +584,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             }
         }
 
-        items.forEach(System.out::println);
+        //items.forEach(System.out::println);
         ci.cancel();
     }
 

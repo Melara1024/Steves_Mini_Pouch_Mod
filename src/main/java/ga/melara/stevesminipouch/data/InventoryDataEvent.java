@@ -17,7 +17,7 @@ public class InventoryDataEvent {
     public static void onAttachCapabilitiesPlayer(AttachCapabilitiesEvent<Entity> event){
         if (event.getObject() instanceof Player) {
             if (!event.getObject().getCapability(PlayerInventoryProvider.DATA).isPresent()) {
-                event.addCapability(new ResourceLocation(MODID, "custominventorysize"), new PlayerInventoryProvider());
+                event.addCapability(new ResourceLocation(MODID, "stats"), new PlayerInventoryProvider());
             }
         }
     }

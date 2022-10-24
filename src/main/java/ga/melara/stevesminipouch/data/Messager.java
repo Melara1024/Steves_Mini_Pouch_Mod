@@ -35,6 +35,13 @@ public class Messager {
                 //.consumerMainThread(PageChangedPacket::handle)
                 .consumerMainThread(PageChangedPacket::handle)
                 .add();
+
+        net.messageBuilder(InventorySyncPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(InventorySyncPacket::new)
+                .encoder(InventorySyncPacket::toBytes)
+                //.consumerMainThread(PageChangedPacket::handle)
+                .consumerMainThread(InventorySyncPacket::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {

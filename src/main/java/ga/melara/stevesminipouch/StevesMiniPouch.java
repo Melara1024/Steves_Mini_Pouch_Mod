@@ -39,6 +39,7 @@ public class StevesMiniPouch {
         eventBus.addListener(InventoryDataEvent::onRegisterCapabilities);
 
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(PlayerInventorySizeData.class);
 
         LOGGER.info("steve's minipouch correctry registered!");
     }
@@ -51,11 +52,9 @@ public class StevesMiniPouch {
     public void a(PlayerSetSpawnEvent e) {
         LazyOptional<PlayerInventorySizeData> l = e.getEntity().getCapability(PlayerInventoryProvider.DATA);
         PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
-        p.increaseSlot(1);
-        System.out.println("got data is... " + p.getSlot());
 
         if(e.getEntity() instanceof ServerPlayer serverPlayer) {
-            //Messager.sendToPlayer(new PacketSync(p), serverPlayer);
+            Messager.sendToPlayer(new InventorySyncPacket(p), serverPlayer);
             //System.out.println("hello client! from server.");
         }
     }
