@@ -25,6 +25,8 @@ public class InventorySyncPacket
         this.isEquippable = data.isEquippable();
         this.isCraftable = data.isCraftable();
         this.slot = data.getSlot();
+
+        System.out.println("inventorySyncPacket init");
     }
 
     public InventorySyncPacket(FriendlyByteBuf buf) {
@@ -47,23 +49,9 @@ public class InventorySyncPacket
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            //Todo クライアント側プレイヤーにNBT値の適用
-            //ctx.getSender().getLevel()
 
-            //保存
-            Player player = ctx.getSender();
-            LazyOptional<PlayerInventorySizeData> l = player.getCapability(PlayerInventoryProvider.DATA);
-            PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
-
-
-            //最初に初期化を行っていないのでデータがnullだった
-            //ログイン後にSyncInventoryStatePacketなどを送りつけてクライアント側にNBTの結果を伝達すべき
-            //下のようにすると，インベントリの初期設定しか読み込んでいないのでNBTの保存値を完全に無視している
-            p.setActiveInventory(((IStorageChangable) player.getInventory()).isActiveInventory());
-            p.setEquippable(((IStorageChangable) player.getInventory()).isActiveArmor());
-            p.setActiveOffhand(((IStorageChangable) player.getInventory()).isActiveOffhand());
-            p.setCraftable(((IStorageChangable) player.getInventory()).isActiveCraft());
-            p.setSlot(((IStorageChangable) player.getInventory()).getInventorySize());
+            //どうやらhandleできていない
+            System.out.println("handled packet");
 
             ClientInventoryData.set(slot, isActiveInventory, isActiveOffhand, isCraftable, isEquippable);
             ctx.setPacketHandled(true);

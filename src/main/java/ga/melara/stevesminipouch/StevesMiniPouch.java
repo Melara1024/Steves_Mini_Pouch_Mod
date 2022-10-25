@@ -61,6 +61,8 @@ public class StevesMiniPouch {
         System.out.println(p.isCraftable());
 
 
+        //どうやらこれは問題ないらしい
+        //プレイy－のログインイベントでどうにか取得できないか？
 
         if(e.getEntity() instanceof ServerPlayer serverPlayer) {
             Messager.sendToPlayer(new InventorySyncPacket(p), serverPlayer);
