@@ -2,6 +2,8 @@ package ga.melara.stevesminipouch.mixin;
 
 import com.google.common.collect.ImmutableList;
 import ga.melara.stevesminipouch.Config;
+import ga.melara.stevesminipouch.data.InventorySyncPacket;
+import ga.melara.stevesminipouch.data.Messager;
 import ga.melara.stevesminipouch.data.PlayerInventoryProvider;
 import ga.melara.stevesminipouch.data.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.util.IAdditionalStorage;
@@ -11,6 +13,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -97,8 +100,21 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public Player player;
 
 
-    @Inject(method = "<init>", at = @At(value = "TAIL"))
+    @Inject(method = "<init>", at = @At(value = "RETURN"))
     public void oninit(Player p_35983_, CallbackInfo ci) {
+
+
+
+        //インベントリ初期化時点で何故かプレイヤーが空になっている？
+        //参照はちゃんと持っているはずなのでプレイヤークラス内での順序の問題かもしれない
+        //状態をクライアント側のプレイヤークラスと動悸する
+//        if(p_35983_ instanceof ServerPlayer serverPlayer) {
+//            LazyOptional<PlayerInventorySizeData> l = p_35983_.getCapability(PlayerInventoryProvider.DATA);
+//            PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
+//            Messager.sendToPlayer(new InventorySyncPacket(p), serverPlayer);
+//            //System.out.println("hello client! from server.");
+//        }
+
 
         //System.out.println(p_35983_);
 
@@ -167,6 +183,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         System.out.println(player.getDisplayName());
 
+        if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("inv called"));
+
         LazyOptional<PlayerInventorySizeData> l = player.getCapability(PlayerInventoryProvider.DATA);
         PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
 
@@ -177,6 +195,11 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         System.out.println(p.isActiveOffhand());
         System.out.println(p.isCraftable());
 
+        //一発目の送信時はクライアントのみ情報を保持していない
+        //二発目以降の送信でクライアント側にも情報が渡されている
+
+        //change, toggleの操作のなかでクライアントとの同期ができている？
+
         changeStorageSize(1, player);
         isActiveArmor = true;
         toggleArmor(player);
@@ -186,6 +209,13 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //クラフトはここから操作する必要なし
 
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Inventory Toggled!"));
+
+        System.out.println("inventory init!  from " + (player.getLevel().isClientSide? "client" : "server"));
+        System.out.println(p.getSlot());
+        System.out.println(p.isActiveInventory());
+        System.out.println(p.isEquippable());
+        System.out.println(p.isActiveOffhand());
+        System.out.println(p.isCraftable());
     }
 
 

@@ -35,12 +35,24 @@ public class InventoryActivateItem extends FunctionFoodItem {
         if(!(entity instanceof Player))return;
 
         Player player = (Player)entity;
-        ((IMenuChangable)player.inventoryMenu).toggleInventory(player);
-        ((IStorageChangable)player.getInventory()).toggleInventory(player);
 
         //保存
         LazyOptional<PlayerInventorySizeData> l = player.getCapability(PlayerInventoryProvider.DATA);
         PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
+
+
+        //最初に初期化を行っていないのでデータがnullだった
+        //ログイン後にSyncInventoryStatePacketなどを送りつけてクライアント側にNBTの結果を伝達すべき
+        //下のようにすると，インベントリの初期設定しか読み込んでいないのでNBTの保存値を完全に無視している
+        p.setActiveInventory(((IStorageChangable) player.getInventory()).isActiveInventory());
+        p.setEquippable(((IStorageChangable) player.getInventory()).isActiveArmor());
+        p.setActiveOffhand(((IStorageChangable) player.getInventory()).isActiveOffhand());
+        p.setCraftable(((IStorageChangable) player.getInventory()).isActiveCraft());
+        p.setSlot(((IStorageChangable) player.getInventory()).getInventorySize());
+
+        ((IMenuChangable)player.inventoryMenu).toggleInventory(player);
+        ((IStorageChangable)player.getInventory()).toggleInventory(player);
+
         p.setActiveInventory(((IStorageChangable) player.getInventory()).isActiveInventory());
         p.setEquippable(((IStorageChangable) player.getInventory()).isActiveArmor());
         p.setActiveOffhand(((IStorageChangable) player.getInventory()).isActiveOffhand());
