@@ -93,12 +93,12 @@ public class PlayerInventorySizeData {
 
 
 
-        System.out.println("loadNBTData");
-        System.out.println(slot);
-        System.out.println(isActiveInventory);
-        System.out.println(isEquippable);
-        System.out.println(isActiveOffhand);
-        System.out.println(isCraftable);
+//        System.out.println("loadNBTData");
+//        System.out.println(slot);
+//        System.out.println(isActiveInventory);
+//        System.out.println(isEquippable);
+//        System.out.println(isActiveOffhand);
+//        System.out.println(isCraftable);
 
 
     }

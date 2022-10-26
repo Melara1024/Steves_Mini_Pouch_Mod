@@ -3,8 +3,10 @@ package ga.melara.stevesminipouch;
 import com.mojang.logging.LogUtils;
 import ga.melara.stevesminipouch.data.*;
 import ga.melara.stevesminipouch.data.InventoryDataEvent;
+import ga.melara.stevesminipouch.util.IHasMixinEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.LazyOptional;
@@ -47,26 +49,26 @@ public class StevesMiniPouch {
 
 
 
-    //パケット送信の例
-    @SubscribeEvent
-    public void a(PlayerSetSpawnEvent e) {
-        LazyOptional<PlayerInventorySizeData> l = e.getEntity().getCapability(PlayerInventoryProvider.DATA);
-        PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
-
-        System.out.println("setspawn");
-        System.out.println(p.getSlot());
-        System.out.println(p.isActiveInventory());
-        System.out.println(p.isEquippable());
-        System.out.println(p.isActiveOffhand());
-        System.out.println(p.isCraftable());
-
-
-
-        if(e.getEntity() instanceof ServerPlayer serverPlayer) {
-            Messager.sendToPlayer(new InventorySyncPacket(p), serverPlayer);
-            //System.out.println("hello client! from server.");
-        }
-    }
+//    //パケット送信の例
+//    @SubscribeEvent
+//    public void a(PlayerSetSpawnEvent e) {
+//        LazyOptional<PlayerInventorySizeData> l = e.getEntity().getCapability(PlayerInventoryProvider.DATA);
+//        PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
+//
+//        System.out.println("setspawn");
+//        System.out.println(p.getSlot());
+//        System.out.println(p.isActiveInventory());
+//        System.out.println(p.isEquippable());
+//        System.out.println(p.isActiveOffhand());
+//        System.out.println(p.isCraftable());
+//
+//
+//
+//        if(e.getEntity() instanceof ServerPlayer serverPlayer) {
+//            Messager.sendToPlayer(new InventorySyncPacket(p), serverPlayer);
+//            //System.out.println("hello client! from server.");
+//        }
+//    }
 
     @SubscribeEvent
     public void b(ClientChatReceivedEvent e)

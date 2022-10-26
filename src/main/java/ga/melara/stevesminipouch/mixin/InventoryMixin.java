@@ -96,11 +96,19 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Mutable
     public Player player;
 
+    public void initMiniPouch(PlayerInventorySizeData data)
+    {
+        //これをクライアントとサーバー両方からなんとか呼び出す
+
+    }
+
 
     @Inject(method = "<init>", at = @At(value = "TAIL"))
     public void oninit(Player p_35983_, CallbackInfo ci) {
 
         //System.out.println(p_35983_);
+
+        System.out.println(p_35983_.getLevel().isClientSide ? "client inventory!" : "server inventory!");
 
 
 
@@ -191,6 +199,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public void toggleArmor(Player player) {
+
+        System.out.println(player.getLevel().isClientSide ? "client inventory!" : "server inventory!");
         //アーマーリストの無効化
         //溢れたアイテムを撒き散らす
         //menu.slotsを回してSlotType.ARMORを無効化・隠蔽処理有効化
@@ -645,7 +655,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             if(id - 35 > armor.size()) ci.cancel();
             else if(armor != null)
             {
-                System.out.println("armor set");
                 armor.set(id - 36, itemStack);
             }
             ci.cancel();

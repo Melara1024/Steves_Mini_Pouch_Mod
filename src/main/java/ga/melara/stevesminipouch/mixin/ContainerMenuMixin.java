@@ -1,9 +1,14 @@
 package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.ModRegistry;
+import ga.melara.stevesminipouch.data.InventorySyncPacket;
+import ga.melara.stevesminipouch.data.Messager;
+import ga.melara.stevesminipouch.data.PlayerInventoryProvider;
+import ga.melara.stevesminipouch.data.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.event.PageChangeEvent;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.core.NonNullList;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -11,7 +16,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.util.thread.SidedThreadGroups;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -56,6 +63,12 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
     int pageMax = 1;
     int page = 0;
 
+    public void initMiniPouch(PlayerInventorySizeData data)
+    {
+        //これをクライアントとサーバー両方から呼び出す
+
+    }
+
     @Inject(method = "<init>", at = @At("RETURN"), cancellable = true)
     public void onConstruct(MenuType p_38851_, int p_38852_, CallbackInfo ci)
     {
@@ -66,9 +79,10 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
     public void oninitContent(CallbackInfo ci)
     {
         //ここでスロットの初期設定をする？
-        System.out.println("initialize Contents");
+//        System.out.println("initialize Contents");
+//
 
-
+        System.out.println(Thread.currentThread().getThreadGroup() == SidedThreadGroups.CLIENT ?  "client menu!" : "server menu");
 
     }
 
@@ -80,6 +94,14 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
             //System.out.println("touched!! " + s.getSlotIndex() + page*27 + " " + s.getItem() + " " + p_150433_);
         }
 
+    }
+
+    @Inject(method = "sendAllDataToRemote", at = @At("RETURN"), cancellable = true)
+    public void onSendToRemote(CallbackInfo ci)
+    {
+        //ここからイベントを発火する？
+        //イベントを受け取ってserverplayer側で購読，設定を行う
+        //System.out.println("send data");
     }
 
 
