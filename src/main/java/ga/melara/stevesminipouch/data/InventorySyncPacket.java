@@ -1,9 +1,11 @@
 package ga.melara.stevesminipouch.data;
 
 import ga.melara.stevesminipouch.event.PageChangeEvent;
+import ga.melara.stevesminipouch.util.IStorageChangable;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -23,6 +25,8 @@ public class InventorySyncPacket
         this.isEquippable = data.isEquippable();
         this.isCraftable = data.isCraftable();
         this.slot = data.getSlot();
+
+        System.out.println("inventorySyncPacket init");
     }
 
     public InventorySyncPacket(FriendlyByteBuf buf) {
@@ -45,6 +49,10 @@ public class InventorySyncPacket
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
+
+            //どうやらhandleできていない
+            System.out.println("handled packet");
+
             ClientInventoryData.set(slot, isActiveInventory, isActiveOffhand, isCraftable, isEquippable);
             ctx.setPacketHandled(true);
         });
