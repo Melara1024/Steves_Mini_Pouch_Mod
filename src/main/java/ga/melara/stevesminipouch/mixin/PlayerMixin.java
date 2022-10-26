@@ -42,7 +42,8 @@ public class PlayerMixin
     @Inject(method = "readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"), cancellable = true)
     public void onReadData(CompoundTag p_36215_, CallbackInfo ci)
     {
-        //System.out.println("minipouch read");
+        System.out.println("minipouch read");
+
         ListTag listtag = p_36215_.getList("MiniPouch", 10);
         ((IAdditionalStorage) this.inventory).loadAdditional(listtag);
     }

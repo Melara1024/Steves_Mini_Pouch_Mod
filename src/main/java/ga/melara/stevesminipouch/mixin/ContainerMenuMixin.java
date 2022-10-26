@@ -67,12 +67,14 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
     {
         //これをクライアントとサーバー両方から呼び出す
 
+
     }
 
     @Inject(method = "<init>", at = @At("RETURN"), cancellable = true)
     public void onConstruct(MenuType p_38851_, int p_38852_, CallbackInfo ci)
     {
         MinecraftForge.EVENT_BUS.register(this);
+        System.out.println("menu class init");
     }
 
     @Inject(method = "initializeContents(ILjava/util/List;Lnet/minecraft/world/item/ItemStack;)V", at = @At(value = "RETURN"), cancellable = true)

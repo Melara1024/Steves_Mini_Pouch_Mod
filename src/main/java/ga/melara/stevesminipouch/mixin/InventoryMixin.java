@@ -102,12 +102,30 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public void initMiniPouch(PlayerInventorySizeData data)
     {
         //これをクライアントとサーバー両方からなんとか呼び出す
+        //必要なのはインベントリのデータ，なのでロード直後に呼んでしまう？
+
+        //ここからしかプレイヤーインスタンスを取得できないのでメニューの初期化はここから行う
+
+
+        //player.inventoryMenu.のようにして初期化，初期化クラスはなんかのインターフェースに加える
+
+
+        //Todo loadメソッドからこれを呼び出す
+        //Todo クライアントにパケットを送ってClientInventoryDataにデータを格納
+
+
+        //Todo サーバー側の初期化
+
+        //Todo メニューのサーバー側初期化
+
+        //Todo もしプレイヤーがLocalPlayerなら，ClientInventoryDataより取得
 
     }
 
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))
     public void oninit(Player p_35983_, CallbackInfo ci) {
+        System.out.println("inventory class init");
 
 
 
