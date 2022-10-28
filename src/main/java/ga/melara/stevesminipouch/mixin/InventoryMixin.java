@@ -99,7 +99,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Mutable
     public Player player;
 
-    public void initMiniPouch(PlayerInventorySizeData data)
+    public void initMiniPouch()
     {
         //これをクライアントとサーバー両方からなんとか呼び出す
         //必要なのはインベントリのデータ，なのでロード直後に呼んでしまう？
@@ -110,8 +110,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //player.inventoryMenu.のようにして初期化，初期化クラスはなんかのインターフェースに加える
 
 
-        //Todo loadメソッドからこれを呼び出す
-        //Todo クライアントにパケットを送ってClientInventoryDataにデータを格納
+
 
 
         //Todo サーバー側の初期化
@@ -120,6 +119,27 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         //Todo もしプレイヤーがLocalPlayerなら，ClientInventoryDataより取得
 
+    }
+
+    public void initServer()
+    {
+        //鯖の初期化
+        //初期化にはプレイヤーを特定する必要がある
+
+        //Todo loadからイベントを発火する->サーバー側はすでに構築されているので初期化可能
+        //Todo クライアントにパケットを送ってClientInventoryDataにデータを格納
+
+        initMiniPouch();
+    }
+
+
+    //クライアント側の初期化作業を行う
+    //Clientdataが入ったタイミングでイベントを発火する？
+    //ちょっとイベントを使いすぎかもしれない
+    public void syncToClient()
+    {
+        //クライアントの初期化
+        initMiniPouch();
     }
 
 
@@ -655,6 +675,14 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         items.clear();
         armor.clear();
         offhand.clear();
+
+        //ここから入れ物の初期化を行う
+        if(player instanceof ServerPlayer serverPlayer) {
+            LazyOptional<PlayerInventorySizeData> l = player.getCapability(PlayerInventoryProvider.DATA);
+            PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
+            //Messager.sendToPlayer(new InventorySyncPacket(p), serverPlayer);
+            System.out.println("init from load.");
+        }
 
         for(int i = 0; i < tags.size(); ++i)
         {
