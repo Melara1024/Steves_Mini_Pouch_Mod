@@ -11,6 +11,7 @@
     "InventoryMixin",
     "LivingEntityMixin",
     "PlayerMixin",
+    "ServerPlayerMixin",
     "SlotMixin"
   ],
   "client": [

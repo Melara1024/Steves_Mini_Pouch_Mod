@@ -2,6 +2,7 @@ package ga.melara.stevesminipouch.mixin;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
+import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.util.IAdditionalStorage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -40,19 +41,20 @@ public class PlayerMixin
 
 
     @Inject(method = "readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"), cancellable = true)
-    public void onReadData(CompoundTag p_36215_, CallbackInfo ci)
+    public void onReadData(CompoundTag tag, CallbackInfo ci)
     {
-        System.out.println("minipouch read");
+        CompoundTag compoundtag = tag.getCompound("InventoryStats");
+        ((IAdditionalStorage) this.inventory).loadStatus(compoundtag);
 
-        ListTag listtag = p_36215_.getList("MiniPouch", 10);
+        ListTag listtag = tag.getList("MiniPouch", 10);
         ((IAdditionalStorage) this.inventory).loadAdditional(listtag);
     }
 
     @Inject(method = "addAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"), cancellable = true)
-    public void onAddData(CompoundTag p_36265_, CallbackInfo ci)
+    public void onAddData(CompoundTag tag, CallbackInfo ci)
     {
-        //System.out.println("minipouch add");
-        p_36265_.put("MiniPouch", ((IAdditionalStorage) this.inventory).saveAdditional(new ListTag()));
-    }
+        tag.put("InventoryStats", ((IAdditionalStorage) this.inventory).saveStatus(new CompoundTag()));
 
+        tag.put("MiniPouch", ((IAdditionalStorage) this.inventory).saveAdditional(new ListTag()));
+    }
 }

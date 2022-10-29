@@ -1,10 +1,16 @@
 package ga.melara.stevesminipouch.util;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
 public interface IAdditionalStorage {
 
-    abstract ListTag saveAdditional(ListTag tag);
+    CompoundTag saveStatus(CompoundTag tag);
 
-    abstract void loadAdditional(ListTag tag);
+    void loadStatus(CompoundTag tag);
+
+
+    ListTag saveAdditional(ListTag tag);
+
+    void loadAdditional(ListTag tag);
 }

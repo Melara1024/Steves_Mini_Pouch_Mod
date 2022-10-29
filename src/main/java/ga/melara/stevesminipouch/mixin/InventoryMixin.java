@@ -54,15 +54,14 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     private int maxPage;
 
-    private int inventorySize;
-    private int hotbarSize;
+    private int inventorySize = 36;
+    private int hotbarSize = 9;
 
 
-    private boolean isActiveInventory = Config.DEFAULT_INVENTORY.get();
-    private boolean isActiveArmor = Config.DEFAULT_ARMOR.get();
-    private boolean isActiveOffhand = Config.DEFAULT_OFFHAND.get();
-
-    private boolean isActiveCraft = Config.DEFAULT_CRAFT.get();
+    private boolean isActiveInventory = false;
+    private boolean isActiveArmor = false;
+    private boolean isActiveOffhand = false;
+    private boolean isActiveCraft = false;
 
     @Shadow
     public NonNullList<ItemStack> items;
@@ -98,6 +97,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Final
     @Mutable
     public Player player;
+
+    @Shadow public abstract void placeItemBackInInventory(ItemStack p_150080_);
 
     public void initMiniPouch()
     {
@@ -168,10 +169,11 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         maxPage = 5;
         //もとの数より減らしてはいけない……
-        inventorySize = 92;
+        inventorySize = 36;
         hotbarSize = 9;
 
         items = LockableItemStackList.withSize(inventorySize, (Inventory) (Object) this, false);
+
         armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, true);
         offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, true);
         compartments.add(0, items);
@@ -483,6 +485,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //toggle機能しか無いので指定の状態にすることが不可能？
         //toggleメソッドとsetメソッドを逆にする必要あり->toggleからそれぞれの状態に応じたsetを呼び出す形式にする
 
+
+
         inventorySize += change;
         LockableItemStackList newItems;
         //とりあえずLockableItemStackListとして宣言してから挿入する？
@@ -542,8 +546,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         items = newItems;
         compartments.add(0, items);
 
-        //items.forEach(System.out::println);
+        items.forEach(System.out::println);
+        System.out.println("storage change -> " + change);
 
+        //サーバーにこれを送信しようとしたときにも通信エラーの同じようなのが出る？　やっぱり間違った方面での送信が原因なのでは
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
     }
 
@@ -677,12 +683,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         offhand.clear();
 
         //ここから入れ物の初期化を行う
-        if(player instanceof ServerPlayer serverPlayer) {
-            LazyOptional<PlayerInventorySizeData> l = player.getCapability(PlayerInventoryProvider.DATA);
-            PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
-            //Messager.sendToPlayer(new InventorySyncPacket(p), serverPlayer);
-            System.out.println("init from load.");
-        }
+
 
         for(int i = 0; i < tags.size(); ++i)
         {
@@ -705,6 +706,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         }
 
         //items.forEach(System.out::println);
+
+        System.out.println("load finished...");
         ci.cancel();
     }
 
@@ -858,6 +861,67 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     }
 
     @Override
+    public CompoundTag saveStatus(CompoundTag tag)
+    {
+        tag.putInt("inventorysize", inventorySize);
+        tag.putBoolean("activateinventory",isActiveInventory);
+        tag.putBoolean("activateoffhand", isActiveOffhand);
+        tag.putBoolean("craftable", isActiveCraft);
+        tag.putBoolean("equippable", isActiveArmor);
+
+        return tag;
+    }
+
+    @Override
+    public void loadStatus(CompoundTag tag)
+    {
+//        CompoundTag compound = tag.getCompound("InventoryStats");
+//        if(compound.contains("inventorysize"))inventorySize = compound.getInt("inventorysize");
+//        else inventorySize = Config.DEFAULT_SIZE.get();
+        //Todo インベントリサイズの相対座標を入れるようにしてもいいかも？
+
+        CompoundTag compound = tag.getCompound("InventoryStats");
+        changeStorageSize(compound.contains("inventorysize")? compound.getInt("inventorysize") : Config.DEFAULT_SIZE.get(), player);
+        System.out.println(compound.contains("inventorysize")? compound.getInt("inventorysize") : Config.DEFAULT_SIZE.get());
+        System.out.println("changed" + (player.getLevel().isClientSide ? "client" : "server"));
+//
+        //Todo とりあえず読み込みには成功している？
+
+        //Todo Menuへの同期
+        //Todo クライアントインベントリへの同期
+
+//        if(compound.contains("activateinventory"))isActiveInventory = compound.getBoolean("activateinventory");
+//        else isActiveInventory = Config.DEFAULT_INVENTORY.get();
+
+        boolean inv = compound.contains("activateinventory")? compound.getBoolean("activateinventory") : Config.DEFAULT_INVENTORY.get();
+        if(inv) toggleInventory(player);
+
+//        if(compound.contains("activateoffhand"))isActiveOffhand = compound.getBoolean("activateoffhand");
+//        else isActiveOffhand = Config.DEFAULT_OFFHAND.get();
+
+        boolean off = compound.contains("activateoffhand")? compound.getBoolean("activateoffhand") : Config.DEFAULT_OFFHAND.get();
+        if(off) toggleOffhand(player);
+
+//        if(compound.contains("craftable"))isActiveCraft = compound.getBoolean("craftable");
+//        else isActiveCraft = Config.DEFAULT_CRAFT.get();
+
+        boolean cft = compound.contains("craftable")? compound.getBoolean("craftable") : Config.DEFAULT_CRAFT.get();
+        if(cft) toggleCraft(player);
+//        if(compound.contains("equippable"))isActiveArmor = compound.getBoolean("equippable");
+//        else isActiveArmor = Config.DEFAULT_ARMOR.get();
+
+        boolean arm = compound.contains("equippable")? compound.getBoolean("equippable") : Config.DEFAULT_ARMOR.get();
+        if(arm) toggleArmor(player);
+
+        System.out.println("load Status!!!!!" + (player.getLevel().isClientSide? "client" : "server"));
+        System.out.println(inventorySize);
+        System.out.println(isActiveInventory);
+        System.out.println(isActiveArmor);
+        System.out.println(isActiveOffhand);
+        System.out.println(isActiveCraft);
+    }
+
+    @Override
     public ListTag saveAdditional(ListTag tag)
     {
         for(int i = 36; i < items.size(); ++i)
@@ -891,4 +955,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             }
         }
     }
+
+
 }
