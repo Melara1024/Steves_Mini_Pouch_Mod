@@ -1,12 +1,10 @@
 package ga.melara.stevesminipouch.mixin;
 
-import com.google.common.collect.ImmutableList;
 import ga.melara.stevesminipouch.Config;
-import ga.melara.stevesminipouch.data.InventorySyncPacket;
-import ga.melara.stevesminipouch.data.Messager;
-import ga.melara.stevesminipouch.data.PlayerInventoryProvider;
+import ga.melara.stevesminipouch.data.ClientInventoryData;
 import ga.melara.stevesminipouch.data.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.util.IAdditionalStorage;
+import ga.melara.stevesminipouch.util.IMenuSynchronizer;
 import ga.melara.stevesminipouch.util.IStorageChangable;
 import ga.melara.stevesminipouch.util.LockableItemStackList;
 import net.minecraft.core.NonNullList;
@@ -15,16 +13,11 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.util.thread.SidedThreadGroups;
-import org.apache.commons.lang3.Validate;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -34,9 +27,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -100,29 +91,17 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Shadow public abstract void placeItemBackInInventory(ItemStack p_150080_);
 
-    public void initMiniPouch()
+    public void initMiniPouch(int slot, boolean inv, boolean arm, boolean off, boolean cft)
     {
-        //これをクライアントとサーバー両方からなんとか呼び出す
-        //必要なのはインベントリのデータ，なのでロード直後に呼んでしまう？
-
-        //ここからしかプレイヤーインスタンスを取得できないのでメニューの初期化はここから行う
-
-
-        //player.inventoryMenu.のようにして初期化，初期化クラスはなんかのインターフェースに加える
-
-
-
-
-
-        //Todo サーバー側の初期化
-
-        //Todo メニューのサーバー側初期化
-
-        //Todo もしプレイヤーがLocalPlayerなら，ClientInventoryDataより取得
+        System.out.println(slot);
+        System.out.println(inv);
+        System.out.println(arm);
+        System.out.println(off);
+        System.out.println(cft);
 
     }
 
-    public void initServer()
+    public void initServer(int slot, boolean inv, boolean arm, boolean off, boolean cft)
     {
         //鯖の初期化
         //初期化にはプレイヤーを特定する必要がある
@@ -130,41 +109,30 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //Todo loadからイベントを発火する->サーバー側はすでに構築されているので初期化可能
         //Todo クライアントにパケットを送ってClientInventoryDataにデータを格納
 
-        initMiniPouch();
+        System.out.println("init server");
+        initMiniPouch(slot, inv, arm, off, cft);
     }
 
 
     //クライアント側の初期化作業を行う
     //Clientdataが入ったタイミングでイベントを発火する？
     //ちょっとイベントを使いすぎかもしれない
-    public void syncToClient()
+    public void initClient()
     {
         //クライアントの初期化
-        initMiniPouch();
+        System.out.println("init client");
+        initMiniPouch(ClientInventoryData.getSlot(),
+                ClientInventoryData.isActiveInventory(),
+                ClientInventoryData.isEquippable(),
+                ClientInventoryData.isActiveOffhand(),
+                ClientInventoryData.isCraftable());
     }
 
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))
     public void oninit(Player p_35983_, CallbackInfo ci) {
-        System.out.println("inventory class init");
-
-
-
-        //インベントリ初期化時点で何故かプレイヤーが空になっている？
-        //参照はちゃんと持っているはずなのでプレイヤークラス内での順序の問題かもしれない
-        //状態をクライアント側のプレイヤークラスと動悸する
-//        if(p_35983_ instanceof ServerPlayer serverPlayer) {
-//            LazyOptional<PlayerInventorySizeData> l = p_35983_.getCapability(PlayerInventoryProvider.DATA);
-//            PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
-//            Messager.sendToPlayer(new InventorySyncPacket(p), serverPlayer);
-//            //System.out.println("hello client! from server.");
-//        }
-
-
-        //System.out.println(p_35983_);
 
         System.out.println(p_35983_.getLevel().isClientSide ? "client inventory!" : "server inventory!");
-
 
 
         maxPage = 5;
@@ -184,6 +152,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         isActiveOffhand = false;
         isActiveArmor = false;
+
+
+        if(p_35983_.getLevel().isClientSide)initClient();
     }
 
 
@@ -233,15 +204,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("inv called"));
 
-        LazyOptional<PlayerInventorySizeData> l = player.getCapability(PlayerInventoryProvider.DATA);
-        PlayerInventorySizeData p = l.orElse(new PlayerInventorySizeData());
-
-        System.out.println("inventory init!  from " + (player.getLevel().isClientSide? "client" : "server"));
-        System.out.println(p.getSlot());
-        System.out.println(p.isActiveInventory());
-        System.out.println(p.isEquippable());
-        System.out.println(p.isActiveOffhand());
-        System.out.println(p.isCraftable());
 
         //一発目の送信時はクライアントのみ情報を保持していない
         //二発目以降の送信でクライアント側にも情報が渡されている
@@ -257,13 +219,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //クラフトはここから操作する必要なし
 
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Inventory Toggled!"));
-
-        System.out.println("inventory init!  from " + (player.getLevel().isClientSide? "client" : "server"));
-        System.out.println(p.getSlot());
-        System.out.println(p.isActiveInventory());
-        System.out.println(p.isEquippable());
-        System.out.println(p.isActiveOffhand());
-        System.out.println(p.isCraftable());
     }
 
 
@@ -365,126 +320,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void changeStorageSize(int change, Player player)
     {
-        //Todo やっぱり一時スロットを別にするのはやめる
-        //Todo 正直処理が重くなるし意味がない
-
-        //なんかマイナス方向に小さくしたときにアイテムが消滅する？
-        //ホットバーの奇数スロットに入れたアイテムがもれなく消滅している
-        //たぶん拾ったときに一番スロットにものが入ってそのまま消滅という流れ
-        //スロットは利用可能だがリストは利用不能という状態に陥っていた
-        //アイテムリストがsetを拒絶している？
-        //しかもスロット数をへらすたびに偶数奇数が入れ替わっている？
-        //そしてなぜか一つスロットに入れただけなのに27個に増える->ただの同期問題
-
-        //多分正しくロックがかかっていない
-        //setしたときの同期
-
-
-
-
-        //Todo SlotTypeがINVENTORYではなくHOTBARになっているためにバグっている？
-
-        //Todo とりあえず通常インベントリの減少がうまく行ったら一段落
-        //Todo 消費した食べ物がアイテムスロット補充されない->数はあっているのでアップデート処理が行われていないかも？
-        //Todo 食べ物はサーバー上ではちゃんと消費されているし補充もされているがクライアント側に同期されていない->見えなくなっていたスロットに入っていた可能性がある
-        //Todo 36スロットを下回ってすぐに歯抜け現象が起こる，はじめにホットバーから使い物にならなくなる->リストの逆転が不必要な位置で繰り返されていたのが原因
-        //Todo 増殖とかはしない模様，単にスロットのアクセスと同期，validslotメソッドが悪さしている
-        //Todo InventoryEffectのapplyに新しいオーバーロードを追加，引数でスロット変更数を変えられるようにする．
-
-        //Todo InventoryActivateFoodの作成，常に減らす方向
-
-        //Todo 2x2クラフトの無効化ロジックを実装する
-
-
-
-
-        //Todo craftingcontainerクラスを書き換える必要があるかも
-        //Todo craftingcontainer内のitemsにアイテムが格納されたら問答無用でその場に吐き出す
-        //craftingcontainerはplayer.getInventory().getCraftingSlotsで参照可能
-
-
-        //Todo 結果スロットのみ少し大きいのでカバー絵を変更可能なようにする
-
-
-
-        //ここまでやった
-
-        //はじめにホイール選択できないようにする
-        //マウスの動きはnet.minecraft.client.MouseHandlerクラスによって定義されている
-        //変更するとすればonScroll,ただMath.signumから符号(チルト方向)のみを入手しているので変更不要か
-
-        //Inventory内のメソッド
-        //isHobarSlot，9以内の番号を返すとtrueになる
-        //swapPaint,これはたぶんスロット位置を9->1や1->9に飛ばすための部分？
-        //getSuitableHotbarSlot
-        //geteSelectionSizeがホットバーのサイズをちゃんと返すように
-
-        //AbstractContainerScreen内のメソッド
-        //checkHotbarMouseClicked
-
-        //ホットバーの動きはホイール駆動->abstractContainerScreen->Inventoryの順に発火されるのでこれだけでokか？
-        //selected格納時に手持ちアイテムがサーバーに送られる？
-        //とりあえずサーバー側は手持ちアイテムを把握しているはずなのでどこかで送られている
-
-
-
-
-        //拾わないかの確認
-        //inventory.itemsリストが正しく閉鎖されていればアイテムは格納されないはず
-
-
-        //次にレンダリング
-        //Guiクラス内に存在するrenderHotbarメソッドの書き換えを行う
-        //renderHotbar自体がたぶん9回呼ばれている？ とりあえず絵の場所を確認すべき
-
-        //Todo 不使用ホットバースロットの除去・非表示機能の実装
-        //Todo インベントリ・スロット・スクリーン全部を書き換える必要がある
-        //Todo HUDの表示クラスを見つける必要がある(TinyInvを参考にする？)
-
-
-        //Gui.javaのrenderHotbar内でレンダリングが行われている
-        //マウスホイールによる選択はどこか？
-        //MouseHandlerクラス内で処理内容が決定されている
-
-
-        //ここまでやった
-
-        //Todo クリエイティブモードのメニューの修正
-        //Todo たぶんクリエメニューのみスロットの追加時の動作がおかしいのでSlotTypeが効いていない？
-
-        //Todo CreativeModeInventoryScreen内の491行目のところでインベントリの初期化を行っている
-        //Todo addSlotメソッドを使っていない
-
-        //Todo Containermenuを介していないので対応不能，Screen側でSlotのチェック機能をつける？
-        //Todo SlotTypeにUndefinedを作る
-
-
-        //ここまでやった
-
-        //Todo なんかサバイバルモードにして拾っても個数が増えない
-        //Todo どこかのスロットがfalseになっていない？
-        //Todo 36スロット以上存在するときは正常に機能しているっぽい
-        //Todo 予想だけどたぶん空きスロット調査メソッドがスロットのfalse状態を認識していない
-        //Todo 35番スロットを空きスロットとしてご認識している様子が見受けられる
-
-        //Todo ひとまずLockList側のsetメソッドを監視
-        //Todo 空きスロット探索メソッドの書き換えも必要ならば行うべき
-        //Todo for文の定義ズレが発生していただけか
-
-
-        //Todo 保存系の処理の実装
-        //NBTにインベントリの開放状態を保存する
-        //インベントリ変更系メソッド全てに保存メソッドの呼び出しを追加
-        //インベントリ・メニューの初期化時にNBTから状態を読み込む
-        //もし特に保存されている情報がなければConfigからデフォルト設定を読み出して適用
-        //PlayerMixin内のonAddDataより新たな値を追加？
-        //PlayerInventorySizeDataですでに管理されている,取得はClientInventoryDataからstaticメソッドより入手可
-
-
-        //ここまでやった
-        //toggle機能しか無いので指定の状態にすることが不可能？
-        //toggleメソッドとsetメソッドを逆にする必要あり->toggleからそれぞれの状態に応じたsetを呼び出す形式にする
-
 
 
         inventorySize += change;
@@ -875,50 +710,22 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void loadStatus(CompoundTag tag)
     {
-//        CompoundTag compound = tag.getCompound("InventoryStats");
-//        if(compound.contains("inventorysize"))inventorySize = compound.getInt("inventorysize");
-//        else inventorySize = Config.DEFAULT_SIZE.get();
         //Todo インベントリサイズの相対座標を入れるようにしてもいいかも？
 
         CompoundTag compound = tag.getCompound("InventoryStats");
-        changeStorageSize(compound.contains("inventorysize")? compound.getInt("inventorysize") : Config.DEFAULT_SIZE.get(), player);
-        System.out.println(compound.contains("inventorysize")? compound.getInt("inventorysize") : Config.DEFAULT_SIZE.get());
-        System.out.println("changed" + (player.getLevel().isClientSide ? "client" : "server"));
-//
-        //Todo とりあえず読み込みには成功している？
-
-        //Todo Menuへの同期
-        //Todo クライアントインベントリへの同期
-
-//        if(compound.contains("activateinventory"))isActiveInventory = compound.getBoolean("activateinventory");
-//        else isActiveInventory = Config.DEFAULT_INVENTORY.get();
-
+        int slt = compound.contains("inventorysize")? compound.getInt("inventorysize") : Config.DEFAULT_SIZE.get();
         boolean inv = compound.contains("activateinventory")? compound.getBoolean("activateinventory") : Config.DEFAULT_INVENTORY.get();
-        if(inv) toggleInventory(player);
-
-//        if(compound.contains("activateoffhand"))isActiveOffhand = compound.getBoolean("activateoffhand");
-//        else isActiveOffhand = Config.DEFAULT_OFFHAND.get();
-
         boolean off = compound.contains("activateoffhand")? compound.getBoolean("activateoffhand") : Config.DEFAULT_OFFHAND.get();
-        if(off) toggleOffhand(player);
-
-//        if(compound.contains("craftable"))isActiveCraft = compound.getBoolean("craftable");
-//        else isActiveCraft = Config.DEFAULT_CRAFT.get();
-
         boolean cft = compound.contains("craftable")? compound.getBoolean("craftable") : Config.DEFAULT_CRAFT.get();
-        if(cft) toggleCraft(player);
-//        if(compound.contains("equippable"))isActiveArmor = compound.getBoolean("equippable");
-//        else isActiveArmor = Config.DEFAULT_ARMOR.get();
-
         boolean arm = compound.contains("equippable")? compound.getBoolean("equippable") : Config.DEFAULT_ARMOR.get();
-        if(arm) toggleArmor(player);
 
-        System.out.println("load Status!!!!!" + (player.getLevel().isClientSide? "client" : "server"));
-        System.out.println(inventorySize);
-        System.out.println(isActiveInventory);
-        System.out.println(isActiveArmor);
-        System.out.println(isActiveOffhand);
-        System.out.println(isActiveCraft);
+
+        initServer(slt, inv, off, cft, arm);
+
+        ServerPlayer serverPlayer = (ServerPlayer)player;
+        ((IMenuSynchronizer)player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, isActiveInventory, isActiveOffhand, isActiveCraft, isActiveArmor));
+
+
     }
 
     @Override

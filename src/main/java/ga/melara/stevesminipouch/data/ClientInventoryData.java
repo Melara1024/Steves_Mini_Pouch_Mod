@@ -14,6 +14,8 @@ public class ClientInventoryData {
         ClientInventoryData.isActiveOffhand = isActiveOffhand;
         ClientInventoryData.isCraftable = isCraftable;
         ClientInventoryData.isEquippable = isEquippable;
+
+        System.out.println("set data to client");
     }
 
     public static boolean isActiveInventory() {

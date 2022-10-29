@@ -53,9 +53,16 @@ public class InventorySyncPacket
             //どうやらhandleできていない
             System.out.println("handled packet");
 
+            System.out.println(slot);
+            System.out.println(isActiveInventory);
+            System.out.println(isActiveOffhand);
+            System.out.println(isCraftable);
+            System.out.println(isEquippable);
+
             ClientInventoryData.set(slot, isActiveInventory, isActiveOffhand, isCraftable, isEquippable);
             ctx.setPacketHandled(true);
         });
         return true;
     }
+
 }

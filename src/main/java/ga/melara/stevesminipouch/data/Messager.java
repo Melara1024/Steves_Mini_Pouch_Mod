@@ -10,7 +10,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
 public class Messager {
-    private static SimpleChannel INSTANCE;
+    public static SimpleChannel INSTANCE;
 
     private static int packetId = 0;
     private static int id() {
@@ -32,14 +32,12 @@ public class Messager {
         net.messageBuilder(PageChangedPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(PageChangedPacket::new)
                 .encoder(PageChangedPacket::toBytes)
-                //.consumerMainThread(PageChangedPacket::handle)
                 .consumerMainThread(PageChangedPacket::handle)
                 .add();
 
         net.messageBuilder(InventorySyncPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(InventorySyncPacket::new)
                 .encoder(InventorySyncPacket::toBytes)
-                //.consumerMainThread(PageChangedPacket::handle)
                 .consumerMainThread(InventorySyncPacket::handle)
                 .add();
     }

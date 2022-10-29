@@ -1,22 +1,16 @@
 package ga.melara.stevesminipouch.mixin;
 
-import ga.melara.stevesminipouch.ModRegistry;
-import ga.melara.stevesminipouch.data.InventorySyncPacket;
-import ga.melara.stevesminipouch.data.Messager;
-import ga.melara.stevesminipouch.data.PlayerInventoryProvider;
 import ga.melara.stevesminipouch.data.PlayerInventorySizeData;
+import ga.melara.stevesminipouch.data.StatsSynchronizer;
 import ga.melara.stevesminipouch.event.PageChangeEvent;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.core.NonNullList;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.util.thread.SidedThreadGroups;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractContainerMenu.class)
-public abstract class ContainerMenuMixin implements IMenuChangable {
+public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchronizer {
     /*
     Todo ページが変更されたときのイベント・メッセージを受け取ってページ変数を保持する
     Todo 可能な限りイベントで実装したほうがよい(タイミングに合わせて変更できるので)
@@ -63,11 +57,22 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
     int pageMax = 1;
     int page = 0;
 
-    public void initMiniPouch(PlayerInventorySizeData data)
+    //こいつを使ってクライアントにデータを送る
+    StatsSynchronizer synchronizer;
+
+    PlayerInventorySizeData data;
+
+    @Override
+    public void setStatsSynchronizer(StatsSynchronizer synchronizer)
     {
-        //これをクライアントとサーバー両方から呼び出す
+        this.synchronizer = synchronizer;
+        System.out.println("setStatsSynchronizer called from menu");
 
+        synchronizer.sendInitialData(data);
+    }
 
+    public void initMenu(PlayerInventorySizeData data){
+        this.data = data;
     }
 
     @Inject(method = "<init>", at = @At("RETURN"), cancellable = true)
@@ -246,6 +251,13 @@ public abstract class ContainerMenuMixin implements IMenuChangable {
     public void onAddSlot(Slot slot, CallbackInfoReturnable<Slot> cir)
     {
         setType(slot);
+
+        //ここでインベントリ側の設定に合わせてスロットを閉じる
+        //armor
+        //offhand
+        //craft+result
+
+
     }
 
 
