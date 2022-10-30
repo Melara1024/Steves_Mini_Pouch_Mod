@@ -66,7 +66,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     public void setStatsSynchronizer(StatsSynchronizer synchronizer)
     {
         this.synchronizer = synchronizer;
-        System.out.println("setStatsSynchronizer called from menu");
+        //System.out.println("setStatsSynchronizer called from menu");
 
         synchronizer.sendInitialData(data);
     }
@@ -79,7 +79,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     public void onConstruct(MenuType p_38851_, int p_38852_, CallbackInfo ci)
     {
         MinecraftForge.EVENT_BUS.register(this);
-        System.out.println("menu class init");
+        //System.out.println("menu class init");
     }
 
     @Inject(method = "initializeContents(ILjava/util/List;Lnet/minecraft/world/item/ItemStack;)V", at = @At(value = "RETURN"), cancellable = true)
@@ -153,9 +153,15 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     }
 
     @Override
+    public void setArmor(boolean change, Player player)
+    {
+        if(change != ((IStorageChangable)player.getInventory()).isActiveArmor())toggleArmor(player);
+    }
+
+    @Override
     public void toggleArmor(Player player){
 
-        if(((IStorageChangable)player.getInventory()).isActiveArmor())
+        if(!((IStorageChangable)player.getInventory()).isActiveArmor())
         {
             for(Slot slot: this.slots)
             {
@@ -179,9 +185,15 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     }
 
     @Override
+    public void setCraft(boolean change, Player player)
+    {
+        if(change != ((IStorageChangable)player.getInventory()).isActiveCraft())toggleCraft(player);
+    }
+
+    @Override
     public void toggleCraft(Player player){
 
-        if(((IStorageChangable)player.getInventory()).isActiveCraft())
+        if(!((IStorageChangable)player.getInventory()).isActiveCraft())
         {
             for(Slot slot: this.slots)
             {
@@ -206,9 +218,15 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     }
 
     @Override
+    public void setOffhand(boolean change, Player player)
+    {
+        if(change != ((IStorageChangable)player.getInventory()).isActiveOffhand())toggleOffhand(player);
+    }
+
+    @Override
     public void toggleOffhand(Player player){
 
-        if(((IStorageChangable)player.getInventory()).isActiveOffhand())
+        if(!((IStorageChangable)player.getInventory()).isActiveOffhand())
         {
             for(Slot slot: this.slots)
             {
@@ -297,6 +315,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
             //クラフティングの完成品スロットの場合
             ((IHasSlotType)targetSlot).setType(SlotType.RESULT);
         }
+
 
 
     }

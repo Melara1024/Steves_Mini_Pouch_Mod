@@ -7,6 +7,7 @@ import ga.melara.stevesminipouch.data.StatsSynchronizer;
 import ga.melara.stevesminipouch.util.IMenuSynchronizer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.InventoryMenu;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,20 +22,25 @@ public class ServerPlayerMixin
     @Inject(method = "initMenu", at = @At(value = "RETURN"), cancellable = true)
     public void onInitMenu(AbstractContainerMenu p_143400_, CallbackInfo ci) {
 
-        ServerPlayer player = (ServerPlayer)(Object)this;
-
-        statsSynchronizer = new StatsSynchronizer()
+        if(p_143400_ instanceof InventoryMenu)
         {
-            @Override
-            public void sendInitialData(PlayerInventorySizeData data)
-            {
-                Messager.sendToPlayer(new InventorySyncPacket(data), player);
-                System.out.println("sended");
-            }
-        };
+            ServerPlayer player = (ServerPlayer)(Object)this;
 
-        System.out.println("initMenu called from serverplayer");
-        ((IMenuSynchronizer)p_143400_).setStatsSynchronizer(this.statsSynchronizer);
+            statsSynchronizer = new StatsSynchronizer()
+            {
+                @Override
+                public void sendInitialData(PlayerInventorySizeData data)
+                {
+                    Messager.sendToPlayer(new InventorySyncPacket(data), player);
+                    System.out.println("sended");
+                }
+            };
+
+            System.out.println("initMenu called from serverplayer");
+            ((IMenuSynchronizer)p_143400_).setStatsSynchronizer(this.statsSynchronizer);
+        }
+
+
     }
 
 

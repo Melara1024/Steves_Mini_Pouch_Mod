@@ -28,8 +28,9 @@ public class OffhandActivateItem extends FunctionFoodItem {
         if(!(entity instanceof Player))return;
 
         Player player = (Player)entity;
-        ((IMenuChangable)player.inventoryMenu).toggleOffhand(player);
+
         ((IStorageChangable)player.getInventory()).toggleOffhand(player);
+        ((IMenuChangable)player.inventoryMenu).toggleOffhand(player);
     }
 
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS)

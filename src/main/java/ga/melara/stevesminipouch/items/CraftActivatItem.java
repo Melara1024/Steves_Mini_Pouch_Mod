@@ -28,8 +28,9 @@ public class CraftActivatItem extends FunctionFoodItem {
         if(!(entity instanceof Player))return;
 
         Player player = (Player)entity;
-        ((IMenuChangable)player.inventoryMenu).toggleCraft(player);
+
         ((IStorageChangable)player.getInventory()).toggleCraft(player);
+        ((IMenuChangable)player.inventoryMenu).toggleCraft(player);
         ((ICraftingContainerChangable)player.inventoryMenu.getCraftSlots()).toggleCraft(player);
     }
 

@@ -2,11 +2,9 @@ package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.data.ClientInventoryData;
+import ga.melara.stevesminipouch.data.InventorySyncEvent;
 import ga.melara.stevesminipouch.data.PlayerInventorySizeData;
-import ga.melara.stevesminipouch.util.IAdditionalStorage;
-import ga.melara.stevesminipouch.util.IMenuSynchronizer;
-import ga.melara.stevesminipouch.util.IStorageChangable;
-import ga.melara.stevesminipouch.util.LockableItemStackList;
+import ga.melara.stevesminipouch.util.*;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -18,6 +16,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -49,10 +49,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     private int hotbarSize = 9;
 
 
-    private boolean isActiveInventory = false;
-    private boolean isActiveArmor = false;
-    private boolean isActiveOffhand = false;
-    private boolean isActiveCraft = false;
+    private boolean isActiveInventory = true;
+    private boolean isActiveArmor = true;
+    private boolean isActiveOffhand = true;
+    private boolean isActiveCraft = true;
 
     @Shadow
     public NonNullList<ItemStack> items;
@@ -99,6 +99,22 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         System.out.println(off);
         System.out.println(cft);
 
+
+        setStorageSize(slot, player);
+
+
+        setInventory(inv, player);
+        ((IMenuChangable)player.containerMenu).toggleInventory(player);
+
+        setArmor(arm, player);
+        ((IMenuChangable)player.containerMenu).toggleArmor(player);
+
+        setOffhand(off, player);
+        ((IMenuChangable)player.containerMenu).toggleOffhand(player);
+
+        setCraft(cft, player);
+        ((IMenuChangable)player.containerMenu).toggleCraft(player);
+
     }
 
     public void initServer(int slot, boolean inv, boolean arm, boolean off, boolean cft)
@@ -117,9 +133,14 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     //クライアント側の初期化作業を行う
     //Clientdataが入ったタイミングでイベントを発火する？
     //ちょっとイベントを使いすぎかもしれない
-    public void initClient()
+    @Override
+    @SubscribeEvent
+    public void initClient(InventorySyncEvent e)
     {
         //クライアントの初期化
+        //悲しいことにinventory(クライアント側)の初期化はパケットが送られるより速い
+        //ふざけんな
+        System.out.println(player);
         System.out.println("init client");
         initMiniPouch(ClientInventoryData.getSlot(),
                 ClientInventoryData.isActiveInventory(),
@@ -134,6 +155,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         System.out.println(p_35983_.getLevel().isClientSide ? "client inventory!" : "server inventory!");
 
+        MinecraftForge.EVENT_BUS.register(this);
 
         maxPage = 5;
         //もとの数より減らしてはいけない……
@@ -141,20 +163,19 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         hotbarSize = 9;
 
         items = LockableItemStackList.withSize(inventorySize, (Inventory) (Object) this, false);
-
-        armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, true);
-        offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, true);
+        armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, false);
+        offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, false);
         compartments.add(0, items);
         compartments.add(1, armor);
         compartments.add(2, offhand);
 
         //Todo プレイヤーに紐付けられたスロット数を初期化で適用する
 
-        isActiveOffhand = false;
-        isActiveArmor = false;
+        isActiveInventory = true;
+        isActiveOffhand = true;
+        isActiveArmor = true;
+        isActiveCraft = true;
 
-
-        if(p_35983_.getLevel().isClientSide)initClient();
     }
 
 
@@ -187,6 +208,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     }
 
 
+    public void setInventory(boolean change, Player player)
+    {
+        if(change != isActiveInventory)toggleInventory(player);
+    }
 
 
     @Override
@@ -210,15 +235,20 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         //change, toggleの操作のなかでクライアントとの同期ができている？
 
-        changeStorageSize(1, player);
-        isActiveArmor = true;
-        toggleArmor(player);
-        isActiveOffhand = true;
-        toggleOffhand(player);
+//        changeStorageSize(1, player);
+//        isActiveArmor = true;
+//        toggleArmor(player);
+//        isActiveOffhand = true;
+//        toggleOffhand(player);
 
         //クラフトはここから操作する必要なし
 
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Inventory Toggled!"));
+    }
+
+    public void setArmor(boolean change, Player player)
+    {
+        if(change != isActiveArmor)toggleArmor(player);
     }
 
 
@@ -231,6 +261,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //menu.slotsを回してSlotType.ARMORを無効化・隠蔽処理有効化
 
         if (this.isActiveArmor) {
+
             for (ItemStack item : armor) {
                 Level level = player.level;
                 ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
@@ -256,9 +287,16 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Armor Toggled!"));
     }
 
+    public void setOffhand(boolean change, Player player)
+    {
+        if(change != isActiveOffhand)toggleOffhand(player);
+    }
+
     @Override
     public void toggleOffhand(Player player) {
         if (this.isActiveOffhand) {
+
+
             for (ItemStack item : offhand) {
                 Level level = player.level;
                 ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
@@ -272,6 +310,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             compartments.add(2, offhand);
 
             this.isActiveOffhand = false;
+
             return;
         }
 
@@ -282,6 +321,11 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         this.isActiveOffhand = true;
 
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Offhand Toggled!"));
+    }
+
+    public void setCraft(boolean change, Player player)
+    {
+        if(change != isActiveCraft)toggleCraft(player);
     }
 
     @Override
@@ -317,10 +361,16 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         return this.isActiveCraft;
     }
 
+    public void setStorageSize(int change, Player player)
+    {
+        changeStorageSize(change - inventorySize, player);
+    }
+
     @Override
     public void changeStorageSize(int change, Player player)
     {
 
+        //setStorageSizeに変更したほうが良い
 
         inventorySize += change;
         LockableItemStackList newItems;
@@ -381,8 +431,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         items = newItems;
         compartments.add(0, items);
 
-        items.forEach(System.out::println);
-        System.out.println("storage change -> " + change);
+        //items.forEach(System.out::println);
+        //System.out.println("storage change -> " + change);
 
         //サーバーにこれを送信しようとしたときにも通信エラーの同じようなのが出る？　やっぱり間違った方面での送信が原因なのでは
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
@@ -698,6 +748,15 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public CompoundTag saveStatus(CompoundTag tag)
     {
+        System.out.println("save data!!!!!");
+        System.out.println(inventorySize);
+        System.out.println(isActiveInventory);
+        System.out.println(isActiveArmor);
+        System.out.println(isActiveOffhand);
+        System.out.println(isActiveCraft);
+
+
+
         tag.putInt("inventorysize", inventorySize);
         tag.putBoolean("activateinventory",isActiveInventory);
         tag.putBoolean("activateoffhand", isActiveOffhand);
@@ -712,20 +771,18 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     {
         //Todo インベントリサイズの相対座標を入れるようにしてもいいかも？
 
-        CompoundTag compound = tag.getCompound("InventoryStats");
-        int slt = compound.contains("inventorysize")? compound.getInt("inventorysize") : Config.DEFAULT_SIZE.get();
-        boolean inv = compound.contains("activateinventory")? compound.getBoolean("activateinventory") : Config.DEFAULT_INVENTORY.get();
-        boolean off = compound.contains("activateoffhand")? compound.getBoolean("activateoffhand") : Config.DEFAULT_OFFHAND.get();
-        boolean cft = compound.contains("craftable")? compound.getBoolean("craftable") : Config.DEFAULT_CRAFT.get();
-        boolean arm = compound.contains("equippable")? compound.getBoolean("equippable") : Config.DEFAULT_ARMOR.get();
+
+        int slt = tag.contains("inventorysize")? tag.getInt("inventorysize") : Config.DEFAULT_SIZE.get();
+        boolean inv = tag.contains("activateinventory")? tag.getBoolean("activateinventory") : Config.DEFAULT_INVENTORY.get();
+        boolean off = tag.contains("activateoffhand")? tag.getBoolean("activateoffhand") : Config.DEFAULT_OFFHAND.get();
+        boolean cft = tag.contains("craftable")? tag.getBoolean("craftable") : Config.DEFAULT_CRAFT.get();
+        boolean arm = tag.contains("equippable")? tag.getBoolean("equippable") : Config.DEFAULT_ARMOR.get();
 
 
-        initServer(slt, inv, off, cft, arm);
+        initServer(slt, inv, arm, off, cft);
 
         ServerPlayer serverPlayer = (ServerPlayer)player;
-        ((IMenuSynchronizer)player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, isActiveInventory, isActiveOffhand, isActiveCraft, isActiveArmor));
-
-
+        ((IMenuSynchronizer)player.containerMenu).initMenu(new PlayerInventorySizeData(slt, inv, off, cft, arm));
     }
 
     @Override

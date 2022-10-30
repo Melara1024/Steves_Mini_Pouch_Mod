@@ -1,11 +1,7 @@
 package ga.melara.stevesminipouch.data;
 
-import ga.melara.stevesminipouch.event.PageChangeEvent;
-import ga.melara.stevesminipouch.util.IStorageChangable;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -15,15 +11,15 @@ public class InventorySyncPacket
 
     private boolean isActiveInventory;
     private boolean isActiveOffhand;
-    private boolean isCraftable;
-    private boolean isEquippable;
+    private boolean isActivateCraft;
+    private boolean isActivateArmor;
     private int slot;
 
     public InventorySyncPacket(PlayerInventorySizeData data) {
         this.isActiveInventory = data.isActiveInventory();
         this.isActiveOffhand = data.isActiveOffhand();
-        this.isEquippable = data.isEquippable();
-        this.isCraftable = data.isCraftable();
+        this.isActivateArmor = data.isEquippable();
+        this.isActivateCraft = data.isCraftable();
         this.slot = data.getSlot();
 
         System.out.println("inventorySyncPacket init");
@@ -31,17 +27,17 @@ public class InventorySyncPacket
 
     public InventorySyncPacket(FriendlyByteBuf buf) {
         isActiveInventory = buf.readBoolean();
+        isActivateArmor = buf.readBoolean();
         isActiveOffhand = buf.readBoolean();
-        isEquippable = buf.readBoolean();
-        isCraftable = buf.readBoolean();
+        isActivateCraft = buf.readBoolean();
         slot = buf.readInt();
     }
 
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeBoolean(isActiveInventory);
+        buf.writeBoolean(isActivateArmor);
         buf.writeBoolean(isActiveOffhand);
-        buf.writeBoolean(isEquippable);
-        buf.writeBoolean(isCraftable);
+        buf.writeBoolean(isActivateCraft);
         buf.writeInt(slot);
     }
 
@@ -55,11 +51,16 @@ public class InventorySyncPacket
 
             System.out.println(slot);
             System.out.println(isActiveInventory);
+            System.out.println(isActivateArmor);
             System.out.println(isActiveOffhand);
-            System.out.println(isCraftable);
-            System.out.println(isEquippable);
+            System.out.println(isActivateCraft);
 
-            ClientInventoryData.set(slot, isActiveInventory, isActiveOffhand, isCraftable, isEquippable);
+            ClientInventoryData.set(slot, isActiveInventory, isActivateArmor, isActiveOffhand, isActivateCraft);
+
+            //ここからイベントを送信して初期化？
+
+            MinecraftForge.EVENT_BUS.post(new InventorySyncEvent());
+
             ctx.setPacketHandled(true);
         });
         return true;

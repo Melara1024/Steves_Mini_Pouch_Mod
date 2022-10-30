@@ -22,7 +22,8 @@ public class SlotItem extends FunctionFoodItem {
         Player player = (Player)entity;
         if(player.getLevel().isClientSide())System.out.println("here is client side!");
         else System.out.println("here is server side");
-        ((IMenuChangable)player.inventoryMenu).changeStorageSize(changeValue, player);
+
         ((IStorageChangable)player.getInventory()).changeStorageSize(changeValue, player);
+        ((IMenuChangable)player.inventoryMenu).changeStorageSize(changeValue, player);
     }
 }

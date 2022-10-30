@@ -29,8 +29,9 @@ public class InventoryActivateItem extends FunctionFoodItem {
 
         Player player = (Player)entity;
 
-        ((IMenuChangable)player.inventoryMenu).toggleInventory(player);
+
         ((IStorageChangable)player.getInventory()).toggleInventory(player);
+        ((IMenuChangable)player.inventoryMenu).toggleInventory(player);
     }
 
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS)

@@ -74,7 +74,7 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
 
         //Todo ここはページによってスロットの色を変えるお楽しみ機能をつけるのくらいにしか使わないはず
 
-
+        //System.out.println(slot.getItem());
 
     }
 
@@ -148,8 +148,12 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
 
 
 
+
+
         for(int k = 0; k < this.menu.slots.size(); ++k) {
             Slot slot = this.menu.slots.get(k);
+
+            SlotType.setHiding(slot);
 
             if(((IHasSlotType)slot).getType() == SlotType.UNDEFINED)
             {

@@ -28,8 +28,9 @@ public class ArmorActivateItem extends FunctionFoodItem {
         if(!(entity instanceof Player))return;
 
         Player player = (Player)entity;
-        ((IMenuChangable)player.inventoryMenu).toggleArmor(player);
+
         ((IStorageChangable)player.getInventory()).toggleArmor(player);
+        ((IMenuChangable)player.inventoryMenu).toggleArmor(player);
     }
 
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS)
