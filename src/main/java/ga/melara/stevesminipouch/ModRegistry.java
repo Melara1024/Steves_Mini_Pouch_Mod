@@ -1,14 +1,20 @@
 package ga.melara.stevesminipouch;
 
+import com.mojang.brigadier.Command;
+import ga.melara.stevesminipouch.effect.SlotEffect;
+import ga.melara.stevesminipouch.enchant.SlotEnchant;
 import ga.melara.stevesminipouch.items.*;
 import ga.melara.stevesminipouch.items.slotitems.*;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
@@ -49,10 +55,16 @@ public class ModRegistry
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 
+    private static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, MODID);
+
+    private static final DeferredRegister<MobEffect> EFFECT = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
+
     public static void registerItems()
     {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ITEMS.register(eventBus);
+        ENCHANTMENTS.register(eventBus);
+        EFFECT.register(eventBus);
     }
 
 
@@ -70,6 +82,10 @@ public class ModRegistry
     public static final RegistryObject<Item> SLOT_SHRINK27_ITEM = Sub27SlotItem.buildInTo(ITEMS);
 
 
+
+    public static final RegistryObject<Enchantment> SLOT_ENCHANT = SlotEnchant.buildInTo(ENCHANTMENTS);
+
+    public static final RegistryObject<MobEffect> SLOT_EFFECT = SlotEffect.buildInTo(EFFECT);
 
 
 
