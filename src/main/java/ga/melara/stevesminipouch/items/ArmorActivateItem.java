@@ -33,6 +33,7 @@ public class ArmorActivateItem extends FunctionFoodItem {
         ((IMenuChangable)player.inventoryMenu).toggleArmor(player);
     }
 
+
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS)
     {
         System.out.println("Armor!!");
