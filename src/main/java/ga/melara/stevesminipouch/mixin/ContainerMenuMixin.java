@@ -129,19 +129,11 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
     @Override
     public void toggleInventory(Player player){
-        for(Slot slot: this.slots)
+        if(!((IStorageChangable)player.getInventory()).isActiveInventory())
         {
-            //メインハンド以外のすべてのスロットを使用不可にする
-            if(slot.getSlotIndex() == 0 && ((IHasSlotType)slot).getType() == SlotType.HOTBAR)
-            {
-                ((ISlotHidable)slot).show();
-            }
-            else
-            {
-                ((ISlotHidable)slot).hide();
-            }
+            setArmor(false, player);
+            setCraft(false, player);
         }
-        System.out.println("menu Toggled");
     }
 
     @Override

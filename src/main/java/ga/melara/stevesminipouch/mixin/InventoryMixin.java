@@ -194,32 +194,11 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public void toggleInventory(Player player) {
-        //全部の無効化
-        //他の機能をまとめて起動するだけなので実装は後で
+        setArmor(false, player);
+        setCraft(false, player);
+        setStorageSize(1, player);
 
-
-        //何故かプレイヤーの参照を正しく得られない？
-        //プレイヤー自体は得られている？
-        //Todo クライアント側のみ初期化が遅れている，NBTの読み込みからクライアントへの動機までが初期設定部分で行えていない
-        //Todo データそのものはサーバーに保存されるので最初に初期化パケットを送るのが必要，その後は多分同期しなくてOK
-
-        System.out.println(player.getDisplayName());
-
-        if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("inv called"));
-
-
-        //一発目の送信時はクライアントのみ情報を保持していない
-        //二発目以降の送信でクライアント側にも情報が渡されている
-
-        //change, toggleの操作のなかでクライアントとの同期ができている？
-
-//        changeStorageSize(1, player);
-//        isActiveArmor = true;
-//        toggleArmor(player);
-//        isActiveOffhand = true;
-//        toggleOffhand(player);
-
-        //クラフトはここから操作する必要なし
+        isActiveInventory = !isActiveInventory;
 
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Inventory Toggled!"));
     }
