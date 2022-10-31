@@ -16,7 +16,8 @@
   ],
   "client": [
     "GuiMixin",
-    "MinecraftMixin"
+    "MinecraftMixin",
+    "TutorialMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -35,27 +35,19 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     MenuインスタンスはScreenインスタンスからmenuを通じて参照可能
      */
 
-    @Shadow public abstract void slotsChanged(Container p_38868_);
+    //インベントリが開けないようにする設定
+    //Todo クライアント側->Minecraft.setScreenのキャンセル・Tutorial.onOpenInventoryのキャンセル
+    //サーバー側->インベントリの開閉ってもしかして鯖側から制限できないかも？
+    //まあどうせチェストとかいじったら見えちゃうし気にしない
+    //Todo オフハンド開放アイテム以外はインベントリが開放されていないと使えない(consumeされない)ように
 
-    @Shadow protected abstract Slot addSlot(Slot p_38898_);
+    //Todo インベントリ開放・閉鎖を実装，開放時はisActivateInventoryをいじるだけで良い
+    //Todo 閉鎖時はスロットを強制的に1に，その他の機能も全て閉鎖する(オフハンドを除く)
 
-    @Shadow public abstract int incrementStateId();
 
     @Shadow
     public NonNullList<Slot> slots;
 
-    @Shadow
-    public NonNullList<ItemStack> remoteSlots;
-
-    @Shadow
-    public NonNullList<ItemStack> lastSlots;
-
-
-    @Shadow
-    public void broadcastFullState(){};
-
-    int pageMax = 1;
-    int page = 0;
 
     //こいつを使ってクライアントにデータを送る
     StatsSynchronizer synchronizer;
@@ -170,7 +162,6 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
                     ((ISlotHidable)slot).hide();
                 }
             }
-            return;
         }
         else
         {
@@ -202,7 +193,6 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
                     ((ISlotHidable)slot).hide();
                 }
             }
-            return;
         }
         else
         {
@@ -214,7 +204,6 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
                 }
             }
         }
-        System.out.println("crafting Toggled");
     }
 
     @Override
@@ -235,7 +224,6 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
                     ((ISlotHidable)slot).hide();
                 }
             }
-            return;
         }
         else
         {
@@ -260,22 +248,10 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
         }
     }
 
-
-
-
-    //todo  very dirty. must be rewrite.
-
     @Inject(method = "addSlot(Lnet/minecraft/world/inventory/Slot;)Lnet/minecraft/world/inventory/Slot;", at = @At("RETURN"), cancellable = true)
     public void onAddSlot(Slot slot, CallbackInfoReturnable<Slot> cir)
     {
         setType(slot);
-
-        //ここでインベントリ側の設定に合わせてスロットを閉じる
-        //armor
-        //offhand
-        //craft+result
-
-
     }
 
 

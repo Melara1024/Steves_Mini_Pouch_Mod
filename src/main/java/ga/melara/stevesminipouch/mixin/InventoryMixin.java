@@ -93,15 +93,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     public void initMiniPouch(int slot, boolean inv, boolean arm, boolean off, boolean cft)
     {
-        System.out.println(slot);
-        System.out.println(inv);
-        System.out.println(arm);
-        System.out.println(off);
-        System.out.println(cft);
-
-
         setStorageSize(slot, player);
-
 
         setInventory(inv, player);
         ((IMenuChangable)player.containerMenu).toggleInventory(player);
@@ -114,32 +106,18 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         setCraft(cft, player);
         ((IMenuChangable)player.containerMenu).toggleCraft(player);
-
     }
 
     public void initServer(int slot, boolean inv, boolean arm, boolean off, boolean cft)
     {
-        //鯖の初期化
-        //初期化にはプレイヤーを特定する必要がある
-
-        //Todo loadからイベントを発火する->サーバー側はすでに構築されているので初期化可能
-        //Todo クライアントにパケットを送ってClientInventoryDataにデータを格納
-
         System.out.println("init server");
         initMiniPouch(slot, inv, arm, off, cft);
     }
 
-
-    //クライアント側の初期化作業を行う
-    //Clientdataが入ったタイミングでイベントを発火する？
-    //ちょっとイベントを使いすぎかもしれない
     @Override
     @SubscribeEvent
     public void initClient(InventorySyncEvent e)
     {
-        //クライアントの初期化
-        //悲しいことにinventory(クライアント側)の初期化はパケットが送られるより速い
-        //ふざけんな
         System.out.println(player);
         System.out.println("init client");
         initMiniPouch(ClientInventoryData.getSlot(),
@@ -748,15 +726,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public CompoundTag saveStatus(CompoundTag tag)
     {
-        System.out.println("save data!!!!!");
-        System.out.println(inventorySize);
-        System.out.println(isActiveInventory);
-        System.out.println(isActiveArmor);
-        System.out.println(isActiveOffhand);
-        System.out.println(isActiveCraft);
-
-
-
         tag.putInt("inventorysize", inventorySize);
         tag.putBoolean("activateinventory",isActiveInventory);
         tag.putBoolean("activateoffhand", isActiveOffhand);
@@ -769,15 +738,11 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void loadStatus(CompoundTag tag)
     {
-        //Todo インベントリサイズの相対座標を入れるようにしてもいいかも？
-
-
         int slt = tag.contains("inventorysize")? tag.getInt("inventorysize") : Config.DEFAULT_SIZE.get();
         boolean inv = tag.contains("activateinventory")? tag.getBoolean("activateinventory") : Config.DEFAULT_INVENTORY.get();
         boolean off = tag.contains("activateoffhand")? tag.getBoolean("activateoffhand") : Config.DEFAULT_OFFHAND.get();
         boolean cft = tag.contains("craftable")? tag.getBoolean("craftable") : Config.DEFAULT_CRAFT.get();
         boolean arm = tag.contains("equippable")? tag.getBoolean("equippable") : Config.DEFAULT_ARMOR.get();
-
 
         initServer(slt, inv, arm, off, cft);
 
