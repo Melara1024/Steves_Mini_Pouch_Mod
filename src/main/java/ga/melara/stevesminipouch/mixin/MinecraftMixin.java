@@ -1,6 +1,6 @@
 package ga.melara.stevesminipouch.mixin;
 
-import ga.melara.stevesminipouch.data.ClientInventoryData;
+import ga.melara.stevesminipouch.stats.ClientInventoryData;
 import ga.melara.stevesminipouch.util.IStorageChangable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;

@@ -1,4 +1,4 @@
-package ga.melara.stevesminipouch.data;
+package ga.melara.stevesminipouch.stats;
 
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.event.IModBusEvent;

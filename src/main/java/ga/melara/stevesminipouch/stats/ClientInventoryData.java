@@ -1,4 +1,4 @@
-package ga.melara.stevesminipouch.data;
+package ga.melara.stevesminipouch.stats;
 
 public class ClientInventoryData {
 

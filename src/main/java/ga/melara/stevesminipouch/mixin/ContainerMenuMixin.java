@@ -1,15 +1,13 @@
 package ga.melara.stevesminipouch.mixin;
 
-import ga.melara.stevesminipouch.data.PlayerInventorySizeData;
-import ga.melara.stevesminipouch.data.StatsSynchronizer;
+import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
+import ga.melara.stevesminipouch.stats.StatsSynchronizer;
 import ga.melara.stevesminipouch.event.PageChangeEvent;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.util.thread.SidedThreadGroups;

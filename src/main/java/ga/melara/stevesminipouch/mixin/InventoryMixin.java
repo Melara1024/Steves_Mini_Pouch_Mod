@@ -1,9 +1,9 @@
 package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.Config;
-import ga.melara.stevesminipouch.data.ClientInventoryData;
-import ga.melara.stevesminipouch.data.InventorySyncEvent;
-import ga.melara.stevesminipouch.data.PlayerInventorySizeData;
+import ga.melara.stevesminipouch.stats.ClientInventoryData;
+import ga.melara.stevesminipouch.stats.InventorySyncEvent;
+import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;

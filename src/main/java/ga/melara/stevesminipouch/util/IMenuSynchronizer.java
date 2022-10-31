@@ -1,7 +1,7 @@
 package ga.melara.stevesminipouch.util;
 
-import ga.melara.stevesminipouch.data.PlayerInventorySizeData;
-import ga.melara.stevesminipouch.data.StatsSynchronizer;
+import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
+import ga.melara.stevesminipouch.stats.StatsSynchronizer;
 
 public interface IMenuSynchronizer
 {

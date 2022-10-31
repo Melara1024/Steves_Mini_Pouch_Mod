@@ -1,8 +1,7 @@
 package ga.melara.stevesminipouch;
 
 import com.mojang.logging.LogUtils;
-import ga.melara.stevesminipouch.data.*;
-import net.minecraft.world.entity.Entity;
+import ga.melara.stevesminipouch.stats.*;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerSetSpawnEvent;

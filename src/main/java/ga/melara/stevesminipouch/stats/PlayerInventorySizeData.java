@@ -1,19 +1,4 @@
-package ga.melara.stevesminipouch.data;
-
-import ga.melara.stevesminipouch.Config;
-import ga.melara.stevesminipouch.mixin.InventoryMixin;
-import ga.melara.stevesminipouch.util.IStorageChangable;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.NetworkEvent;
-import org.openjdk.nashorn.internal.objects.annotations.Getter;
-import org.openjdk.nashorn.internal.objects.annotations.Setter;
-
+package ga.melara.stevesminipouch.stats;
 
 
 //データを保持する本体

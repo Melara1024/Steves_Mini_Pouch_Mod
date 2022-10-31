@@ -1,4 +1,4 @@
-package ga.melara.stevesminipouch.data;
+package ga.melara.stevesminipouch.stats;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
