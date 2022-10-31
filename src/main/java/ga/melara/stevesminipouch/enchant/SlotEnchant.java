@@ -22,4 +22,16 @@ public class SlotEnchant extends Enchantment {
         return ENCHANTMENT.register("slot_enchant", SlotEnchant::new);
     }
 
+    public int getMinCost(int p_45083_) {
+        return 5 + 20 * (p_45083_ - 1);
+    }
+
+    public int getMaxCost(int p_45085_) {
+        return super.getMinCost(p_45085_) + 50;
+    }
+
+    public int getMaxLevel() {
+        return 2;
+    }
+
 }

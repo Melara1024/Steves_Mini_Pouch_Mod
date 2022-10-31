@@ -46,6 +46,10 @@ public class SlotChangeCommand{
         }))))))));
     }
 
+    //エフェクトが機能している間一定数スロットを増やす？
+    //インベントリ減少アイテムで減らせないスロット
+    //Todo Inventoryに一時ポーチサイズを再度追加する
+
     private static int giveEffect(CommandSourceStack p_136967_, Collection<? extends Entity> p_136968_, MobEffect p_136969_, @Nullable Integer p_136970_, int p_136971_, boolean p_136972_) throws CommandSyntaxException {
         int i = 0;
         int j;
