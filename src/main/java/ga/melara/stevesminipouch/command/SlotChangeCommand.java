@@ -27,6 +27,7 @@ public class SlotChangeCommand{
     private static final SimpleCommandExceptionType ERROR_CLEAR_SPECIFIC_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.effect.clear.specific.failed"));
 
     public static void register(CommandDispatcher<CommandSourceStack> p_136954_) {
+        System.out.println("register command");
         p_136954_.register(Commands.literal("pouch").requires((p_136958_) -> {
             return p_136958_.hasPermission(2);
         }).then(Commands.literal("clear").executes((p_136984_) -> {

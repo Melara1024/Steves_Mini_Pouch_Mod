@@ -41,7 +41,7 @@ public class StevesMiniPouch {
 
 
     @SubscribeEvent
-    public static void registerCommands(RegisterCommandsEvent event){
+    public void registerCommands(RegisterCommandsEvent event){
         SlotChangeCommand.register(event.getDispatcher());
     }
 
