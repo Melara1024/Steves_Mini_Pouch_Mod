@@ -13,6 +13,7 @@ public class Config {
     //server settings
     public static ForgeConfigSpec.IntValue DEFAULT_SIZE;
     public static ForgeConfigSpec.IntValue MAX_SIZE;
+    public static ForgeConfigSpec.BooleanValue FORCE_SIZE;
 
     public static ForgeConfigSpec.BooleanValue DEFAULT_INVENTORY;
     public static ForgeConfigSpec.BooleanValue FORCE_INVENTORY;
@@ -28,8 +29,6 @@ public class Config {
 
     public static ForgeConfigSpec.IntValue HOTBAR;
 
-    public static ForgeConfigSpec.IntValue ADDITIONAL_INVENTORY_INDEX;
-
     //client settings
     public static ForgeConfigSpec.IntValue RENDER_SCALE_X;
     public static ForgeConfigSpec.IntValue RENDER_SCALE_Y;
@@ -41,23 +40,21 @@ public class Config {
         SERVER_BUILDER.comment("Comment Server").push("server");
 
         //server default slots
-        DEFAULT_SIZE = SERVER_BUILDER.comment("Default Inventory Size").defineInRange("defaultsize", 80, 0, 1000);
-        MAX_SIZE = SERVER_BUILDER.comment("Default Inventory Size").defineInRange("maxsize", 36, 0, 72);
+        DEFAULT_SIZE = SERVER_BUILDER.comment("Default Inventory Size").defineInRange("defaultsize", 36, 0, Integer.MAX_VALUE);
+        MAX_SIZE = SERVER_BUILDER.comment("Max Inventory Size").defineInRange("maxsize", 90, 0, Integer.MAX_VALUE);
+        FORCE_SIZE = SERVER_BUILDER.comment("Force Inventory Size to Max Size").define("isforcesize", false);
 
         DEFAULT_INVENTORY = SERVER_BUILDER.comment("Default setting of inventory activate").define("isinventory", true);
         FORCE_INVENTORY = SERVER_BUILDER.comment("If true, inventory activate settings forced to all players.").define("forceinventory", false);
 
         DEFAULT_OFFHAND = SERVER_BUILDER.comment("Default setting of offhand activate").define("isoffhand", true);
-        FORCE_OFFHAND = SERVER_BUILDER.comment("If true, inventory activate settings forced to all players.").define("forceoffhand", false);
+        FORCE_OFFHAND = SERVER_BUILDER.comment("If true, offhand activate settings forced to all players.").define("forceoffhand", false);
 
         DEFAULT_CRAFT = SERVER_BUILDER.comment("Default setting of inventory crafting activate").define("iscraft", true);
-        FORCE_CRAFT = SERVER_BUILDER.comment("If true, inventory activate settings forced to all players.").define("forcecraft", false);
+        FORCE_CRAFT = SERVER_BUILDER.comment("If true, 2x2 craft activate settings forced to all players.").define("forcecraft", false);
 
         DEFAULT_ARMOR = SERVER_BUILDER.comment("Default setting of equipment activate").define("isarmor", true);
-        FORCE_ARMOR = SERVER_BUILDER.comment("If true, inventory activate settings forced to all players.").define("forcearmor", false);
-
-
-        ADDITIONAL_INVENTORY_INDEX = SERVER_BUILDER.comment("Additional Inventory Slot index. If you change this, do carefully.").defineInRange("indexstart", 300, 0, 1024);
+        FORCE_ARMOR = SERVER_BUILDER.comment("If true, armor activate settings forced to all players.").define("forcearmor", false);
 
 
         //server default hotbar
