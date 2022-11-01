@@ -11,6 +11,11 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class SlotEnchant extends Enchantment {
 
+    //エンチャントそのものは名前だけの塊
+    //プレイヤーの保持するアイテムにエンチャントがついているか調査する事が可能
+    //Todo EnchantmentHelper.getEnchantmentLevel(Enchantments.PUNCH_ARROWS, p_36746_);でエンチャ保持確認
+    //Todo エンチャントがついた鎧を着ているか一定時間ごとに確認して更新する部分が必要
+
     public SlotEnchant()
     {
         super(Rarity.RARE, EnchantmentCategory.ARMOR_CHEST, new EquipmentSlot[]{EquipmentSlot.CHEST});
