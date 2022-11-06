@@ -41,6 +41,11 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
 
     拾ってもちゃんとスロットに反映されない問題->Inventory.addのどこかがおかしい？
+
+    Todo Datagenが動作していない問題
+    Todo エンチャントの実装
+    Todo エフェクトの実装
+    Todo コマンドの実装
      */
 
     private int maxPage;

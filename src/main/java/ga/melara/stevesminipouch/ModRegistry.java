@@ -41,7 +41,7 @@ public class ModRegistry
                     @Override
                     public int compare(ItemStack o1, ItemStack o2)
                     {
-                        return String.CASE_INSENSITIVE_ORDER.compare(o1.getDisplayName().getString(), o2.getDisplayName().getString());
+                        return String.CASE_INSENSITIVE_ORDER.compare(o1.getItem().toString(), o2.getItem().toString());
                     }
                 });
 

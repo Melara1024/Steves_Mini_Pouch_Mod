@@ -25,6 +25,6 @@ public class Sub9SlotItem extends SlotItem
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS)
     {
         System.out.println("Sub9!!");
-        return ITEMS.register("slot_sub_2", Sub9SlotItem::new);
+        return ITEMS.register("slot_sub_9", Sub9SlotItem::new);
     }
 }

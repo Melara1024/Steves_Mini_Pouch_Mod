@@ -2,6 +2,7 @@ package ga.melara.stevesminipouch;
 
 import com.mojang.logging.LogUtils;
 import ga.melara.stevesminipouch.command.SlotChangeCommand;
+import ga.melara.stevesminipouch.datagen.DataGenerators;
 import ga.melara.stevesminipouch.stats.*;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -34,6 +35,7 @@ public class StevesMiniPouch {
         IEventBus eventBus = MinecraftForge.EVENT_BUS;
 
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(DataGenerators.class);
         MinecraftForge.EVENT_BUS.register(PlayerInventorySizeData.class);
 
         LOGGER.info("steve's minipouch correctry registered!");

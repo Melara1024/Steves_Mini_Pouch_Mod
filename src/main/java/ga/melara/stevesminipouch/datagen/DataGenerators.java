@@ -12,6 +12,7 @@ public class DataGenerators {
 
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
+        System.out.println("gatherdata");
         DataGenerator generator = event.getGenerator();
 
         //generator.addProvider(event.includeServer(), new Recipes(generator));
