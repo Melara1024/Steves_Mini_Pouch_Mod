@@ -27,6 +27,12 @@ public class SlotChangeCommand{
     private static final SimpleCommandExceptionType ERROR_CLEAR_SPECIFIC_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.effect.clear.specific.failed"));
 
     public static void register(CommandDispatcher<CommandSourceStack> p_136954_) {
+
+        //Todo スロットの増減を行うコマンド -> プレイヤーの選択 -> 変更スロット数
+        //Todo かばん状態を変化させるコマンド -> プレイヤーの選択 -> True or False
+        //Todo 状態をチェックするコマンド -> プレイヤーの選択
+
+
         System.out.println("register command");
         p_136954_.register(Commands.literal("pouch").requires((p_136958_) -> {
             return p_136958_.hasPermission(2);

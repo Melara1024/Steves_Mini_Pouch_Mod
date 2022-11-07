@@ -1,6 +1,7 @@
 package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.Config;
+import ga.melara.stevesminipouch.ModRegistry;
 import ga.melara.stevesminipouch.stats.ClientInventoryData;
 import ga.melara.stevesminipouch.stats.InventorySyncEvent;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
@@ -51,6 +52,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     private int maxPage;
 
     private int inventorySize = 36;
+
+    private int enchantSize = 0;
+
+    private int effectSize = 0;
     private int hotbarSize = 9;
 
 
@@ -401,6 +406,21 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     }
 
     @Override
+    public void updateStorageSize()
+    {
+        System.out.printf("effect -> %d%n", effectSize);
+        System.out.printf("enchant -> %d%n", enchantSize);
+        changeStorageSize(0, player);
+    }
+
+    @Override
+    public void changeEffectSize(int change)
+    {
+        effectSize = change;
+        updateStorageSize();
+    }
+
+    @Override
     public boolean isValidSlot(int id)
     {
         if(id < 36)
@@ -556,11 +576,14 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         System.out.println("load finished...");
         ci.cancel();
+
+        checkSlotEnchant();
     }
 
     @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSetItem(int id, ItemStack itemStack, CallbackInfo ci)
     {
+        checkSlotEnchant();
         //System.out.println("setItem");
         //System.out.printf("%s, %s%n", String.valueOf(id), itemStack.toString());
 
@@ -767,6 +790,20 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 }
             }
         }
+    }
+
+
+
+
+    //エンチャントスロット数の確認と更新
+    //このメソッドをload/save，setitemなどに挟む
+    private void checkSlotEnchant()
+    {
+        enchantSize = 0;
+        armor.forEach(
+                (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
+        );
+        updateStorageSize();
     }
 
 

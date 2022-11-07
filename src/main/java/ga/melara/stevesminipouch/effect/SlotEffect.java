@@ -1,12 +1,14 @@
 package ga.melara.stevesminipouch.effect;
 
 import ga.melara.stevesminipouch.items.slotitems.Add1SlotItem;
+import ga.melara.stevesminipouch.util.IStorageChangable;
 import net.minecraft.world.effect.AbsoptionMobEffect;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -18,19 +20,34 @@ public class SlotEffect extends MobEffect {
     }
 
     @Override
-    public void removeAttributeModifiers(LivingEntity p_19417_, AttributeMap p_19418_, int p_19419_) {
+    public void removeAttributeModifiers(LivingEntity livingentity, AttributeMap p_19418_, int p_19419_) {
         //Todo スロットを減らす
         //Todo エフェクトスロット数を何処かに保存しておく？
         //Todo PlayerかInventoryに保存しておくべき値
-        p_19417_.setAbsorptionAmount(p_19417_.getAbsorptionAmount() - (float)(4 * (p_19419_ + 1)));
-        super.removeAttributeModifiers(p_19417_, p_19418_, p_19419_);
+
+        if(livingentity instanceof Player player)
+        {
+            System.out.printf("SlotEffect Removed! level -> %d%n", p_19419_);
+            //Todo スロットエフェクト除去処理
+            ((IStorageChangable)player.getInventory()).changeEffectSize(p_19419_);
+        }
+        livingentity.setAbsorptionAmount(livingentity.getAbsorptionAmount() - (float)(4 * (p_19419_ + 1)));
+        super.removeAttributeModifiers(livingentity, p_19418_, p_19419_);
     }
 
     @Override
-    public void addAttributeModifiers(LivingEntity p_19421_, AttributeMap p_19422_, int p_19423_) {
+    public void addAttributeModifiers(LivingEntity  livingentity, AttributeMap p_19422_, int p_19423_) {
         //Todo スロットを増やす
-        p_19421_.setAbsorptionAmount(p_19421_.getAbsorptionAmount() + (float)(4 * (p_19423_ + 1)));
-        super.addAttributeModifiers(p_19421_, p_19422_, p_19423_);
+
+        if(livingentity instanceof Player player)
+        {
+            System.out.printf("SlotEffect Added! level -> %d%n", p_19423_);
+            //Todo スロットエフェクト適用処理
+            ((IStorageChangable)player.getInventory()).changeEffectSize(p_19423_);
+        }
+
+        livingentity.setAbsorptionAmount(livingentity.getAbsorptionAmount() + (float)(4 * (p_19423_ + 1)));
+        super.addAttributeModifiers(livingentity, p_19422_, p_19423_);
     }
 
     public static RegistryObject<MobEffect> buildInTo(DeferredRegister<MobEffect> MOB_EFFECT)
