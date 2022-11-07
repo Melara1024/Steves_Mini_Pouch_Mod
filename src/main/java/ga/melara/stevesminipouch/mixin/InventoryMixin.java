@@ -336,6 +336,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void changeStorageSize(int change, Player player)
     {
+        System.out.printf("change in %s, %d, %d", player.getLevel().isClientSide?"client":"server", effectSize, enchantSize  );
 
         //setStorageSizeに変更したほうが良い
 
@@ -417,6 +418,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void changeEffectSize(int change)
     {
+        //Todo エフェクトスロットは同期しないとだめかも
         effectSize = change;
         updateStorageSize();
     }
