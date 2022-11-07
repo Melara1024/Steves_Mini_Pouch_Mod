@@ -408,6 +408,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void updateStorageSize()
     {
+        if(player.getLevel().isClientSide())return;
         System.out.printf("effect -> %d%n", effectSize);
         System.out.printf("enchant -> %d%n", enchantSize);
         changeStorageSize(0, player);
