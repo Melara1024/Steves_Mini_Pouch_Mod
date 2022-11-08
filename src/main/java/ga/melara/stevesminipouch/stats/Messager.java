@@ -40,6 +40,12 @@ public class Messager {
                 .encoder(InventorySyncPacket::toBytes)
                 .consumerMainThread(InventorySyncPacket::handle)
                 .add();
+
+        net.messageBuilder(EffectSlotSyncPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(EffectSlotSyncPacket::new)
+                .encoder(EffectSlotSyncPacket::toBytes)
+                .consumerMainThread(EffectSlotSyncPacket::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {

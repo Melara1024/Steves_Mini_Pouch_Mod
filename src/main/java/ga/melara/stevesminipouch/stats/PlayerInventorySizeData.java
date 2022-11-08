@@ -5,6 +5,8 @@ package ga.melara.stevesminipouch.stats;
 public class PlayerInventorySizeData {
 
     private int slot;
+
+    private int effectSlot;
     private boolean isActiveInventory;
     private boolean isActiveOffhand;
     private boolean isCraftable;
@@ -12,6 +14,7 @@ public class PlayerInventorySizeData {
 
     public PlayerInventorySizeData(){
         slot = 36;
+        effectSlot = 0;
         isActiveInventory = true;
         isActiveOffhand = true;
         isCraftable = true;
@@ -27,34 +30,19 @@ public class PlayerInventorySizeData {
         this.isEquippable = arm;
     }
 
-
-    public void setActiveInventory(boolean activeInventory)
-    {
-        isActiveInventory = activeInventory;
-    }
-
-    public void setActiveOffhand(boolean activeOffhand)
-    {
-        isActiveOffhand = activeOffhand;
-    }
-
-    public void setCraftable(boolean craftable)
-    {
-        isCraftable = craftable;
-    }
-
-    public void setEquippable(boolean equippable)
-    {
-        isEquippable = equippable;
-    }
-
-    public void setSlot(int slot)
+    public PlayerInventorySizeData(int slot, int effectSlot, boolean inv, boolean off, boolean cft, boolean arm)
     {
         this.slot = slot;
+        this.effectSlot = effectSlot;
+        this.isActiveInventory = inv;
+        this.isActiveOffhand = off;
+        this.isCraftable = cft;
+        this.isEquippable = arm;
     }
 
     public void copyFrom(PlayerInventorySizeData source) {
         slot = source.slot;
+        effectSlot = source.effectSlot;
         isActiveInventory = source.isActiveInventory;
         isActiveOffhand = source.isActiveOffhand;
         isCraftable = source.isCraftable;
@@ -82,4 +70,11 @@ public class PlayerInventorySizeData {
         return slot;
     }
 
+    public int getEffectSlot() {return effectSlot;}
+
+    @Override
+    public String toString()
+    {
+        return String.format("player inv data -> [slot: %d, effectslot: %d, inv: %b, armor: %b, offhand: %b, craft: %b]", slot, effectSlot, isActiveInventory, isEquippable, isActiveOffhand, isCraftable);
+    }
 }

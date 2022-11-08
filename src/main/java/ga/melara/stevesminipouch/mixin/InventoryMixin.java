@@ -2,6 +2,7 @@ package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.ModRegistry;
+import ga.melara.stevesminipouch.event.EffectSlotSyncEvent;
 import ga.melara.stevesminipouch.stats.ClientInventoryData;
 import ga.melara.stevesminipouch.stats.InventorySyncEvent;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
@@ -17,6 +18,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Final;
@@ -101,8 +104,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Shadow public abstract void placeItemBackInInventory(ItemStack p_150080_);
 
-    public void initMiniPouch(int slot, boolean inv, boolean arm, boolean off, boolean cft)
+    public void initMiniPouch(int slot, int effectSize, boolean inv, boolean arm, boolean off, boolean cft)
     {
+        this.effectSize = effectSize;
         setStorageSize(slot, player);
 
         setInventory(inv, player);
@@ -121,7 +125,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public void initServer(int slot, boolean inv, boolean arm, boolean off, boolean cft)
     {
         System.out.println("init server");
-        initMiniPouch(slot, inv, arm, off, cft);
+        initMiniPouch(slot, this.effectSize, inv, arm, off, cft);
     }
 
     @Override
@@ -131,6 +135,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         System.out.println(player);
         System.out.println("init client");
         initMiniPouch(ClientInventoryData.getSlot(),
+                ClientInventoryData.getEffectSlot(),
                 ClientInventoryData.isActiveInventory(),
                 ClientInventoryData.isEquippable(),
                 ClientInventoryData.isActiveOffhand(),
@@ -409,9 +414,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void updateStorageSize()
     {
-        if(player.getLevel().isClientSide())return;
         System.out.printf("effect -> %d%n", effectSize);
         System.out.printf("enchant -> %d%n", enchantSize);
+
+        //Todo エフェクトスロットをここで同期する？
         changeStorageSize(0, player);
     }
 
@@ -421,6 +427,13 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         //Todo エフェクトスロットは同期しないとだめかも
         effectSize = change;
         updateStorageSize();
+    }
+
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
+    public void syncEffectSizeToClient(EffectSlotSyncEvent e)
+    {
+        this.effectSize = ClientInventoryData.getEffectSlot();
     }
 
     @Override
@@ -757,7 +770,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         initServer(slt, inv, arm, off, cft);
 
         ServerPlayer serverPlayer = (ServerPlayer)player;
-        ((IMenuSynchronizer)player.containerMenu).initMenu(new PlayerInventorySizeData(slt, inv, off, cft, arm));
+        ((IMenuSynchronizer)player.containerMenu).initMenu(new PlayerInventorySizeData(slt,this.effectSize, inv, off, cft, arm));
     }
 
     @Override

@@ -50,7 +50,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     //こいつを使ってクライアントにデータを送る
     StatsSynchronizer synchronizer;
 
-    PlayerInventorySizeData data;
+    PlayerInventorySizeData data = new PlayerInventorySizeData();
 
     @Override
     public void setStatsSynchronizer(StatsSynchronizer synchronizer)
@@ -58,10 +58,15 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
         this.synchronizer = synchronizer;
         //System.out.println("setStatsSynchronizer called from menu");
 
+        //Todo どうやらワールド新規生成時はloadが呼ばれない
+        //Todo nullのときに合わせて初期化する必要があるかも
         synchronizer.sendInitialData(data);
     }
 
     public void initMenu(PlayerInventorySizeData data){
+        System.out.println("init menu");
+        System.out.println(data);
+
         this.data = data;
     }
 

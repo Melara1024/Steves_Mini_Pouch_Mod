@@ -15,12 +15,15 @@ public class InventorySyncPacket
     private boolean isActivateArmor;
     private int slot;
 
+    private int effectSlot;
+
     public InventorySyncPacket(PlayerInventorySizeData data) {
         this.isActiveInventory = data.isActiveInventory();
         this.isActiveOffhand = data.isActiveOffhand();
         this.isActivateArmor = data.isEquippable();
         this.isActivateCraft = data.isCraftable();
         this.slot = data.getSlot();
+        this.effectSlot = data.getEffectSlot();
 
         System.out.println("inventorySyncPacket init");
     }
@@ -31,6 +34,7 @@ public class InventorySyncPacket
         isActiveOffhand = buf.readBoolean();
         isActivateCraft = buf.readBoolean();
         slot = buf.readInt();
+        effectSlot = buf.readInt();
     }
 
     public void toBytes(FriendlyByteBuf buf) {
@@ -39,21 +43,13 @@ public class InventorySyncPacket
         buf.writeBoolean(isActiveOffhand);
         buf.writeBoolean(isActivateCraft);
         buf.writeInt(slot);
+        buf.writeInt(effectSlot);
     }
 
     //こいつ自身はサーバーのクラス
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-
-            //どうやらhandleできていない
-            System.out.println("handled packet");
-
-            System.out.println(slot);
-            System.out.println(isActiveInventory);
-            System.out.println(isActivateArmor);
-            System.out.println(isActiveOffhand);
-            System.out.println(isActivateCraft);
 
             ClientInventoryData.set(slot, isActiveInventory, isActivateArmor, isActiveOffhand, isActivateCraft);
 
