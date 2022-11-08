@@ -355,12 +355,12 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         if(inventorySize < 1)inventorySize = 1;
 
         hotbarSize = 9;
-        if(inventorySize< 36)
+        if((inventorySize + effectSize + enchantSize) < 36)
         {
             //36以内になってしまう場合にはスロットは36固定
             newItems = LockableItemStackList.withSize(36, (Inventory)(Object)this,false);
 
-            for(int i=0; i< (36-inventorySize) ; i++)
+            for(int i=0; i< (36-(inventorySize + effectSize + enchantSize)) ; i++)
             {
                 //まず頭から順にtrueにしていく
                 newItems.lockList.set(35-i, true);
@@ -369,15 +369,15 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
             //減らすべき分の要素のstopperをtrueにしていく
             //置き換えのときのsetで弾かれて自動で放り投げられるのでほかはそのままでOK?
-            if(inventorySize < 9)
+            if((inventorySize + effectSize + enchantSize) < 9)
             {
-                hotbarSize = inventorySize;
-                if(selected > inventorySize-1)selected = inventorySize-1;
+                hotbarSize = (inventorySize + effectSize + enchantSize);
+                if(selected > (inventorySize + effectSize + enchantSize)-1)selected =(inventorySize + effectSize + enchantSize)-1;
             }
         }
         else
         {
-            newItems = LockableItemStackList.withSize(inventorySize, (Inventory)(Object)this,false);
+            newItems = LockableItemStackList.withSize((inventorySize + effectSize + enchantSize), (Inventory)(Object)this,false);
         }
 
 
@@ -417,14 +417,12 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         System.out.printf("effect -> %d%n", effectSize);
         System.out.printf("enchant -> %d%n", enchantSize);
 
-        //Todo エフェクトスロットをここで同期する？
         changeStorageSize(0, player);
     }
 
     @Override
     public void changeEffectSize(int change)
     {
-        //Todo エフェクトスロットは同期しないとだめかも
         effectSize = change;
         updateStorageSize();
     }
@@ -434,6 +432,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public void syncEffectSizeToClient(EffectSlotSyncEvent e)
     {
         this.effectSize = ClientInventoryData.getEffectSlot();
+        updateStorageSize();
     }
 
     @Override
@@ -510,7 +509,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public int getInventorySize()
     {
-        return inventorySize;
+        return (inventorySize + effectSize + enchantSize);
     }
 
     @Override
@@ -600,7 +599,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public void onSetItem(int id, ItemStack itemStack, CallbackInfo ci)
     {
         checkSlotEnchant();
-        //System.out.println("setItem");
+        System.out.println("setItem");
         //System.out.printf("%s, %s%n", String.valueOf(id), itemStack.toString());
 
 
@@ -813,6 +812,15 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     //エンチャントスロット数の確認と更新
     //このメソッドをload/save，setitemなどに挟む
+
+    //Todo エンチャスロット・エフェクトスロットに保存されたアイテムはログイン時にどうなる？
+
+    //Todo エンチャスロット->アイテムをarmorリストに読むときに確認
+    //Todo エフェクトスロット->エフェクトの再開がどのタイミングで行われるのか確認すべき
+    //Todo もしエフェクトの再開がアイテムリスト初期化より遅いなら，エフェクト再開側から
+    //Todo インベントリの挿入を行う？
+
+    //Todo NBTにログアウト時のエンチャスロット数とエフェクトスロット数を保持，setItem時にぶちまけずに一時リストに保存？
     private void checkSlotEnchant()
     {
         enchantSize = 0;
