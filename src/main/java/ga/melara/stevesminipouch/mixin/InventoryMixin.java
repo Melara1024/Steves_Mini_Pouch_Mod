@@ -383,7 +383,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
 
         //置き換え
-        for(int i=0; i<(change>0?items:newItems).size(); i++)
+        for(int i=0; i<(Math.min(items.size(), newItems.size())); i++)
         {
             newItems.set(i, items.get(i));
             items.set(i, ItemStack.EMPTY);

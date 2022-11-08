@@ -239,6 +239,10 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
         {
             //36スロットより少ないとき，slots内のSlotType.INVENTORYを後ろから無効化
 
+            for(Slot slot: this.slots)
+            {
+                ((IHasSlotPage)slot).setPage(((IHasSlotPage) slot).getPage());
+            }
             //……しようかなとおもったけど面倒なのでitemsのlockリストをスロット側から入手する
         }
     }
