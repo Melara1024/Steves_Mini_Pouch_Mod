@@ -6,6 +6,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
@@ -15,6 +16,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class LockableItemStackList extends NonNullList<ItemStack>
 {
@@ -30,13 +33,22 @@ public class LockableItemStackList extends NonNullList<ItemStack>
 
     private boolean stopper = false;
 
-    private boolean isActivateObserver = false;
+
 
     //ロックされているときにアイテムをぶちまけるため，自身の所属するインベントリの参照を持っておく
     private Inventory inventory;
 
     //private static final ItemStack defaultItem = new ItemStack(ModRegistry.DUMMY_ITEM::get, 1);
     private static final ItemStack defaultItem = ItemStack.EMPTY;
+
+    private Consumer<ItemStack> observer;
+    private boolean isActivateObserver = false;
+
+    public void setObserver(Consumer<ItemStack> observer)
+    {
+        this.observer = observer;
+        isActivateObserver = true;
+    }
 
     public static LockableItemStackList create(Inventory inventory, boolean stopper)
     {
@@ -87,7 +99,7 @@ public class LockableItemStackList extends NonNullList<ItemStack>
         //System.out.println("set to " + p_122795_ + " item " + p_122796_ + " locklist " + lockList.get(p_122795_));
         if(stopper || lockList.get(p_122795_))
         {
-            observer(p_122796_);
+            if(isActivateObserver) this.observer.accept(p_122796_);
 
             Level level = inventory.player.level;
             Player entity = inventory.player;
@@ -107,7 +119,4 @@ public class LockableItemStackList extends NonNullList<ItemStack>
         return super.remove(p_122793_);
     }
 
-    public void observer(ItemStack changedItem)
-    {
-    }
 }

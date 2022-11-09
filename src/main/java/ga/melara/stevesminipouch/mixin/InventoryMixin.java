@@ -157,6 +157,13 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         items = LockableItemStackList.withSize(inventorySize, (Inventory) (Object) this, false);
         armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, false);
+        ((LockableItemStackList)armor).setObserver((detectItem)->{
+            enchantSize = 0;
+            armor.forEach(
+                    (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
+            );
+            updateStorageSize();
+        });
         offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, false);
         compartments.add(0, items);
         compartments.add(1, armor);
@@ -599,7 +606,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public void onSetItem(int id, ItemStack itemStack, CallbackInfo ci)
     {
 
-        checkSlotEnchant();
+        //checkSlotEnchant();
         System.out.println("setItem");
         //System.out.printf("%s, %s%n", String.valueOf(id), itemStack.toString());
 
