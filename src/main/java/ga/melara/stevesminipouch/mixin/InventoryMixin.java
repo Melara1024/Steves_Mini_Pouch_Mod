@@ -598,6 +598,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSetItem(int id, ItemStack itemStack, CallbackInfo ci)
     {
+
         checkSlotEnchant();
         System.out.println("setItem");
         //System.out.printf("%s, %s%n", String.valueOf(id), itemStack.toString());

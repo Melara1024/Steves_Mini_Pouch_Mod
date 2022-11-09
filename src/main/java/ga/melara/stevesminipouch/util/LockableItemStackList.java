@@ -8,6 +8,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.Event;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,6 +29,8 @@ public class LockableItemStackList extends NonNullList<ItemStack>
     //Todo メソッドのオーバーロードでアクセスを指定できるようにする
 
     private boolean stopper = false;
+
+    private boolean isActivateObserver = false;
 
     //ロックされているときにアイテムをぶちまけるため，自身の所属するインベントリの参照を持っておく
     private Inventory inventory;
@@ -49,6 +53,11 @@ public class LockableItemStackList extends NonNullList<ItemStack>
         ItemStack[] aobject = new ItemStack[p_122781_];
         Arrays.fill(aobject, defaultItem);
         return new LockableItemStackList(Arrays.asList(aobject), inventory, stopper);
+    }
+
+    public void setObserver()
+    {
+        isActivateObserver = true;
     }
 
     @SafeVarargs
@@ -83,6 +92,8 @@ public class LockableItemStackList extends NonNullList<ItemStack>
         //System.out.println("set to " + p_122795_ + " item " + p_122796_ + " locklist " + lockList.get(p_122795_));
         if(stopper || lockList.get(p_122795_))
         {
+            if(isActivateObserver)MinecraftForge.EVENT_BUS.post(new LockableItemStackList.Observer(p_122796_));
+
             Level level = inventory.player.level;
             Player entity = inventory.player;
                 ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), p_122796_);
@@ -99,5 +110,19 @@ public class LockableItemStackList extends NonNullList<ItemStack>
     {
         if(stopper || lockList.get(p_122793_)) return defaultItem;
         return super.remove(p_122793_);
+    }
+
+    public class Observer extends Event
+    {
+        private ItemStack changedItem;
+        public Observer(ItemStack changedItem)
+        {
+            this.changedItem = changedItem;
+        }
+
+        public ItemStack getChangedItem()
+        {
+            return this.changedItem;
+        }
     }
 }
