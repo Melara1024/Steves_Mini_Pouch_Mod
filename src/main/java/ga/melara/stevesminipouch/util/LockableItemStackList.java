@@ -55,11 +55,6 @@ public class LockableItemStackList extends NonNullList<ItemStack>
         return new LockableItemStackList(Arrays.asList(aobject), inventory, stopper);
     }
 
-    public void setObserver()
-    {
-        isActivateObserver = true;
-    }
-
     @SafeVarargs
     public static LockableItemStackList of(Inventory inventory, boolean stopper, ItemStack... p_122785_)
     {
@@ -92,7 +87,7 @@ public class LockableItemStackList extends NonNullList<ItemStack>
         //System.out.println("set to " + p_122795_ + " item " + p_122796_ + " locklist " + lockList.get(p_122795_));
         if(stopper || lockList.get(p_122795_))
         {
-            if(isActivateObserver)MinecraftForge.EVENT_BUS.post(new LockableItemStackList.Observer(p_122796_));
+            observer(p_122796_);
 
             Level level = inventory.player.level;
             Player entity = inventory.player;
@@ -112,17 +107,7 @@ public class LockableItemStackList extends NonNullList<ItemStack>
         return super.remove(p_122793_);
     }
 
-    public class Observer extends Event
+    public void observer(ItemStack changedItem)
     {
-        private ItemStack changedItem;
-        public Observer(ItemStack changedItem)
-        {
-            this.changedItem = changedItem;
-        }
-
-        public ItemStack getChangedItem()
-        {
-            return this.changedItem;
-        }
     }
 }

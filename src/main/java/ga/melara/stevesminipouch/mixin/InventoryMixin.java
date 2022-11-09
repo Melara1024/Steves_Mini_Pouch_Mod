@@ -338,6 +338,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         changeStorageSize(change - inventorySize, player);
     }
 
+
     @Override
     public void changeStorageSize(int change, Player player)
     {
@@ -379,6 +380,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         {
             newItems = LockableItemStackList.withSize((inventorySize + effectSize + enchantSize), (Inventory)(Object)this,false);
         }
+
 
 
 
@@ -591,8 +593,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         System.out.println("load finished...");
         ci.cancel();
-
-        checkSlotEnchant();
     }
 
     @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At(value = "HEAD"), cancellable = true)
@@ -822,6 +822,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     //Todo インベントリの挿入を行う？
 
     //Todo NBTにログアウト時のエンチャスロット数とエフェクトスロット数を保持，setItem時にぶちまけずに一時リストに保存？
+
+
+
+    //これのチェックで永久にループしてる？
     private void checkSlotEnchant()
     {
         enchantSize = 0;
