@@ -158,6 +158,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         items = LockableItemStackList.withSize(inventorySize, (Inventory) (Object) this, false);
         armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, false);
         ((LockableItemStackList)armor).setObserver((detectItem)->{
+            System.out.println("aaa*");
             enchantSize = 0;
             armor.forEach(
                     (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
@@ -259,6 +260,13 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         compartments.remove(armor);
         armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, false);
+        ((LockableItemStackList)armor).setObserver((detectItem)->{
+            enchantSize = 0;
+            armor.forEach(
+                    (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
+            );
+            updateStorageSize();
+        });
         compartments.add(1, armor);
 
         this.isActiveArmor = true;
@@ -349,10 +357,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void changeStorageSize(int change, Player player)
     {
-        System.out.printf("change in %s, %d, %d", player.getLevel().isClientSide?"client":"server", effectSize, enchantSize  );
-
-        //setStorageSizeに変更したほうが良い
-
         inventorySize += change;
         LockableItemStackList newItems;
         //とりあえずLockableItemStackListとして宣言してから挿入する？
@@ -365,14 +369,12 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         hotbarSize = 9;
         if((inventorySize + effectSize + enchantSize) < 36)
         {
-            //36以内になってしまう場合にはスロットは36固定
             newItems = LockableItemStackList.withSize(36, (Inventory)(Object)this,false);
 
             for(int i=0; i< (36-(inventorySize + effectSize + enchantSize)) ; i++)
             {
                 //まず頭から順にtrueにしていく
                 newItems.lockList.set(35-i, true);
-                newItems.lockList.forEach((b)->{System.out.println(" val is "+ b);});
             }
 
             //減らすべき分の要素のstopperをtrueにしていく
@@ -387,9 +389,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         {
             newItems = LockableItemStackList.withSize((inventorySize + effectSize + enchantSize), (Inventory)(Object)this,false);
         }
-
-
-
 
         //置き換え
         for(int i=0; i<(Math.min(items.size(), newItems.size())); i++)
@@ -412,9 +411,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         compartments.remove(items);
         items = newItems;
         compartments.add(0, items);
-
-        //items.forEach(System.out::println);
-        //System.out.println("storage change -> " + change);
 
         //サーバーにこれを送信しようとしたときにも通信エラーの同じようなのが出る？　やっぱり間違った方面での送信が原因なのでは
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
@@ -829,18 +825,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     //Todo インベントリの挿入を行う？
 
     //Todo NBTにログアウト時のエンチャスロット数とエフェクトスロット数を保持，setItem時にぶちまけずに一時リストに保存？
-
-
-
-    //これのチェックで永久にループしてる？
-    private void checkSlotEnchant()
-    {
-        enchantSize = 0;
-        armor.forEach(
-                (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
-        );
-        updateStorageSize();
-    }
 
 
 }

@@ -99,8 +99,6 @@ public class LockableItemStackList extends NonNullList<ItemStack>
         //System.out.println("set to " + p_122795_ + " item " + p_122796_ + " locklist " + lockList.get(p_122795_));
         if(stopper || lockList.get(p_122795_))
         {
-            if(isActivateObserver) this.observer.accept(p_122796_);
-
             Level level = inventory.player.level;
             Player entity = inventory.player;
                 ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), p_122796_);
@@ -109,6 +107,7 @@ public class LockableItemStackList extends NonNullList<ItemStack>
                 level.addFreshEntity(itementity);
             return defaultItem;
         }
+        if(isActivateObserver) this.observer.accept(p_122796_);
         return super.set(p_122795_, p_122796_);
     }
 
@@ -116,6 +115,7 @@ public class LockableItemStackList extends NonNullList<ItemStack>
     public ItemStack remove(int p_122793_)
     {
         if(stopper || lockList.get(p_122793_)) return defaultItem;
+        if(isActivateObserver) this.observer.accept(ItemStack.EMPTY);
         return super.remove(p_122793_);
     }
 
