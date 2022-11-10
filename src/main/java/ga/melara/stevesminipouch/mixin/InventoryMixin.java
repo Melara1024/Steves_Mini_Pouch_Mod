@@ -41,15 +41,7 @@ import java.util.Objects;
 public abstract class InventoryMixin implements IStorageChangable, IAdditionalStorage {
 
     /*
-    Todo コマンド・インベントリ拡張アイテムの放つイベントに合わせてitemsやsizeを増減する
 
-
-    拾ってもちゃんとスロットに反映されない問題->Inventory.addのどこかがおかしい？
-
-    Todo Datagenが動作していない問題
-    Todo エンチャントの実装
-    Todo エフェクトの実装
-    Todo コマンドの実装
      */
 
     private int maxPage;
@@ -146,8 +138,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Inject(method = "<init>", at = @At(value = "RETURN"))
     public void oninit(Player p_35983_, CallbackInfo ci) {
 
-        System.out.println(p_35983_.getLevel().isClientSide ? "client inventory!" : "server inventory!");
-
         MinecraftForge.EVENT_BUS.register(this);
 
         maxPage = 5;
@@ -155,14 +145,18 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         inventorySize = 36;
         hotbarSize = 9;
 
+        //正直インスタンスをnewしまくるの重すぎ
+        //基本はロックのみで済ませてページ追加のみ新しいインスタンスを作る？
+
         items = LockableItemStackList.withSize(inventorySize, (Inventory) (Object) this, false);
         armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, false);
         ((LockableItemStackList)armor).setObserver((detectItem)->{
-            System.out.println("aaa*");
+            System.out.println(player.getLevel().isClientSide ? "client":"server");
             enchantSize = 0;
             armor.forEach(
                     (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
             );
+            System.out.printf("enchantSize = %d",  enchantSize);
             updateStorageSize();
         });
         offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, false);
@@ -261,6 +255,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         compartments.remove(armor);
         armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, false);
         ((LockableItemStackList)armor).setObserver((detectItem)->{
+            //Fixme このオブザーバーは呼ばれていない
+            System.out.println("called observer");
+            System.out.println(player.getLevel().isClientSide());
             enchantSize = 0;
             armor.forEach(
                     (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
@@ -367,11 +364,13 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         if(inventorySize < 1)inventorySize = 1;
 
         hotbarSize = 9;
-        if((inventorySize + effectSize + enchantSize) < 36)
+        int allSize = (inventorySize + effectSize + enchantSize);
+
+        if(allSize < 36)
         {
             newItems = LockableItemStackList.withSize(36, (Inventory)(Object)this,false);
 
-            for(int i=0; i< (36-(inventorySize + effectSize + enchantSize)) ; i++)
+            for(int i=0; i< (36-allSize) ; i++)
             {
                 //まず頭から順にtrueにしていく
                 newItems.lockList.set(35-i, true);
@@ -379,15 +378,15 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
             //減らすべき分の要素のstopperをtrueにしていく
             //置き換えのときのsetで弾かれて自動で放り投げられるのでほかはそのままでOK?
-            if((inventorySize + effectSize + enchantSize) < 9)
+            if(allSize < 9)
             {
-                hotbarSize = (inventorySize + effectSize + enchantSize);
-                if(selected > (inventorySize + effectSize + enchantSize)-1)selected =(inventorySize + effectSize + enchantSize)-1;
+                hotbarSize = allSize;
+                if(selected > allSize)selected =allSize-1;
             }
         }
         else
         {
-            newItems = LockableItemStackList.withSize((inventorySize + effectSize + enchantSize), (Inventory)(Object)this,false);
+            newItems = LockableItemStackList.withSize(allSize, (Inventory)(Object)this,false);
         }
 
         //置き換え
@@ -601,12 +600,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSetItem(int id, ItemStack itemStack, CallbackInfo ci)
     {
-
-        //checkSlotEnchant();
-        System.out.println("setItem");
-        //System.out.printf("%s, %s%n", String.valueOf(id), itemStack.toString());
-
-
+        System.out.println(itemStack);
         if(id < 36)
         {
             if(id + 1 > items.size()) ci.cancel();

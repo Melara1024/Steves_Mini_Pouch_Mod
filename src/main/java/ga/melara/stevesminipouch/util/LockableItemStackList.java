@@ -41,23 +41,24 @@ public class LockableItemStackList extends NonNullList<ItemStack>
     //private static final ItemStack defaultItem = new ItemStack(ModRegistry.DUMMY_ITEM::get, 1);
     private static final ItemStack defaultItem = ItemStack.EMPTY;
 
-    private Consumer<ItemStack> observer;
+    private Consumer<ItemStack> observer = new Consumer<ItemStack>() {
+        @Override
+        public void accept(ItemStack itemStack) {
+            System.out.println("called pre");
+        }
+    };
     private boolean isActivateObserver = false;
 
     public void setObserver(Consumer<ItemStack> observer)
     {
         this.observer = observer;
         isActivateObserver = true;
+        System.out.println("setObserver");
     }
 
     public static LockableItemStackList create(Inventory inventory, boolean stopper)
     {
         return new LockableItemStackList(Lists.newArrayList(), inventory, stopper);
-    }
-
-    public static LockableItemStackList createWithCapacity(int p_182648_, Inventory inventory, boolean stopper)
-    {
-        return new LockableItemStackList(Lists.newArrayListWithCapacity(p_182648_), inventory, stopper);
     }
 
     public static LockableItemStackList withSize(int p_122781_, Inventory inventory, boolean stopper)
@@ -117,6 +118,26 @@ public class LockableItemStackList extends NonNullList<ItemStack>
         if(stopper || lockList.get(p_122793_)) return defaultItem;
         if(isActivateObserver) this.observer.accept(ItemStack.EMPTY);
         return super.remove(p_122793_);
+    }
+
+    public void allLock()
+    {
+        this.lockList.forEach((i) -> i = false);
+    }
+
+    public void allOpen()
+    {
+        this.lockList.forEach((i) -> i = true);
+    }
+
+    public void lock(int target)
+    {
+        lockList.set(target, false);
+    }
+
+    public void open(int target)
+    {
+        lockList.set(target, true);
     }
 
 }

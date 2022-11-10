@@ -76,6 +76,7 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
     @Override
     public void setPage(int page)
     {
+        System.out.println("called setPage");
         this.page = page;
         if(this.type == SlotType.INVENTORY) {
             if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()) {
