@@ -108,16 +108,19 @@ public class LockableItemStackList extends NonNullList<ItemStack>
                 level.addFreshEntity(itementity);
             return defaultItem;
         }
+
+        ItemStack result =  super.set(p_122795_, p_122796_);
         if(isActivateObserver) this.observer.accept(p_122796_);
-        return super.set(p_122795_, p_122796_);
+        return result;
     }
 
     @Override
     public ItemStack remove(int p_122793_)
     {
         if(stopper || lockList.get(p_122793_)) return defaultItem;
+        ItemStack result = super.remove(p_122793_);
         if(isActivateObserver) this.observer.accept(ItemStack.EMPTY);
-        return super.remove(p_122793_);
+        return result;
     }
 
     public void allLock()

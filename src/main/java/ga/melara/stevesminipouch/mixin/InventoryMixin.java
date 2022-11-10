@@ -85,6 +85,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         return null;
     }
 
+    //Todo アーマースロット追加時にスロットへの反映がない，スロット追加してもなぜか溢れる(lock状態)
+    //Todo 一度メニューを閉じないとスロット状態が一切更新されない
+    //Todo インベントリ側は更新されているのにメニュー側が更新されていない？
+
 
     @Shadow
     public abstract void tick();
@@ -156,7 +160,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             armor.forEach(
                     (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
             );
-            System.out.printf("enchantSize = %d",  enchantSize);
+            System.out.printf("enchantSize = %d\n",  enchantSize);
             updateStorageSize();
         });
         offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, false);
@@ -373,6 +377,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             for(int i=0; i< (36-allSize) ; i++)
             {
                 //まず頭から順にtrueにしていく
+                System.out.printf("allsize -> %d", allSize);
                 newItems.lockList.set(35-i, true);
             }
 

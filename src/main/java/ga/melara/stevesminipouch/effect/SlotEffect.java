@@ -23,6 +23,12 @@ public class SlotEffect extends MobEffect {
         super(MobEffectCategory.BENEFICIAL, 5);
     }
 
+
+    //Todo エフェクトスロットの管理法がだめすぎ
+    //Todo 同一エフェクト重ねがけへの対応ができていない
+
+    //Todo エフェクト消滅時にスロットの更新がされていない
+
     @Override
     public void removeAttributeModifiers(LivingEntity livingentity, AttributeMap p_19418_, int p_19419_) {
         //Todo スロットを減らす
@@ -33,9 +39,9 @@ public class SlotEffect extends MobEffect {
         {
             System.out.printf("SlotEffect Removed! level -> %d%n", p_19419_);
             //Todo スロットエフェクト除去処理
-            ((IStorageChangable)player.getInventory()).changeEffectSize(p_19419_);
+            ((IStorageChangable)player.getInventory()).changeEffectSize(0);
             if (player instanceof  ServerPlayer serverPlayer)
-                Messager.sendToPlayer(new EffectSlotSyncPacket(p_19419_), serverPlayer);
+                Messager.sendToPlayer(new EffectSlotSyncPacket(0), serverPlayer);
         }
         livingentity.setAbsorptionAmount(livingentity.getAbsorptionAmount() - (float)(4 * (p_19419_ + 1)));
         super.removeAttributeModifiers(livingentity, p_19418_, p_19419_);
