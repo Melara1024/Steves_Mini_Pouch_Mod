@@ -35,12 +35,11 @@ public class SlotEffect extends MobEffect {
         //Todo エフェクトスロット数を何処かに保存しておく？
         //Todo PlayerかInventoryに保存しておくべき値
 
-        if(livingentity instanceof Player player)
-        {
+        if(livingentity instanceof Player player) {
             //System.out.printf("SlotEffect Removed! level -> %d%n", p_19419_);
             //Todo スロットエフェクト除去処理
-            ((IStorageChangable)player.getInventory()).changeEffectSize(0);
-            if (player instanceof  ServerPlayer serverPlayer)
+            ((IStorageChangable) player.getInventory()).changeEffectSize(0);
+            if(player instanceof ServerPlayer serverPlayer)
                 Messager.sendToPlayer(new EffectSlotSyncPacket(0), serverPlayer);
         }
         //livingentity.setAbsorptionAmount(livingentity.getAbsorptionAmount() - (float)(4 * (p_19419_ + 1)));
@@ -50,27 +49,25 @@ public class SlotEffect extends MobEffect {
     }
 
     @Override
-    public void addAttributeModifiers(LivingEntity  livingentity, AttributeMap p_19422_, int p_19423_) {
+    public void addAttributeModifiers(LivingEntity livingentity, AttributeMap p_19422_, int p_19423_) {
         //Todo スロットを増やす
 
-        if(livingentity instanceof Player player)
-        {
+        if(livingentity instanceof Player player) {
             //System.out.printf("SlotEffect Added! level -> %d%n", p_19423_);
             //Todo スロットエフェクト適用処理
-            ((IStorageChangable)player.getInventory()).changeEffectSize(p_19423_);
-            if (player instanceof  ServerPlayer serverPlayer)
+            ((IStorageChangable) player.getInventory()).changeEffectSize(p_19423_);
+            if(player instanceof ServerPlayer serverPlayer)
                 Messager.sendToPlayer(new EffectSlotSyncPacket(p_19423_), serverPlayer);
         }
 
         //livingentity.setAbsorptionAmount(livingentity.getAbsorptionAmount() + (float)(4 * (p_19423_ + 1)));
 
         System.out.println("");
-        System.out.printf("attributemap -> %s\n" , p_19422_.toString());
+        System.out.printf("attributemap -> %s\n", p_19422_.toString());
         super.addAttributeModifiers(livingentity, p_19422_, p_19423_);
     }
 
-    public static RegistryObject<MobEffect> buildInTo(DeferredRegister<MobEffect> MOB_EFFECT)
-    {
+    public static RegistryObject<MobEffect> buildInTo(DeferredRegister<MobEffect> MOB_EFFECT) {
         return MOB_EFFECT.register("slot_effect", SlotEffect::new);
     }
 }

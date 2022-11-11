@@ -8,22 +8,20 @@ import net.minecraft.world.item.Rarity;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-public class Add9SlotItem extends SlotItem
-{
+public class Add9SlotItem extends SlotItem {
     public static Item.Properties PROPERTIES = new Item.Properties()
             .tab(ModRegistry.ITEM_GROUP)
             .rarity(Rarity.RARE)
             .stacksTo(27)
-            .food(FOOD_PROPERTIES);;
+            .food(FOOD_PROPERTIES);
+    ;
 
-    public Add9SlotItem()
-    {
+    public Add9SlotItem() {
         super(PROPERTIES);
         this.changeValue = 9;
     }
 
-    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS)
-    {
+    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
         System.out.println("Add9!!");
         return ITEMS.register("slot_add_9", Add9SlotItem::new);
     }

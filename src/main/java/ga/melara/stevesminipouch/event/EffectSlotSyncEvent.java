@@ -6,13 +6,11 @@ public class EffectSlotSyncEvent extends Event {
 
     int size = 0;
 
-    public EffectSlotSyncEvent(int setSize)
-    {
+    public EffectSlotSyncEvent(int setSize) {
         this.size = setSize;
     }
 
-    public int getEffectSize()
-    {
+    public int getEffectSize() {
         return this.size;
     }
 }

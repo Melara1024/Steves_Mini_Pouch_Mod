@@ -34,7 +34,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
      */
 
     //patch for common slot
-    private static final ResourceLocation PATCH = new ResourceLocation(MODID,"textures/gui/patch.png");
+    private static final ResourceLocation PATCH = new ResourceLocation(MODID, "textures/gui/patch.png");
 
     private int page = 0;
 
@@ -43,16 +43,21 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
     @Shadow
     protected int inventoryLabelY;
 
-    @Shadow protected int leftPos;
+    @Shadow
+    protected int leftPos;
 
-    @Shadow protected int topPos;
+    @Shadow
+    protected int topPos;
 
-    @Shadow protected int imageWidth;
+    @Shadow
+    protected int imageWidth;
 
-    @Shadow T menu;
+    @Shadow
+    T menu;
 
 
-    @Shadow public abstract T getMenu();
+    @Shadow
+    public abstract T getMenu();
 
     Button upButton;
     Button downButton;
@@ -64,8 +69,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
     }
 
     @Inject(method = "renderSlot(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/inventory/Slot;)V", at = @At(value = "HEAD"), cancellable = true)
-    public void onSlotRender(PoseStack poseStack, Slot slot, CallbackInfo ci)
-    {
+    public void onSlotRender(PoseStack poseStack, Slot slot, CallbackInfo ci) {
         //Todo そもそもactive = trueを返さないものはレンダリングが動かない
         //Todo renderメソッドそのものに表示非表示のロジックを埋め込む必要がある
 
@@ -76,37 +80,34 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
     }
 
 
-
     @Inject(method = "renderLabels(Lcom/mojang/blaze3d/vertex/PoseStack;II)V", at = @At(value = "RETURN"), cancellable = true)
-    public void onLabelRender(PoseStack poseStack, int unUsed1, int unUsed2, CallbackInfo ci)
-    {
+    public void onLabelRender(PoseStack poseStack, int unUsed1, int unUsed2, CallbackInfo ci) {
     }
 
     @Inject(method = "init()V", at = @At(value = "RETURN"), cancellable = true)
-    public void oninitRender(CallbackInfo ci)
-    {
+    public void oninitRender(CallbackInfo ci) {
         Messager.sendToServer(new PageChangedPacket(page));
-        this.menu.slots.forEach(slot -> ((IHasSlotPage)slot).setPage(page));
+        this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
 
         this.setBlitOffset(100);
         this.itemRenderer.blitOffset = 100.0F;
 
-        upButton = new Button(this.leftPos+this.inventoryLabelX+this.imageWidth-5, this.topPos+this.inventoryLabelY+18, 18, 18,
+        upButton = new Button(this.leftPos + this.inventoryLabelX + this.imageWidth - 5, this.topPos + this.inventoryLabelY + 18, 18, 18,
                 Component.literal("▲"), (p_96337_) -> {
             previousPage();
             Messager.sendToServer(new PageChangedPacket(page));
-            this.menu.slots.forEach(slot -> ((IHasSlotPage)slot).setPage(page));
+            this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
         });
 
-        downButton = new Button(this.leftPos+this.inventoryLabelX+this.imageWidth-5, this.topPos+this.inventoryLabelY+54, 18, 18,
+        downButton = new Button(this.leftPos + this.inventoryLabelX + this.imageWidth - 5, this.topPos + this.inventoryLabelY + 54, 18, 18,
                 Component.literal("▼"), (p_96337_) -> {
             nextPage();
             Messager.sendToServer(new PageChangedPacket(page));
-            this.menu.slots.forEach(slot -> ((IHasSlotPage)slot).setPage(page));
+            this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
         });
 
-        pageIndicator = new Button(this.leftPos+this.inventoryLabelX+this.imageWidth-5, this.topPos+this.inventoryLabelY+36, 18, 18,
-                Component.literal(String.valueOf(page+1)), (p_96337_) -> {
+        pageIndicator = new Button(this.leftPos + this.inventoryLabelX + this.imageWidth - 5, this.topPos + this.inventoryLabelY + 36, 18, 18,
+                Component.literal(String.valueOf(page + 1)), (p_96337_) -> {
         });
         pageIndicator.active = false;
 
@@ -121,33 +122,29 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
     }
 
     //最大値はClient側menuよりthis.menuとして入手
-    private void nextPage()
-    {
-        if(page < (((IStorageChangable) Minecraft.getInstance().player.getInventory()).getMaxPage()))page++;
+    private void nextPage() {
+        if(page < (((IStorageChangable) Minecraft.getInstance().player.getInventory()).getMaxPage())) page++;
         //ここでもスロットの更新(表示，非表示の切り替え)をかける？
     }
-    private void previousPage()
-    {
-        if(page > 0)page--;
+
+    private void previousPage() {
+        if(page > 0) page--;
         //ここでもスロットの更新(表示，非表示の切り替え)をかける？
     }
 
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;IIF)V", at = @At(value = "RETURN"), cancellable = true)
-    public void onRender(PoseStack poseStack, int mouseX, int mouseY, float partialTick, CallbackInfo ci)
-    {
+    public void onRender(PoseStack poseStack, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         //this.renderables.forEach(button -> button.render(poseStack, mouseX, mouseY, partialTick));
 
-        if((((IStorageChangable) Minecraft.getInstance().player.getInventory()).getMaxPage()) > 0)
-        {
+        if((((IStorageChangable) Minecraft.getInstance().player.getInventory()).getMaxPage()) > 0) {
             upButton.visible = true;
             downButton.visible = true;
             pageIndicator.visible = true;
             upButton.renderButton(poseStack, mouseX, mouseY, partialTick);
             downButton.renderButton(poseStack, mouseX, mouseY, partialTick);
-            pageIndicator.setMessage(Component.literal(String.valueOf(page+1)));
+            pageIndicator.setMessage(Component.literal(String.valueOf(page + 1)));
             pageIndicator.renderButton(poseStack, mouseX, mouseY, partialTick);
-        }
-        else{
+        } else {
             upButton.visible = false;
             downButton.visible = false;
             pageIndicator.visible = false;
@@ -163,8 +160,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
             SlotType.setHiding(slot);
 
-            if(((IHasSlotType)slot).getType() == SlotType.UNDEFINED)
-            {
+            if(((IHasSlotType) slot).getType() == SlotType.UNDEFINED) {
                 SlotType.setType(slot);
                 SlotType.setHiding(slot);
             }
@@ -174,28 +170,23 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
             //System.out.println("slotType -> " + ((IHasSlotType)slot).getType());
             //System.out.println("slotCont -> " + slot.container);
 
-            if(!((ISlotHidable)slot).isShowing())
-            {
-                patchSlot(((IHasSlotType)slot).getType(), poseStack, slot);
-            }
-            else if(((IHasSlotType)slot).getType() == SlotType.INVENTORY)
-            {
+            if(!((ISlotHidable) slot).isShowing()) {
+                patchSlot(((IHasSlotType) slot).getType(), poseStack, slot);
+            } else if(((IHasSlotType) slot).getType() == SlotType.INVENTORY) {
                 existActiveSlot = true;
             }
         }
-        if(!existActiveSlot)
-        {
+        if(!existActiveSlot) {
             previousPage();
             Messager.sendToServer(new PageChangedPacket(page));
-            this.menu.slots.forEach(slot -> ((IHasSlotPage)slot).setPage(page));
+            this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
         }
     }
 
-    private void patchSlot(SlotType type, PoseStack poseStack, Slot slot)
-    {
+    private void patchSlot(SlotType type, PoseStack poseStack, Slot slot) {
         RenderSystem.setShaderTexture(0, PATCH);
         RenderSystem.enableTexture();
         RenderSystem.enableDepthTest();
-        this.blit(poseStack, slot.x + leftPos -1, slot.y + topPos - 1, this.getBlitOffset(), 18, 18, 21);
+        this.blit(poseStack, slot.x + leftPos - 1, slot.y + topPos - 1, this.getBlitOffset(), 18, 18, 21);
     }
 }

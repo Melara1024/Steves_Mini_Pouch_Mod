@@ -14,7 +14,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
 public class SlotItem extends FunctionFoodItem {
-    
+
     public int changeValue = 0;
 
     public SlotItem(Item.Properties properties) {
@@ -22,20 +22,18 @@ public class SlotItem extends FunctionFoodItem {
     }
 
 
-
     @Override
-    public void onEat(LivingEntity entity)
-    {
-        if(!(entity instanceof Player))return;
+    public void onEat(LivingEntity entity) {
+        if(!(entity instanceof Player)) return;
 
-        Player player = (Player)entity;
-        if(player.getLevel().isClientSide())System.out.println("here is client side!");
+        Player player = (Player) entity;
+        if(player.getLevel().isClientSide()) System.out.println("here is client side!");
         else System.out.println("here is server side");
 
-        ((IStorageChangable)player.getInventory()).changeStorageSize(changeValue, player);
+        ((IStorageChangable) player.getInventory()).changeStorageSize(changeValue, player);
 
-        if(!(player instanceof ServerPlayer serverPlayer))return;
+        if(!(player instanceof ServerPlayer serverPlayer)) return;
         Inventory inventory = player.getInventory();
-        Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable)inventory).getAllData()), serverPlayer);
+        Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable) inventory).getAllData()), serverPlayer);
     }
 }

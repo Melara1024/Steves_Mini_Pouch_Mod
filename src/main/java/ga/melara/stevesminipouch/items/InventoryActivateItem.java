@@ -21,28 +21,25 @@ public class InventoryActivateItem extends FunctionFoodItem {
             .stacksTo(1)
             .food(FOOD_PROPERTIES);
 
-    public InventoryActivateItem()
-    {
+    public InventoryActivateItem() {
         super(PROPERTIES);
     }
 
     @Override
-    public void onEat(LivingEntity entity)
-    {
-        if(!(entity instanceof Player))return;
+    public void onEat(LivingEntity entity) {
+        if(!(entity instanceof Player)) return;
 
-        Player player = (Player)entity;
+        Player player = (Player) entity;
 
 
-        ((IStorageChangable)player.getInventory()).toggleInventory(player);
+        ((IStorageChangable) player.getInventory()).toggleInventory(player);
 
-        if(!(player instanceof ServerPlayer serverPlayer))return;
+        if(!(player instanceof ServerPlayer serverPlayer)) return;
         Inventory inventory = player.getInventory();
-        Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable)inventory).getAllData()), serverPlayer);
+        Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable) inventory).getAllData()), serverPlayer);
     }
 
-    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS)
-    {
+    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
         System.out.println("Inventory!!");
         return ITEMS.register("activate_inventory", InventoryActivateItem::new);
     }

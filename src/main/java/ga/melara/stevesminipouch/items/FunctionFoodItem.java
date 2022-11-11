@@ -13,13 +13,12 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
-public class FunctionFoodItem extends Item
-{
+public class FunctionFoodItem extends Item {
     public static FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
             .nutrition(2)
             .saturationMod(2)
             .alwaysEat()
-            .effect(() -> new MobEffectInstance(MobEffects.BLINDNESS,20, 1), 1.0F)
+            .effect(() -> new MobEffectInstance(MobEffects.BLINDNESS, 20, 1), 1.0F)
             .build();
 
     public static Item.Properties ITEM_PROPERTIES = new Item.Properties()
@@ -28,24 +27,24 @@ public class FunctionFoodItem extends Item
             .stacksTo(64)
             .food(FOOD_PROPERTIES);
 
-    public FunctionFoodItem(Properties properties)
-    {
+    public FunctionFoodItem(Properties properties) {
         super(properties);
     }
 
-    public FunctionFoodItem()
-    {
+    public FunctionFoodItem() {
         super(ITEM_PROPERTIES);
     }
 
-    public void onEat(LivingEntity entity){
+    public void onEat(LivingEntity entity) {
 
     }
 
     private boolean isAllowedEat = true;
-    public void isAllowedEat(Player player){
-        isAllowedEat = ((IStorageChangable)player.getInventory()).isActiveInventory();
+
+    public void isAllowedEat(Player player) {
+        isAllowedEat = ((IStorageChangable) player.getInventory()).isActiveInventory();
     }
+
     @Override
     public boolean isEdible() {
         return this.isAllowedEat;

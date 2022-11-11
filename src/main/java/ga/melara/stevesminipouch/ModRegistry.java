@@ -25,8 +25,7 @@ import java.util.Comparator;
 
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
-public class ModRegistry
-{
+public class ModRegistry {
     public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab("steves_mini_pouch") {
         @Override
         public ItemStack makeIcon() {
@@ -36,11 +35,9 @@ public class ModRegistry
         @Override
         public void fillItemList(NonNullList<ItemStack> pItems) {
             for(Item item : Registry.ITEM) {
-                pItems.sort(new Comparator<ItemStack>()
-                {
+                pItems.sort(new Comparator<ItemStack>() {
                     @Override
-                    public int compare(ItemStack o1, ItemStack o2)
-                    {
+                    public int compare(ItemStack o1, ItemStack o2) {
                         return String.CASE_INSENSITIVE_ORDER.compare(o1.getItem().toString(), o2.getItem().toString());
                     }
                 });
@@ -48,7 +45,9 @@ public class ModRegistry
                 item.fillItemCategory(this, pItems);
             }
 
-            pItems.forEach((i)->{System.out.println(i.getItem());});
+            pItems.forEach((i) -> {
+                System.out.println(i.getItem());
+            });
         }
     };
 
@@ -59,8 +58,7 @@ public class ModRegistry
 
     private static final DeferredRegister<MobEffect> EFFECT = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
 
-    public static void registerItems()
-    {
+    public static void registerItems() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ITEMS.register(eventBus);
         ENCHANTMENTS.register(eventBus);
@@ -73,7 +71,7 @@ public class ModRegistry
     public static final RegistryObject<Item> ARMOR_ACTIVATE_ITEM = ArmorActivateItem.buildInTo(ITEMS);
     public static final RegistryObject<Item> OFFHAND_ACTIVATE_ITEM = OffhandActivateItem.buildInTo(ITEMS);
 
-    public static final RegistryObject<Item> SLOT_ADD1_ITEM  = Add1SlotItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> SLOT_ADD1_ITEM = Add1SlotItem.buildInTo(ITEMS);
     public static final RegistryObject<Item> SLOT_ADD9_ITEM = Add9SlotItem.buildInTo(ITEMS);
     public static final RegistryObject<Item> SLOT_ADD27_ITEM = Add27SlotItem.buildInTo(ITEMS);
 
@@ -82,11 +80,9 @@ public class ModRegistry
     public static final RegistryObject<Item> SLOT_SHRINK27_ITEM = Sub27SlotItem.buildInTo(ITEMS);
 
 
-
     public static final RegistryObject<Enchantment> SLOT_ENCHANT = SlotEnchant.buildInTo(ENCHANTMENTS);
 
     public static final RegistryObject<MobEffect> SLOT_EFFECT = SlotEffect.buildInTo(EFFECT);
-
 
 
     //スロットが増える状態異常，エンチャントの導入

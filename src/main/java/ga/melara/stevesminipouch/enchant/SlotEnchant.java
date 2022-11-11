@@ -16,14 +16,12 @@ public class SlotEnchant extends Enchantment {
     //Todo EnchantmentHelper.getEnchantmentLevel(Enchantments.PUNCH_ARROWS, p_36746_);でエンチャ保持確認
     //Todo エンチャントがついた鎧を着ているか一定時間ごとに確認して更新する部分が必要
 
-    public SlotEnchant()
-    {
+    public SlotEnchant() {
         super(Rarity.RARE, EnchantmentCategory.ARMOR, new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.LEGS});
     }
 
 
-    public static RegistryObject<Enchantment> buildInTo(DeferredRegister<Enchantment> ENCHANTMENT)
-    {
+    public static RegistryObject<Enchantment> buildInTo(DeferredRegister<Enchantment> ENCHANTMENT) {
         return ENCHANTMENT.register("slot_enchant", SlotEnchant::new);
     }
 

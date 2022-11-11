@@ -39,9 +39,9 @@ public class ArmorActivateItem extends FunctionFoodItem {
 
         ((IStorageChangable)player.getInventory()).toggleArmor(player);
 
-        if(!(player instanceof ServerPlayer serverPlayer))return;
+        if(!(player instanceof ServerPlayer serverPlayer)) return;
         Inventory inventory = player.getInventory();
-        Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable)inventory).getAllData()), serverPlayer);
+        Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable) inventory).getAllData()), serverPlayer);
     }
 
 

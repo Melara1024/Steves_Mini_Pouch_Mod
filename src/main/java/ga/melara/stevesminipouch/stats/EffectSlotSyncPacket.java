@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 public class EffectSlotSyncPacket {
 
+
     private int effectSlot;
 
     public EffectSlotSyncPacket(int setSize) {

@@ -8,6 +8,4 @@ public interface IHasSlotType {
     abstract void setType(SlotType type);
 
     abstract SlotType getType();
-
-
 }

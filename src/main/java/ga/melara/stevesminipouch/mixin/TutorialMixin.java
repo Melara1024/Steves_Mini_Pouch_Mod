@@ -8,11 +8,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Tutorial.class)
-public class TutorialMixin
-{
-    @Inject(method = "onOpenInventory", at= @At("HEAD"), cancellable = true)
-    public void onOpenInventory(CallbackInfo ci)
-    {
-        if(!ClientInventoryData.isActiveInventory())ci.cancel();
+public class TutorialMixin {
+    @Inject(method = "onOpenInventory", at = @At("HEAD"), cancellable = true)
+    public void onOpenInventory(CallbackInfo ci) {
+        if(!ClientInventoryData.isActiveInventory()) ci.cancel();
     }
 }

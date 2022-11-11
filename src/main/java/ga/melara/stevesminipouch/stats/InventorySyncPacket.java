@@ -6,8 +6,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class InventorySyncPacket
-{
+public class InventorySyncPacket {
 
     private boolean isActiveInventory;
     private boolean isActiveOffhand;

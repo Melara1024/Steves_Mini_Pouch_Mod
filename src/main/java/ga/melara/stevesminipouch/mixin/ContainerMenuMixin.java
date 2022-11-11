@@ -53,8 +53,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     PlayerInventorySizeData data = new PlayerInventorySizeData();
 
     @Override
-    public void setStatsSynchronizer(StatsSynchronizer synchronizer)
-    {
+    public void setStatsSynchronizer(StatsSynchronizer synchronizer) {
         this.synchronizer = synchronizer;
         //System.out.println("setStatsSynchronizer called from menu");
 
@@ -63,7 +62,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
         synchronizer.sendInitialData(data);
     }
 
-    public void initMenu(PlayerInventorySizeData data){
+    public void initMenu(PlayerInventorySizeData data) {
         System.out.println("init menu");
         System.out.println(data);
 
@@ -71,36 +70,33 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     }
 
     @Inject(method = "<init>", at = @At("RETURN"), cancellable = true)
-    public void onConstruct(MenuType p_38851_, int p_38852_, CallbackInfo ci)
-    {
+    public void onConstruct(MenuType p_38851_, int p_38852_, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.register(this);
         //System.out.println("menu class init");
     }
 
     @Inject(method = "initializeContents(ILjava/util/List;Lnet/minecraft/world/item/ItemStack;)V", at = @At(value = "RETURN"), cancellable = true)
-    public void oninitContent(CallbackInfo ci)
-    {
+    public void oninitContent(CallbackInfo ci) {
         //ここでスロットの初期設定をする？
 //        System.out.println("initialize Contents");
 //
 
-        System.out.println(Thread.currentThread().getThreadGroup() == SidedThreadGroups.CLIENT ?  "client menu!" : "server menu");
+        System.out.println(Thread.currentThread().getThreadGroup() == SidedThreadGroups.CLIENT ? "client menu!" : "server menu");
 
     }
 
     @Inject(method = "doClick(IILnet/minecraft/world/inventory/ClickType;Lnet/minecraft/world/entity/player/Player;)V", at = @At("RETURN"), cancellable = true)
-    public void onClick(int slotId, int p_150432_, ClickType p_150433_, Player p_150434_, CallbackInfo ci)
-    {
+    public void onClick(int slotId, int p_150432_, ClickType p_150433_, Player p_150434_, CallbackInfo ci) {
 
-        if(slotId > 0){Slot s = slots.get(slotId);
+        if(slotId > 0) {
+            Slot s = slots.get(slotId);
             //System.out.println("touched!! " + s.getSlotIndex() + page*27 + " " + s.getItem() + " " + p_150433_);
         }
 
     }
 
     @Inject(method = "sendAllDataToRemote", at = @At("RETURN"), cancellable = true)
-    public void onSendToRemote(CallbackInfo ci)
-    {
+    public void onSendToRemote(CallbackInfo ci) {
         //ここからイベントを発火する？
         //イベントを受け取ってserverplayer側で購読，設定を行う
         //System.out.println("send data");
@@ -108,15 +104,13 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
 
     @SubscribeEvent
-    public void onPageChange(PageChangeEvent e)
-    {
+    public void onPageChange(PageChangeEvent e) {
         //System.out.println("hello! from abstractcontainermenu! " + e.getPage());
         //送られてきたページ変数が正しいかどうかの処理はスロット側で行う
         //ここでは変な値が送られてきたとしても無視
-        for(Slot s : this.slots)
-        {
+        for(Slot s : this.slots) {
             //スロットに対してページ変更を報告
-            ((IHasSlotPage)s).setPage(e.getPage());
+            ((IHasSlotPage) s).setPage(e.getPage());
 
 
             //スロットを再度初期化
@@ -131,165 +125,127 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
 
     @Override
-    public void toggleInventory(Player player){
-        if(!((IStorageChangable)player.getInventory()).isActiveInventory())
-        {
+    public void toggleInventory(Player player) {
+        if(!((IStorageChangable) player.getInventory()).isActiveInventory()) {
             setArmor(false, player);
             setCraft(false, player);
         }
     }
 
     @Override
-    public void setArmor(boolean change, Player player)
-    {
-        if(change != ((IStorageChangable)player.getInventory()).isActiveArmor())toggleArmor(player);
+    public void setArmor(boolean change, Player player) {
+        if(change != ((IStorageChangable) player.getInventory()).isActiveArmor()) toggleArmor(player);
     }
 
     @Override
-    public void toggleArmor(Player player){
+    public void toggleArmor(Player player) {
 
-        if(!((IStorageChangable)player.getInventory()).isActiveArmor())
-        {
-            for(Slot slot: this.slots)
-            {
-                if(((IHasSlotType)slot).getType() == SlotType.ARMOR)
-                {
-                    ((ISlotHidable)slot).hide();
+        if(!((IStorageChangable) player.getInventory()).isActiveArmor()) {
+            for(Slot slot : this.slots) {
+                if(((IHasSlotType) slot).getType() == SlotType.ARMOR) {
+                    ((ISlotHidable) slot).hide();
                 }
             }
-        }
-        else
-        {
-            for(Slot slot: this.slots)
-            {
-                if(((IHasSlotType)slot).getType() == SlotType.ARMOR)
-                {
-                    ((ISlotHidable)slot).show();
+        } else {
+            for(Slot slot : this.slots) {
+                if(((IHasSlotType) slot).getType() == SlotType.ARMOR) {
+                    ((ISlotHidable) slot).show();
                 }
             }
         }
     }
 
     @Override
-    public void setCraft(boolean change, Player player)
-    {
-        if(change != ((IStorageChangable)player.getInventory()).isActiveCraft())toggleCraft(player);
+    public void setCraft(boolean change, Player player) {
+        if(change != ((IStorageChangable) player.getInventory()).isActiveCraft()) toggleCraft(player);
     }
 
     @Override
-    public void toggleCraft(Player player){
+    public void toggleCraft(Player player) {
 
-        if(!((IStorageChangable)player.getInventory()).isActiveCraft())
-        {
-            for(Slot slot: this.slots)
-            {
-                if(((IHasSlotType)slot).getType() == SlotType.CRAFT || ((IHasSlotType)slot).getType() == SlotType.RESULT)
-                {
-                    ((ISlotHidable)slot).hide();
+        if(!((IStorageChangable) player.getInventory()).isActiveCraft()) {
+            for(Slot slot : this.slots) {
+                if(((IHasSlotType) slot).getType() == SlotType.CRAFT || ((IHasSlotType) slot).getType() == SlotType.RESULT) {
+                    ((ISlotHidable) slot).hide();
                 }
             }
-        }
-        else
-        {
-            for(Slot slot: this.slots)
-            {
-                if(((IHasSlotType)slot).getType() == SlotType.CRAFT || ((IHasSlotType)slot).getType() == SlotType.RESULT)
-                {
-                    ((ISlotHidable)slot).show();
+        } else {
+            for(Slot slot : this.slots) {
+                if(((IHasSlotType) slot).getType() == SlotType.CRAFT || ((IHasSlotType) slot).getType() == SlotType.RESULT) {
+                    ((ISlotHidable) slot).show();
                 }
             }
         }
     }
 
     @Override
-    public void setOffhand(boolean change, Player player)
-    {
-        if(change != ((IStorageChangable)player.getInventory()).isActiveOffhand())toggleOffhand(player);
+    public void setOffhand(boolean change, Player player) {
+        if(change != ((IStorageChangable) player.getInventory()).isActiveOffhand()) toggleOffhand(player);
     }
 
     @Override
-    public void toggleOffhand(Player player){
+    public void toggleOffhand(Player player) {
 
-        if(!((IStorageChangable)player.getInventory()).isActiveOffhand())
-        {
-            for(Slot slot: this.slots)
-            {
-                if(((IHasSlotType)slot).getType() == SlotType.OFFHAND)
-                {
-                    ((ISlotHidable)slot).hide();
+        if(!((IStorageChangable) player.getInventory()).isActiveOffhand()) {
+            for(Slot slot : this.slots) {
+                if(((IHasSlotType) slot).getType() == SlotType.OFFHAND) {
+                    ((ISlotHidable) slot).hide();
                 }
             }
-        }
-        else
-        {
-            for(Slot slot: this.slots)
-            {
-                if(((IHasSlotType)slot).getType() == SlotType.OFFHAND)
-                {
-                    ((ISlotHidable)slot).show();
+        } else {
+            for(Slot slot : this.slots) {
+                if(((IHasSlotType) slot).getType() == SlotType.OFFHAND) {
+                    ((ISlotHidable) slot).show();
                 }
             }
         }
     }
 
     @Override
-    public void changeStorageSize(int change, Player player){
+    public void changeStorageSize(int change, Player player) {
         //36スロットより少ないとき，slots内のSlotType.INVENTORYを後ろから無効化
-        for(Slot slot: this.slots)
-        {
-            if(((IHasSlotType)slot).getType() == SlotType.INVENTORY || ((IHasSlotType)slot).getType() == SlotType.HOTBAR)
-            {
-                    ((IHasSlotPage) slot).setPage(((IHasSlotPage) slot).getPage());
-                    System.out.println("change storage size");
+        for(Slot slot : this.slots) {
+            if(((IHasSlotType) slot).getType() == SlotType.INVENTORY || ((IHasSlotType) slot).getType() == SlotType.HOTBAR) {
+                ((IHasSlotPage) slot).setPage(((IHasSlotPage) slot).getPage());
+                System.out.println("change storage size");
             }
         }
-            //……しようかなとおもったけど面倒なのでitemsのlockリストをスロット側から入手する
+        //……しようかなとおもったけど面倒なのでitemsのlockリストをスロット側から入手する
     }
 
     @Inject(method = "addSlot(Lnet/minecraft/world/inventory/Slot;)Lnet/minecraft/world/inventory/Slot;", at = @At("RETURN"), cancellable = true)
-    public void onAddSlot(Slot slot, CallbackInfoReturnable<Slot> cir)
-    {
+    public void onAddSlot(Slot slot, CallbackInfoReturnable<Slot> cir) {
         setType(slot);
     }
 
 
-    private void setType(Slot targetSlot)
-    {
+    private void setType(Slot targetSlot) {
         //System.out.println(targetSlot.container.toString());
-        if(targetSlot.container instanceof Inventory)
-        {
-            if(targetSlot.getSlotIndex() >= 0 && targetSlot.getSlotIndex() < 9)
-            {
-                ((IHasSlotType)targetSlot).setType(SlotType.HOTBAR);
+        if(targetSlot.container instanceof Inventory) {
+            if(targetSlot.getSlotIndex() >= 0 && targetSlot.getSlotIndex() < 9) {
+                ((IHasSlotType) targetSlot).setType(SlotType.HOTBAR);
             }
-            if(targetSlot.getSlotIndex() >= 9 && targetSlot.getSlotIndex() < 36)
-            {
-                ((IHasSlotType)targetSlot).setType(SlotType.INVENTORY);
-                ((IHasSlotPage)targetSlot).setPage(0);
+            if(targetSlot.getSlotIndex() >= 9 && targetSlot.getSlotIndex() < 36) {
+                ((IHasSlotType) targetSlot).setType(SlotType.INVENTORY);
+                ((IHasSlotPage) targetSlot).setPage(0);
             }
-            if(targetSlot.getSlotIndex() >= 36 && targetSlot.getSlotIndex() < 40)
-            {
-                ((IHasSlotType)targetSlot).setType(SlotType.ARMOR);
+            if(targetSlot.getSlotIndex() >= 36 && targetSlot.getSlotIndex() < 40) {
+                ((IHasSlotType) targetSlot).setType(SlotType.ARMOR);
             }
-            if(targetSlot.getSlotIndex() == 40)
-            {
-                ((IHasSlotType)targetSlot).setType(SlotType.OFFHAND);
+            if(targetSlot.getSlotIndex() == 40) {
+                ((IHasSlotType) targetSlot).setType(SlotType.OFFHAND);
             }
         }
-        if(targetSlot.container instanceof CraftingContainer)
-        {
-            if(((CraftingContainer) targetSlot.container).menu instanceof InventoryMenu)
-            {
+        if(targetSlot.container instanceof CraftingContainer) {
+            if(((CraftingContainer) targetSlot.container).menu instanceof InventoryMenu) {
                 //2x2クラフティング系のスロットの場合
-                ((IHasSlotType)targetSlot).setType(SlotType.CRAFT);
+                ((IHasSlotType) targetSlot).setType(SlotType.CRAFT);
             }
         }
-        if(targetSlot instanceof ResultSlot)
-        {
+        if(targetSlot instanceof ResultSlot) {
             //クラフティングの完成品スロットの場合
-            ((IHasSlotType)targetSlot).setType(SlotType.RESULT);
+            ((IHasSlotType) targetSlot).setType(SlotType.RESULT);
         }
-
 
 
     }

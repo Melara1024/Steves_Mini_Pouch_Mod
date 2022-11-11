@@ -12,7 +12,7 @@ public class PlayerInventorySizeData {
     private boolean isCraftable;
     private boolean isEquippable;
 
-    public PlayerInventorySizeData(){
+    public PlayerInventorySizeData() {
         slot = 36;
         effectSlot = 0;
         isActiveInventory = true;
@@ -21,8 +21,7 @@ public class PlayerInventorySizeData {
         isEquippable = true;
     }
 
-    public PlayerInventorySizeData(int slot, boolean inv, boolean off, boolean cft, boolean arm)
-    {
+    public PlayerInventorySizeData(int slot, boolean inv, boolean off, boolean cft, boolean arm) {
         this.slot = slot;
         this.isActiveInventory = inv;
         this.isActiveOffhand = off;
@@ -30,8 +29,7 @@ public class PlayerInventorySizeData {
         this.isEquippable = arm;
     }
 
-    public PlayerInventorySizeData(int slot, int effectSlot, boolean inv, boolean off, boolean cft, boolean arm)
-    {
+    public PlayerInventorySizeData(int slot, int effectSlot, boolean inv, boolean off, boolean cft, boolean arm) {
         this.slot = slot;
         this.effectSlot = effectSlot;
         this.isActiveInventory = inv;
@@ -70,11 +68,12 @@ public class PlayerInventorySizeData {
         return slot;
     }
 
-    public int getEffectSlot() {return effectSlot;}
+    public int getEffectSlot() {
+        return effectSlot;
+    }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return String.format("player inv data -> [slot: %d, effectslot: %d, inv: %b, armor: %b, offhand: %b, craft: %b]", slot, effectSlot, isActiveInventory, isEquippable, isActiveOffhand, isCraftable);
     }
 }

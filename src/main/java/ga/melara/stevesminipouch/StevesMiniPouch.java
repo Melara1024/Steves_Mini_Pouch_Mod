@@ -43,7 +43,7 @@ public class StevesMiniPouch {
 
 
     @SubscribeEvent
-    public void registerCommands(RegisterCommandsEvent event){
+    public void registerCommands(RegisterCommandsEvent event) {
         SlotChangeCommand.register(event.getDispatcher());
     }
 
@@ -56,8 +56,7 @@ public class StevesMiniPouch {
     }
 
     @SubscribeEvent
-    public void b(ClientChatReceivedEvent e)
-    {
+    public void b(ClientChatReceivedEvent e) {
 
         //Messager.sendToPlayer(new PacketSync(p), serverPlayer);
         //System.out.println("hello client! from server.");

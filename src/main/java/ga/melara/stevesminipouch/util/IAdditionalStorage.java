@@ -10,7 +10,6 @@ public interface IAdditionalStorage {
 
     void loadStatus(CompoundTag tag);
 
-
     ListTag saveAdditional(ListTag tag);
 
     void loadAdditional(ListTag tag);

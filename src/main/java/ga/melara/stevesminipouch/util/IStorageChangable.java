@@ -24,7 +24,7 @@ public interface IStorageChangable {
 
     abstract void updateStorageSize();
 
-    abstract  void changeEffectSize(int change);
+    abstract void changeEffectSize(int change);
 
     abstract boolean isValidSlot(int id);
 

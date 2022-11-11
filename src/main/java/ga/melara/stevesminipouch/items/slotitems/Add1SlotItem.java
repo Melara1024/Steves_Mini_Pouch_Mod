@@ -11,22 +11,20 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
-public class Add1SlotItem extends SlotItem
-{
+public class Add1SlotItem extends SlotItem {
     public static Item.Properties PROPERTIES = new Item.Properties()
             .tab(ModRegistry.ITEM_GROUP)
             .rarity(Rarity.COMMON)
             .stacksTo(27)
-            .food(FOOD_PROPERTIES);;
+            .food(FOOD_PROPERTIES);
+    ;
 
-    public Add1SlotItem()
-    {
+    public Add1SlotItem() {
         super(PROPERTIES);
         this.changeValue = 1;
     }
 
-    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS)
-    {
+    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
         System.out.println("Add1!!");
         return ITEMS.register("slot_add_1", Add1SlotItem::new);
     }

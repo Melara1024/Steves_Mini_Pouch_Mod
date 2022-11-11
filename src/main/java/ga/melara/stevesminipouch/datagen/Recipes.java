@@ -7,12 +7,11 @@ import net.minecraft.data.recipes.RecipeProvider;
 import java.util.function.Consumer;
 
 public class Recipes extends RecipeProvider {
-    public Recipes(DataGenerator generator)
-    {
+    public Recipes(DataGenerator generator) {
         super(generator);
     }
 
     @Override
-    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer)
-    {}
+    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
+    }
 }

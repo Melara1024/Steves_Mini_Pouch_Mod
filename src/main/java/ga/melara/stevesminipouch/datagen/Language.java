@@ -7,14 +7,12 @@ import net.minecraftforge.common.data.LanguageProvider;
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
 public class Language extends LanguageProvider {
-    public Language(DataGenerator generator, String locale)
-    {
+    public Language(DataGenerator generator, String locale) {
         super(generator, MODID, locale);
     }
 
     @Override
-    protected void addTranslations()
-    {
+    protected void addTranslations() {
         add(ModRegistry.SLOT_ADD1_ITEM.get(), "Edible Chest");
         add(ModRegistry.SLOT_ADD9_ITEM.get(), "Edible Largechest");
         add(ModRegistry.SLOT_ADD27_ITEM.get(), "Edible Triplechest");

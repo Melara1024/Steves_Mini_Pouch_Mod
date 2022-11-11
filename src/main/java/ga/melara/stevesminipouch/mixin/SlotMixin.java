@@ -56,252 +56,200 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
     public int y;
 
     @Shadow
-    public void setChanged() {}
+    public void setChanged() {
+    }
 
     private boolean isShowing = true;
 
 
     @Override
-    public void setType(SlotType type)
-    {
+    public void setType(SlotType type) {
         this.type = type;
     }
 
     @Override
-    public SlotType getType()
-    {
+    public SlotType getType() {
         return this.type;
     }
 
     @Override
-    public void setPage(int page)
-    {
+    public void setPage(int page) {
         this.page = page;
         if(this.type == SlotType.INVENTORY) {
             if(this.slot + (27 * page) < ((IStorageChangable) container).getInventorySize()) {
                 show();
-            }
-            else
-            {
+            } else {
                 hide();
             }
         }
     }
 
     @Override
-    public int getPage()
-    {
+    public int getPage() {
         return this.page;
     }
 
 
     @Override
-    public void hide()
-    {
+    public void hide() {
         isShowing = false;
     }
 
     @Override
-    public void show()
-    {
+    public void show() {
         isShowing = true;
     }
 
     @Override
-    public boolean isShowing()
-    {
+    public boolean isShowing() {
         return this.isShowing;
     }
 
     @Inject(method = "<init>", at = @At("RETURN"), cancellable = true)
-    public void onInit(Container p_40223_, int p_40224_, int p_40225_, int p_40226_, CallbackInfo ci)
-    {
+    public void onInit(Container p_40223_, int p_40224_, int p_40225_, int p_40226_, CallbackInfo ci) {
 
     }
 
     @Inject(method = "isActive()Z", at = @At("HEAD"), cancellable = true)
-    public void onCallIsActive(CallbackInfoReturnable<Boolean> cir)
-    {
+    public void onCallIsActive(CallbackInfoReturnable<Boolean> cir) {
         if(!this.isShowing()) cir.setReturnValue(false);
     }
 
     @Inject(method = "mayPlace(Lnet/minecraft/world/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
-    public void onCallMayPlace(CallbackInfoReturnable<Boolean> cir)
-    {
+    public void onCallMayPlace(CallbackInfoReturnable<Boolean> cir) {
         if(!this.isShowing()) cir.setReturnValue(false);
     }
 
 
     @Inject(method = "initialize(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
-    public void onInitialize(ItemStack p_40240_, CallbackInfo ci)
-    {
+    public void onInitialize(ItemStack p_40240_, CallbackInfo ci) {
 
         //todo なんとかしてスロットからインベントリのロック状態を取得
         //containerはinventoryなので，inventorymixin内にクエリ用メソッドを作る？
         //自身のthis.slotの値をつかってisSlotVaridを呼ぶ？
         //ページを捲る前にinitializeが呼ばれてしまっている？
-        if(this.type == SlotType.INVENTORY && page>0)
-        {
-            if(this.slot + 27*page < ((IStorageChangable)container).getInventorySize()
-            && ((IStorageChangable)container).isValidSlot(this.slot + 27*page + 5))
-            {
+        if(this.type == SlotType.INVENTORY && page > 0) {
+            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()
+                    && ((IStorageChangable) container).isValidSlot(this.slot + 27 * page + 5)) {
                 this.show();
                 //System.out.println("set item to " + (this.slot + 27*page + 5) + " name " + p_40240_);
-                this.container.setItem(this.slot + 27*page + 5, p_40240_);
+                this.container.setItem(this.slot + 27 * page + 5, p_40240_);
                 this.setChanged();
                 ci.cancel();
-            }
-            else
-            {
+            } else {
                 //スロットが指す位置のアイテムがそもそも範囲外だった場合
                 this.hide();
                 ci.cancel();
             }
         }
-        if(this.type == SlotType.HOTBAR)
-        {
-            if(((IStorageChangable)container).isValidSlot(this.slot)) {
+        if(this.type == SlotType.HOTBAR) {
+            if(((IStorageChangable) container).isValidSlot(this.slot)) {
                 this.show();
-            }
-            else this.hide();
+            } else this.hide();
         }
-        if(this.type == SlotType.ARMOR)
-        {
-            if(((IStorageChangable)container).isActiveArmor()) {
+        if(this.type == SlotType.ARMOR) {
+            if(((IStorageChangable) container).isActiveArmor()) {
                 this.show();
-            }
-            else this.hide();
+            } else this.hide();
         }
-        if(this.type == SlotType.OFFHAND)
-        {
-            if(((IStorageChangable)container).isActiveOffhand()) {
+        if(this.type == SlotType.OFFHAND) {
+            if(((IStorageChangable) container).isActiveOffhand()) {
                 this.show();
-            }
-            else this.hide();
+            } else this.hide();
         }
-        if(this.type == SlotType.CRAFT)
-        {
+        if(this.type == SlotType.CRAFT) {
 
         }
-        if(this.type == SlotType.RESULT)
-        {
+        if(this.type == SlotType.RESULT) {
 
         }
     }
 
     @Inject(method = "set(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
-    public void onSetItem(ItemStack p_40240_, CallbackInfo ci)
-    {
-        if(this.type == SlotType.INVENTORY && page>0)
-        {
-            if(this.slot + 27*page < ((IStorageChangable)container).getInventorySize()
-                    && ((IStorageChangable)container).isValidSlot(this.slot + 27*page + 5))
-            {
+    public void onSetItem(ItemStack p_40240_, CallbackInfo ci) {
+        if(this.type == SlotType.INVENTORY && page > 0) {
+            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()
+                    && ((IStorageChangable) container).isValidSlot(this.slot + 27 * page + 5)) {
                 this.show();
-                this.container.setItem(this.slot + 27*page + 5, p_40240_);
+                this.container.setItem(this.slot + 27 * page + 5, p_40240_);
                 this.setChanged();
                 ci.cancel();
-            }
-            else
-            {
+            } else {
                 //スロットが指す位置のアイテムがそもそも範囲外だった場合
                 this.hide();
                 ci.cancel();
             }
         }
-        if(this.type == SlotType.HOTBAR)
-        {
-            if(((IStorageChangable)container).isValidSlot(this.slot)) {
+        if(this.type == SlotType.HOTBAR) {
+            if(((IStorageChangable) container).isValidSlot(this.slot)) {
                 this.show();
-            }
-            else this.hide();
+            } else this.hide();
         }
-        if(this.type == SlotType.ARMOR)
-        {
+        if(this.type == SlotType.ARMOR) {
 
         }
-        if(this.type == SlotType.OFFHAND)
-        {
+        if(this.type == SlotType.OFFHAND) {
 
         }
     }
 
     @Inject(method = "getItem()Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
-    public void onGetItem(CallbackInfoReturnable<ItemStack> cir)
-    {
+    public void onGetItem(CallbackInfoReturnable<ItemStack> cir) {
         //System.out.println("called slot is " + (this.slot + 27*page + 5));
-        if(this.type == SlotType.INVENTORY && page>0)
-        {
-            if(this.slot + 27*page < ((IStorageChangable)container).getInventorySize()
-                    && ((IStorageChangable)container).isValidSlot(this.slot + 27*page + 5))
-            {
+        if(this.type == SlotType.INVENTORY && page > 0) {
+            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()
+                    && ((IStorageChangable) container).isValidSlot(this.slot + 27 * page + 5)) {
                 this.show();
                 //System.out.println("set item to " +  (this.slot + 27*page + 5) + " name " + this.container.getItem(this.slot + 27*page + 5));
-                cir.setReturnValue(this.container.getItem(this.slot + 27*page + 5));
-            }
-            else
-            {
+                cir.setReturnValue(this.container.getItem(this.slot + 27 * page + 5));
+            } else {
                 //スロットが指す位置のアイテムがそもそも範囲外だった場合
                 this.hide();
                 cir.setReturnValue(ItemStack.EMPTY);
             }
         }
-        if(this.type == SlotType.HOTBAR)
-        {
-            if(((IStorageChangable)container).isValidSlot(this.slot)) {
+        if(this.type == SlotType.HOTBAR) {
+            if(((IStorageChangable) container).isValidSlot(this.slot)) {
                 this.show();
-            }
-            else this.hide();
+            } else this.hide();
         }
-        if(this.type == SlotType.ARMOR)
-        {
+        if(this.type == SlotType.ARMOR) {
 
         }
-        if(this.type == SlotType.OFFHAND)
-        {
+        if(this.type == SlotType.OFFHAND) {
 
         }
     }
 
     @Inject(method = "remove(I)Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
-    public void onRemoveItem(int p_40227_, CallbackInfoReturnable<ItemStack> cir)
-    {
-        if(this.type == SlotType.INVENTORY && page>0)
-        {
-            if(this.slot + 27*page < ((IStorageChangable)container).getInventorySize()
-                    && ((IStorageChangable)container).isValidSlot(this.slot + 27*page + 5))
-            {
+    public void onRemoveItem(int p_40227_, CallbackInfoReturnable<ItemStack> cir) {
+        if(this.type == SlotType.INVENTORY && page > 0) {
+            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()
+                    && ((IStorageChangable) container).isValidSlot(this.slot + 27 * page + 5)) {
                 this.show();
-                cir.setReturnValue(this.container.removeItem(this.slot + 27*page + 5, p_40227_));
-            }
-            else
-            {
+                cir.setReturnValue(this.container.removeItem(this.slot + 27 * page + 5, p_40227_));
+            } else {
                 //スロットが指す位置のアイテムがそもそも範囲外だった場合
                 this.hide();
                 cir.setReturnValue(ItemStack.EMPTY);
             }
         }
-        if(this.type == SlotType.HOTBAR)
-        {
-            if(((IStorageChangable)container).isValidSlot(this.slot)) {
+        if(this.type == SlotType.HOTBAR) {
+            if(((IStorageChangable) container).isValidSlot(this.slot)) {
                 this.show();
-            }
-            else this.hide();
+            } else this.hide();
         }
-        if(this.type == SlotType.ARMOR)
-        {
+        if(this.type == SlotType.ARMOR) {
 
         }
-        if(this.type == SlotType.OFFHAND)
-        {
+        if(this.type == SlotType.OFFHAND) {
 
         }
     }
 
     @Inject(method = "tryRemove(IILnet/minecraft/world/entity/player/Player;)Ljava/util/Optional;", at = @At("HEAD"), cancellable = true)
-    public void onTryRemoveItem(int p_150642_, int p_150643_, Player p_150644_, CallbackInfoReturnable<Optional<ItemStack>> cir)
-    {
-        System.out.println("try remove on " + (this.slot + this.page*27) );
+    public void onTryRemoveItem(int p_150642_, int p_150643_, Player p_150644_, CallbackInfoReturnable<Optional<ItemStack>> cir) {
+        System.out.println("try remove on " + (this.slot + this.page * 27));
     }
 
 }

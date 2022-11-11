@@ -31,8 +31,7 @@ import java.util.Map;
 import java.util.OptionalInt;
 
 @Mixin(Player.class)
-public class PlayerMixin
-{
+public class PlayerMixin {
 
     @Shadow
     @Final
@@ -41,8 +40,7 @@ public class PlayerMixin
 
 
     @Inject(method = "readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"), cancellable = true)
-    public void onReadData(CompoundTag tag, CallbackInfo ci)
-    {
+    public void onReadData(CompoundTag tag, CallbackInfo ci) {
         CompoundTag compoundtag = tag.getCompound("InventoryStats");
         ((IAdditionalStorage) this.inventory).loadStatus(compoundtag);
 
@@ -51,8 +49,7 @@ public class PlayerMixin
     }
 
     @Inject(method = "addAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"), cancellable = true)
-    public void onAddData(CompoundTag tag, CallbackInfo ci)
-    {
+    public void onAddData(CompoundTag tag, CallbackInfo ci) {
         tag.put("InventoryStats", ((IAdditionalStorage) this.inventory).saveStatus(new CompoundTag()));
 
         tag.put("MiniPouch", ((IAdditionalStorage) this.inventory).saveAdditional(new ListTag()));

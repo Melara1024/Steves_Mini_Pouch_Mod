@@ -38,7 +38,8 @@ public class LivingEntityMixin
                     p_21068_.getItem() instanceof ArmorActivateItem)
             && !((IStorageChangable)player.getInventory()).isActiveInventory())
             {
-                if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("You felt great power, but nothing happened."));
+                if(player.getLevel().isClientSide())
+                    player.sendSystemMessage(Component.literal("You felt great power, but nothing happened."));
                 cir.setReturnValue(p_21068_);
             }
         }

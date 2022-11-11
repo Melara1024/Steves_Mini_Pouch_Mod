@@ -37,11 +37,11 @@ public class CraftingContainerMixin implements ICraftingContainerChangable {
 
     @Override
     public void toggleCraft(Player player) {
-        if(!(((CraftingContainer) (Object) this).menu instanceof  InventoryMenu))return;
+        if(!(((CraftingContainer) (Object) this).menu instanceof InventoryMenu)) return;
 
 
-        if (this.isActiveCraft) {
-            for (ItemStack item : items) {
+        if(this.isActiveCraft) {
+            for(ItemStack item : items) {
                 Level level = player.level;
                 ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
                 itementity.setDefaultPickUpDelay();
@@ -50,13 +50,13 @@ public class CraftingContainerMixin implements ICraftingContainerChangable {
             }
 
 
-            items = LockableItemStackList.withSize(4, ((InventoryMenu)((CraftingContainer) (Object) this).menu).owner.getInventory(), true);
+            items = LockableItemStackList.withSize(4, ((InventoryMenu) ((CraftingContainer) (Object) this).menu).owner.getInventory(), true);
 
             this.isActiveCraft = false;
             return;
         }
 
-        items = LockableItemStackList.withSize(4, ((InventoryMenu)((CraftingContainer) (Object) this).menu).owner.getInventory(), false);
+        items = LockableItemStackList.withSize(4, ((InventoryMenu) ((CraftingContainer) (Object) this).menu).owner.getInventory(), false);
 
         this.isActiveCraft = true;
 
