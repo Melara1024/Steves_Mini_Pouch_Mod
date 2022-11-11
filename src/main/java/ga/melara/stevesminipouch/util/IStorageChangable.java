@@ -1,5 +1,6 @@
 package ga.melara.stevesminipouch.util;
 
+import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import net.minecraft.world.entity.player.Player;
 
 public interface IStorageChangable {
@@ -32,4 +33,7 @@ public interface IStorageChangable {
     abstract int getInventorySize();
 
     abstract int getHotbarSize();
+
+
+    PlayerInventorySizeData getAllData();
 }

@@ -220,6 +220,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         setStorageSize(1, player);
 
         isActiveInventory = !isActiveInventory;
+        System.out.printf("isActivateInvetory -> %b\n", isActiveInventory);
+
+        ((IMenuChangable)player.containerMenu).toggleInventory(player);
 
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Inventory Toggled!"));
     }
@@ -272,6 +275,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         this.isActiveArmor = true;
 
+
+        ((IMenuChangable)player.containerMenu).toggleArmor(player);
+
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Armor Toggled!"));
     }
 
@@ -308,6 +314,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         this.isActiveOffhand = true;
 
+        ((IMenuChangable)player.containerMenu).toggleOffhand(player);
+
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Offhand Toggled!"));
     }
 
@@ -321,6 +329,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     {
         //Todo アイテムリストに対しての操作はしないがisActiveCraftのトグル操作のみ行う部分
         isActiveCraft = !isActiveCraft;
+
+        ((IMenuChangable)player.inventoryMenu).toggleCraft(player);
+        ((IMenuChangable)player.containerMenu).toggleCraft(player);
+        ((ICraftingContainerChangable)player.inventoryMenu.getCraftSlots()).toggleCraft(player);
 
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Craft Toggled!"));
     }
@@ -417,6 +429,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         compartments.remove(items);
         items = newItems;
         compartments.add(0, items);
+
+        ((IMenuChangable)player.containerMenu).changeStorageSize(change, player);
+
+
 
         //サーバーにこれを送信しようとしたときにも通信エラーの同じようなのが出る？　やっぱり間違った方面での送信が原因なのでは
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
@@ -533,6 +549,12 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public int getHotbarSize()
     {
         return hotbarSize;
+    }
+
+    @Override
+    public PlayerInventorySizeData getAllData()
+    {
+        return new PlayerInventorySizeData(inventorySize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
     }
 
     @Inject(method = "save(Lnet/minecraft/nbt/ListTag;)Lnet/minecraft/nbt/ListTag;", at = @At(value = "HEAD"), cancellable = true)

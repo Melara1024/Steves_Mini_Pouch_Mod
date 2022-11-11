@@ -2,7 +2,9 @@ package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.items.*;
 import ga.melara.stevesminipouch.util.IStorageChangable;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -27,13 +29,18 @@ public class LivingEntityMixin
     }
 
     @Inject(method = "eat", at = @At("HEAD"), cancellable = true)
-    public void onEat(Level p_21067_, ItemStack p_21068_, CallbackInfoReturnable<ItemStack> cir) {
-        if ((LivingEntity) (Object) this instanceof Player player)
+    public void onEat(Level level, ItemStack p_21068_, CallbackInfoReturnable<ItemStack> cir) {
+
+        if ((LivingEntity) (Object) this instanceof Player player && p_21068_.getItem() instanceof FunctionFoodItem food)
         {
             if((p_21068_.getItem() instanceof SlotItem ||
                     p_21068_.getItem() instanceof CraftActivatItem ||
-                    p_21068_.getItem() instanceof ArmorActivateItem) &&
-                    !((IStorageChangable)player.getInventory()).isActiveInventory()) cir.setReturnValue(p_21068_);
+                    p_21068_.getItem() instanceof ArmorActivateItem)
+            && !((IStorageChangable)player.getInventory()).isActiveInventory())
+            {
+                if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("You felt great power, but nothing happened."));
+                cir.setReturnValue(p_21068_);
+            }
         }
     }
 }

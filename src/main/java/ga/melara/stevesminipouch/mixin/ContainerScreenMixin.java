@@ -139,7 +139,6 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
         if((((IStorageChangable) Minecraft.getInstance().player.getInventory()).getMaxPage()) > 0)
         {
-            System.out.println("button rendered");
             upButton.visible = true;
             downButton.visible = true;
             pageIndicator.visible = true;

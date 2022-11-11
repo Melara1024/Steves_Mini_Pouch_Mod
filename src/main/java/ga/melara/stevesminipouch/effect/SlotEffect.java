@@ -37,7 +37,7 @@ public class SlotEffect extends MobEffect {
 
         if(livingentity instanceof Player player)
         {
-            System.out.printf("SlotEffect Removed! level -> %d%n", p_19419_);
+            //System.out.printf("SlotEffect Removed! level -> %d%n", p_19419_);
             //Todo スロットエフェクト除去処理
             ((IStorageChangable)player.getInventory()).changeEffectSize(0);
             if (player instanceof  ServerPlayer serverPlayer)
@@ -45,7 +45,7 @@ public class SlotEffect extends MobEffect {
         }
         //livingentity.setAbsorptionAmount(livingentity.getAbsorptionAmount() - (float)(4 * (p_19419_ + 1)));
 
-        System.out.printf("attributemap -> \n" , p_19418_);
+        //System.out.printf("attributemap -> \n" , p_19418_);
         super.removeAttributeModifiers(livingentity, p_19418_, p_19419_);
     }
 
@@ -55,7 +55,7 @@ public class SlotEffect extends MobEffect {
 
         if(livingentity instanceof Player player)
         {
-            System.out.printf("SlotEffect Added! level -> %d%n", p_19423_);
+            //System.out.printf("SlotEffect Added! level -> %d%n", p_19423_);
             //Todo スロットエフェクト適用処理
             ((IStorageChangable)player.getInventory()).changeEffectSize(p_19423_);
             if (player instanceof  ServerPlayer serverPlayer)

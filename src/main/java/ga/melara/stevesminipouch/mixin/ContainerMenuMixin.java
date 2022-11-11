@@ -234,16 +234,16 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
     @Override
     public void changeStorageSize(int change, Player player){
-        //itemsリストの大きさで自動的に決まるので36スロット以上のときは何もしない
-        if((player.getInventory()).getContainerSize() + change < 36)
+        //36スロットより少ないとき，slots内のSlotType.INVENTORYを後ろから無効化
+        for(Slot slot: this.slots)
         {
-            //36スロットより少ないとき，slots内のSlotType.INVENTORYを後ろから無効化
-            for(Slot slot: this.slots)
+            if(((IHasSlotType)slot).getType() == SlotType.INVENTORY || ((IHasSlotType)slot).getType() == SlotType.HOTBAR)
             {
-                ((IHasSlotPage)slot).setPage(((IHasSlotPage) slot).getPage());
+                    ((IHasSlotPage) slot).setPage(((IHasSlotPage) slot).getPage());
+                    System.out.println("change storage size");
             }
-            //……しようかなとおもったけど面倒なのでitemsのlockリストをスロット側から入手する
         }
+            //……しようかなとおもったけど面倒なのでitemsのlockリストをスロット側から入手する
     }
 
     @Inject(method = "addSlot(Lnet/minecraft/world/inventory/Slot;)Lnet/minecraft/world/inventory/Slot;", at = @At("RETURN"), cancellable = true)

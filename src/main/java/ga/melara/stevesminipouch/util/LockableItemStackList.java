@@ -53,7 +53,6 @@ public class LockableItemStackList extends NonNullList<ItemStack>
     {
         this.observer = observer;
         isActivateObserver = true;
-        System.out.println("setObserver");
     }
 
     public static LockableItemStackList create(Inventory inventory, boolean stopper)

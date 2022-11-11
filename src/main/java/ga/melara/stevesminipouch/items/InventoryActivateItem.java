@@ -1,8 +1,12 @@
 package ga.melara.stevesminipouch.items;
 
 import ga.melara.stevesminipouch.ModRegistry;
+import ga.melara.stevesminipouch.stats.InventorySyncPacket;
+import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.util.*;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -31,7 +35,10 @@ public class InventoryActivateItem extends FunctionFoodItem {
 
 
         ((IStorageChangable)player.getInventory()).toggleInventory(player);
-        ((IMenuChangable)player.inventoryMenu).toggleInventory(player);
+
+        if(!(player instanceof ServerPlayer serverPlayer))return;
+        Inventory inventory = player.getInventory();
+        Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable)inventory).getAllData()), serverPlayer);
     }
 
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS)
