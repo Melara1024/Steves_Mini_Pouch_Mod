@@ -144,7 +144,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         MinecraftForge.EVENT_BUS.register(this);
 
-        maxPage = 5;
+        maxPage = 0;
         //もとの数より減らしてはいけない……
         inventorySize = 36;
         hotbarSize = 9;
@@ -370,8 +370,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         hotbarSize = 9;
         int allSize = (inventorySize + effectSize + enchantSize);
 
-        if(allSize < 36)
+        if(allSize <= 36)
         {
+            maxPage = 0;
             newItems = LockableItemStackList.withSize(36, (Inventory)(Object)this,false);
 
             for(int i=0; i< (36-allSize) ; i++)
@@ -391,6 +392,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         }
         else
         {
+            maxPage = (int)Math.floor((allSize-9)/27);
             newItems = LockableItemStackList.withSize(allSize, (Inventory)(Object)this,false);
         }
 

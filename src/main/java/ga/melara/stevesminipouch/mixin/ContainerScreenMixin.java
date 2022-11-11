@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
 @Mixin(AbstractContainerScreen.class)
-public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Screen {
+public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> extends Screen {
 
     /*
     Todo ページ変更システム，ボタンを押してページ変数のインクリメント，デクリメント
@@ -51,6 +51,8 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
 
     @Shadow T menu;
 
+
+    @Shadow public abstract T getMenu();
 
     Button upButton;
     Button downButton;
@@ -134,17 +136,29 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
     public void onRender(PoseStack poseStack, int mouseX, int mouseY, float partialTick, CallbackInfo ci)
     {
         //this.renderables.forEach(button -> button.render(poseStack, mouseX, mouseY, partialTick));
-        upButton.renderButton(poseStack, mouseX, mouseY, partialTick);
-        downButton.renderButton(poseStack, mouseX, mouseY, partialTick);
-        pageIndicator.setMessage(Component.literal(String.valueOf(page+1)));
-        pageIndicator.renderButton(poseStack, mouseX, mouseY, partialTick);
-        //this.font.draw(poseStack, Component.literal(String.valueOf(page)), (float) this.leftPos+this.inventoryLabelX+this.imageWidth, this.topPos+this.inventoryLabelY+40, 0xFFFFFF);
+
+        if((((IStorageChangable) Minecraft.getInstance().player.getInventory()).getMaxPage()) > 0)
+        {
+            System.out.println("button rendered");
+            upButton.visible = true;
+            downButton.visible = true;
+            pageIndicator.visible = true;
+            upButton.renderButton(poseStack, mouseX, mouseY, partialTick);
+            downButton.renderButton(poseStack, mouseX, mouseY, partialTick);
+            pageIndicator.setMessage(Component.literal(String.valueOf(page+1)));
+            pageIndicator.renderButton(poseStack, mouseX, mouseY, partialTick);
+        }
+        else{
+            upButton.visible = false;
+            downButton.visible = false;
+            pageIndicator.visible = false;
+        }
+
+        //this.font.draw(poseStack, Component.literal(String.valueOf(page)), (float) this.leftPos+this.inventoryLabelX+this.imageWidth, this.topPos+this.inventoryLabelY+40, 0xFFFFFF)
 
 
-
-
-
-
+        //スロット減少時にページを強制的に巻き戻す
+        boolean existActiveSlot = false;
         for(int k = 0; k < this.menu.slots.size(); ++k) {
             Slot slot = this.menu.slots.get(k);
 
@@ -165,6 +179,16 @@ public class ContainerScreenMixin<T extends AbstractContainerMenu> extends Scree
             {
                 patchSlot(((IHasSlotType)slot).getType(), poseStack, slot);
             }
+            else if(((IHasSlotType)slot).getType() == SlotType.INVENTORY)
+            {
+                existActiveSlot = true;
+            }
+        }
+        if(!existActiveSlot)
+        {
+            previousPage();
+            Messager.sendToServer(new PageChangedPacket(page));
+            this.menu.slots.forEach(slot -> ((IHasSlotPage)slot).setPage(page));
         }
     }
 
