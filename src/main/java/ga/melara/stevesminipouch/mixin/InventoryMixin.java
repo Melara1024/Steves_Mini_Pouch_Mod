@@ -423,6 +423,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void updateStorageSize()
     {
+        Thread t = Thread.currentThread();
+        String name = t.getName();
+        System.out.println("name=" + name);
+
         System.out.printf("effect -> %d%n", effectSize);
         System.out.printf("enchant -> %d%n", enchantSize);
 
@@ -432,6 +436,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void changeEffectSize(int change)
     {
+        System.out.printf("changeEffectSize -> %s\n", player.getLevel().isClientSide()?"client": "server");
         effectSize = change;
         updateStorageSize();
     }
@@ -440,7 +445,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @OnlyIn(Dist.CLIENT)
     public void syncEffectSizeToClient(EffectSlotSyncEvent e)
     {
-        this.effectSize = ClientInventoryData.getEffectSlot();
+        System.out.println("sync method");
+        this.effectSize = e.getEffectSize();
         updateStorageSize();
     }
 

@@ -43,7 +43,9 @@ public class SlotEffect extends MobEffect {
             if (player instanceof  ServerPlayer serverPlayer)
                 Messager.sendToPlayer(new EffectSlotSyncPacket(0), serverPlayer);
         }
-        livingentity.setAbsorptionAmount(livingentity.getAbsorptionAmount() - (float)(4 * (p_19419_ + 1)));
+        //livingentity.setAbsorptionAmount(livingentity.getAbsorptionAmount() - (float)(4 * (p_19419_ + 1)));
+
+        System.out.printf("attributemap -> \n" , p_19418_);
         super.removeAttributeModifiers(livingentity, p_19418_, p_19419_);
     }
 
@@ -60,7 +62,10 @@ public class SlotEffect extends MobEffect {
                 Messager.sendToPlayer(new EffectSlotSyncPacket(p_19423_), serverPlayer);
         }
 
-        livingentity.setAbsorptionAmount(livingentity.getAbsorptionAmount() + (float)(4 * (p_19423_ + 1)));
+        //livingentity.setAbsorptionAmount(livingentity.getAbsorptionAmount() + (float)(4 * (p_19423_ + 1)));
+
+        System.out.println("");
+        System.out.printf("attributemap -> %s\n" , p_19422_.toString());
         super.addAttributeModifiers(livingentity, p_19422_, p_19423_);
     }
 

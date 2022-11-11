@@ -18,7 +18,7 @@ public class SlotEnchant extends Enchantment {
 
     public SlotEnchant()
     {
-        super(Rarity.RARE, EnchantmentCategory.ARMOR_CHEST, new EquipmentSlot[]{EquipmentSlot.CHEST});
+        super(Rarity.RARE, EnchantmentCategory.ARMOR, new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.LEGS});
     }
 
 
@@ -36,7 +36,7 @@ public class SlotEnchant extends Enchantment {
     }
 
     public int getMaxLevel() {
-        return 2;
+        return 27;
     }
 
 }
