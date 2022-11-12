@@ -219,6 +219,9 @@ public class SlotChangeCommand {
     private static int setSlot(CommandSourceStack p_136960_, Collection<? extends Entity> p_136961_, int change) throws CommandSyntaxException
     {
         System.out.println("run setslot command");
+        Thread thread = Thread.currentThread();
+
+        System.out.printf("thread => %s, %s \n", thread.getName(), thread.getId());
         int applied = 0;
         for(Entity entity : p_136961_) {
             if(entity instanceof Player player) {

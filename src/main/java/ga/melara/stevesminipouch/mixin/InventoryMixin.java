@@ -214,21 +214,21 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public void toggleInventory(Player player) {
-        setArmor(player, false);
-        setCraft(player, false);
-        setStorageSize(1, player);
+        setArmor(this.player, false);
+        setCraft(this.player, false);
+        setStorageSize(1, this.player);
 
         isActiveInventory = !isActiveInventory;
         System.out.printf("isActivateInvetory -> %b\n", isActiveInventory);
 
-        ((IMenuChangable) player.containerMenu).toggleInventory(player);
+        ((IMenuChangable) this.player.containerMenu).toggleInventory(this.player);
 
-        if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Inventory Toggled!"));
+        if(this.player.getLevel().isClientSide()) this.player.sendSystemMessage(Component.literal("Inventory Toggled!"));
     }
 
     @Override
         public void setArmor(Player player, boolean change) {
-        if(change != isActiveArmor) toggleArmor(player);
+        if(change != isActiveArmor) toggleArmor(this.player);
     }
 
 

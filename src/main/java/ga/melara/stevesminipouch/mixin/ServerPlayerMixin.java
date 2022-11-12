@@ -36,9 +36,5 @@ public class ServerPlayerMixin {
             System.out.println("initMenu called from serverplayer");
             ((IMenuSynchronizer) p_143400_).setStatsSynchronizer(this.statsSynchronizer);
         }
-
-
     }
-
-
 }
