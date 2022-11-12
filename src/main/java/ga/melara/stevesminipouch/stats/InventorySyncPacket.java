@@ -8,41 +8,32 @@ import java.util.function.Supplier;
 
 public class InventorySyncPacket {
 
-    private boolean isActiveInventory;
-    private boolean isActiveOffhand;
-    private boolean isActivateCraft;
-    private boolean isActivateArmor;
-    private int slot;
-
-    private int effectSlot;
+    PlayerInventorySizeData data;
 
     public InventorySyncPacket(PlayerInventorySizeData data) {
-        this.isActiveInventory = data.isActiveInventory();
-        this.isActiveOffhand = data.isActiveOffhand();
-        this.isActivateArmor = data.isEquippable();
-        this.isActivateCraft = data.isCraftable();
-        this.slot = data.getSlot();
-        this.effectSlot = data.getEffectSlot();
+        this.data = data;
 
         System.out.println("inventorySyncPacket init");
     }
 
     public InventorySyncPacket(FriendlyByteBuf buf) {
-        isActiveInventory = buf.readBoolean();
-        isActivateArmor = buf.readBoolean();
-        isActiveOffhand = buf.readBoolean();
-        isActivateCraft = buf.readBoolean();
-        slot = buf.readInt();
-        effectSlot = buf.readInt();
+        boolean isActivateInventory = buf.readBoolean();
+        boolean isActivateArmor = buf.readBoolean();
+        boolean isActiveOffhand = buf.readBoolean();
+        boolean isActivateCraft = buf.readBoolean();
+        int slot = buf.readInt();
+        int effectSlot = buf.readInt();
+
+        this.data = new PlayerInventorySizeData(slot, effectSlot, isActivateInventory, isActiveOffhand, isActivateCraft, isActivateArmor);
     }
 
     public void toBytes(FriendlyByteBuf buf) {
-        buf.writeBoolean(isActiveInventory);
-        buf.writeBoolean(isActivateArmor);
-        buf.writeBoolean(isActiveOffhand);
-        buf.writeBoolean(isActivateCraft);
-        buf.writeInt(slot);
-        buf.writeInt(effectSlot);
+        buf.writeBoolean(this.data.isActiveInventory());
+        buf.writeBoolean(this.data.isEquippable());
+        buf.writeBoolean(this.data.isActiveOffhand());
+        buf.writeBoolean(this.data.isCraftable());
+        buf.writeInt(this.data.getSlot());
+        buf.writeInt(this.data.getEffectSlot());
     }
 
     //こいつ自身はサーバーのクラス
@@ -50,11 +41,10 @@ public class InventorySyncPacket {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
 
-            ClientInventoryData.set(slot, isActiveInventory, isActivateArmor, isActiveOffhand, isActivateCraft);
 
             //ここからイベントを送信して初期化？
 
-            MinecraftForge.EVENT_BUS.post(new InventorySyncEvent());
+            MinecraftForge.EVENT_BUS.post(new InventorySyncEvent(this.data));
 
             ctx.setPacketHandled(true);
         });

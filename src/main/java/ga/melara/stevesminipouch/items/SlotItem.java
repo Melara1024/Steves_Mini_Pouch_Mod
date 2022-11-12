@@ -27,8 +27,6 @@ public class SlotItem extends FunctionFoodItem {
         if(!(entity instanceof Player)) return;
 
         Player player = (Player) entity;
-        if(player.getLevel().isClientSide()) System.out.println("here is client side!");
-        else System.out.println("here is server side");
 
         ((IStorageChangable) player.getInventory()).changeStorageSize(changeValue, player);
 

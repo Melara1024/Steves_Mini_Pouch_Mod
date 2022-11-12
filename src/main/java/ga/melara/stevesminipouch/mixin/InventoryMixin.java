@@ -3,7 +3,6 @@ package ga.melara.stevesminipouch.mixin;
 import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.ModRegistry;
 import ga.melara.stevesminipouch.event.EffectSlotSyncEvent;
-import ga.melara.stevesminipouch.stats.ClientInventoryData;
 import ga.melara.stevesminipouch.stats.InventorySyncEvent;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.util.*;
@@ -105,16 +104,16 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         this.effectSize = effectSize;
         setStorageSize(slot, player);
 
-        setInventory(inv, player);
+        setInventory(player, inv);
         ((IMenuChangable) player.containerMenu).toggleInventory(player);
 
-        setArmor(arm, player);
+        setArmor(player, arm);
         ((IMenuChangable) player.containerMenu).toggleArmor(player);
 
-        setOffhand(off, player);
+        setOffhand(player, off);
         ((IMenuChangable) player.containerMenu).toggleOffhand(player);
 
-        setCraft(cft, player);
+        setCraft(player, cft);
         ((IMenuChangable) player.containerMenu).toggleCraft(player);
     }
 
@@ -128,12 +127,14 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public void initClient(InventorySyncEvent e) {
         System.out.println(player);
         System.out.println("init client");
-        initMiniPouch(ClientInventoryData.getSlot(),
-                ClientInventoryData.getEffectSlot(),
-                ClientInventoryData.isActiveInventory(),
-                ClientInventoryData.isEquippable(),
-                ClientInventoryData.isActiveOffhand(),
-                ClientInventoryData.isCraftable());
+
+        PlayerInventorySizeData data = e.getData();
+        initMiniPouch(data.getSlot(),
+                data.getEffectSlot(),
+                data.isActiveInventory(),
+                data.isEquippable(),
+                data.isActiveOffhand(),
+                data.isCraftable());
     }
 
 
@@ -205,15 +206,16 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     }
 
 
-    public void setInventory(boolean change, Player player) {
+    @Override
+    public void setInventory(Player player, boolean change) {
         if(change != isActiveInventory) toggleInventory(player);
     }
 
 
     @Override
     public void toggleInventory(Player player) {
-        setArmor(false, player);
-        setCraft(false, player);
+        setArmor(player, false);
+        setCraft(player, false);
         setStorageSize(1, player);
 
         isActiveInventory = !isActiveInventory;
@@ -224,7 +226,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Inventory Toggled!"));
     }
 
-    public void setArmor(boolean change, Player player) {
+    @Override
+        public void setArmor(Player player, boolean change) {
         if(change != isActiveArmor) toggleArmor(player);
     }
 
@@ -277,7 +280,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Armor Toggled!"));
     }
 
-    public void setOffhand(boolean change, Player player) {
+    @Override
+    public void setOffhand(Player player, boolean change) {
         if(change != isActiveOffhand) toggleOffhand(player);
     }
 
@@ -314,7 +318,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Offhand Toggled!"));
     }
 
-    public void setCraft(boolean change, Player player) {
+    @Override
+    public void setCraft(Player player, boolean change) {
         if(change != isActiveCraft) toggleCraft(player);
     }
 
@@ -350,6 +355,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         return this.isActiveCraft;
     }
 
+    @Override
     public void setStorageSize(int change, Player player) {
         changeStorageSize(change - inventorySize, player);
     }

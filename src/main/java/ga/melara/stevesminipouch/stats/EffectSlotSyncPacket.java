@@ -29,8 +29,6 @@ public class EffectSlotSyncPacket {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
 
-            ClientInventoryData.setEffectSlot(effectSlot);
-
             //ここからイベントを送信して初期化？
 
             MinecraftForge.EVENT_BUS.post(new EffectSlotSyncEvent(effectSlot));

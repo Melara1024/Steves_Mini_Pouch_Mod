@@ -47,27 +47,4 @@ public class StevesMiniPouch {
         SlotChangeCommand.register(event.getDispatcher());
     }
 
-
-    //パケット送信の例
-    @SubscribeEvent
-    public void a(PlayerSetSpawnEvent e) {
-
-
-    }
-
-    @SubscribeEvent
-    public void b(ClientChatReceivedEvent e) {
-
-        //Messager.sendToPlayer(new PacketSync(p), serverPlayer);
-        //System.out.println("hello client! from server.");
-
-
-        System.out.println("I got data! ->" + ClientInventoryData.getSlot());
-        System.out.println("I got data! ->" + ClientInventoryData.isActiveInventory());
-        System.out.println("I got data! ->" + ClientInventoryData.isActiveOffhand());
-        System.out.println("I got data! ->" + ClientInventoryData.isCraftable());
-        System.out.println("I got data! ->" + ClientInventoryData.isEquippable());
-
-
-    }
 }
