@@ -7,11 +7,14 @@ import ga.melara.stevesminipouch.stats.PageChangedPacket;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -140,6 +143,13 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
             upButton.visible = true;
             downButton.visible = true;
             pageIndicator.visible = true;
+
+
+            upButton.x = this.leftPos + this.inventoryLabelX + this.imageWidth - 5;
+            downButton.x = this.leftPos + this.inventoryLabelX + this.imageWidth - 5;
+            pageIndicator.x = this.leftPos + this.inventoryLabelX + this.imageWidth - 5;
+
+
             upButton.renderButton(poseStack, mouseX, mouseY, partialTick);
             downButton.renderButton(poseStack, mouseX, mouseY, partialTick);
             pageIndicator.setMessage(Component.literal(String.valueOf(page + 1)));
@@ -152,6 +162,8 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
         //this.font.draw(poseStack, Component.literal(String.valueOf(page)), (float) this.leftPos+this.inventoryLabelX+this.imageWidth, this.topPos+this.inventoryLabelY+40, 0xFFFFFF)
 
+        int j = this.getBlitOffset();
+        this.setBlitOffset(-90);
 
         //スロット減少時にページを強制的に巻き戻す
         boolean existActiveSlot = false;
@@ -175,7 +187,10 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
             } else if(((IHasSlotType) slot).getType() == SlotType.INVENTORY) {
                 existActiveSlot = true;
             }
+
         }
+
+        this.setBlitOffset(j);
         if(!existActiveSlot) {
             previousPage();
             Messager.sendToServer(new PageChangedPacket(page));
@@ -187,6 +202,6 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         RenderSystem.setShaderTexture(0, PATCH);
         RenderSystem.enableTexture();
         RenderSystem.enableDepthTest();
-        this.blit(poseStack, slot.x + leftPos - 1, slot.y + topPos - 1, this.getBlitOffset(), 18, 18, 21);
+        this.blit(poseStack, slot.x + leftPos - 1, slot.y + topPos - 1, 0, 0, 18, 18, 18, 18);
     }
 }

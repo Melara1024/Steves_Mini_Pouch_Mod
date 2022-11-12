@@ -518,7 +518,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public PlayerInventorySizeData getAllData() {
-        return new PlayerInventorySizeData(inventorySize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
+        return new PlayerInventorySizeData(inventorySize, isActiveInventory, isActiveOffhand, isActiveCraft, isActiveArmor);
     }
 
     @Inject(method = "save(Lnet/minecraft/nbt/ListTag;)Lnet/minecraft/nbt/ListTag;", at = @At(value = "HEAD"), cancellable = true)
