@@ -207,7 +207,6 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
         for(Slot slot : this.slots) {
             if(((IHasSlotType) slot).getType() == SlotType.INVENTORY || ((IHasSlotType) slot).getType() == SlotType.HOTBAR) {
                 ((IHasSlotPage) slot).setPage(((IHasSlotPage) slot).getPage());
-                System.out.println("change storage size");
             }
         }
         //……しようかなとおもったけど面倒なのでitemsのlockリストをスロット側から入手する

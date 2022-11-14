@@ -81,7 +81,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         @Override
         public Iterator<NonNullList<ItemStack>> iterator()
         {
-            System.out.println("called iterator");
             synchronized (this)
             {
                 return super.iterator();

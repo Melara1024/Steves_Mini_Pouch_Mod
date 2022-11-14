@@ -42,7 +42,7 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
     private Consumer<ItemStack> observer = new Consumer<ItemStack>() {
         @Override
         public void accept(ItemStack itemStack) {
-            System.out.println("called pre");
+
         }
     };
     private boolean isActivateObserver = false;
