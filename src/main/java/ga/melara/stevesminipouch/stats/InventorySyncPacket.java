@@ -12,8 +12,6 @@ public class InventorySyncPacket {
 
     public InventorySyncPacket(PlayerInventorySizeData data) {
         this.data = data;
-
-        System.out.println("inventorySyncPacket init");
     }
 
     public InventorySyncPacket(FriendlyByteBuf buf) {

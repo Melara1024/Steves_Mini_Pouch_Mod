@@ -44,10 +44,6 @@ public class ModRegistry {
 
                 item.fillItemCategory(this, pItems);
             }
-
-            pItems.forEach((i) -> {
-                System.out.println(i.getItem());
-            });
         }
     };
 

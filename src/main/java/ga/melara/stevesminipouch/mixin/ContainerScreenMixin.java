@@ -177,7 +177,8 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
             //ARMOR,OFFHANDのhide設定がなされていない？
             //initializeはAbstractContainerMenu内のメソッド，なのでCreativeScreenからは呼ばれない！
 
-            //System.out.println("slotType -> " + ((IHasSlotType)slot).getType());
+            //System.out.println
+            // ("slotType -> " + ((IHasSlotType)slot).getType());
             //System.out.println("slotCont -> " + slot.container);
 
             if(!((ISlotHidable) slot).isShowing()) {
