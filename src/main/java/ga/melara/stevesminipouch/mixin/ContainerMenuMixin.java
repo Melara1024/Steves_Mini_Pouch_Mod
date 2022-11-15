@@ -244,6 +244,13 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
         //Todo もし最大ページが縮んだ場合ページを巻き戻す
 
+        //こいつは問題ない，たぶんクライアント側のメニューにページの状態が共有されていない
+        //サーバー側からページ変更を通達するためのパケットも作る？
+
+        //とりあえずこの部分がクライアントからも呼ばれているか確認
+
+        //maxpageが負になる問題も解決する
+
 
         for(Slot slot : this.slots) {
             if(((IHasSlotType) slot).getType() == SlotType.INVENTORY || ((IHasSlotType) slot).getType() == SlotType.HOTBAR) {
