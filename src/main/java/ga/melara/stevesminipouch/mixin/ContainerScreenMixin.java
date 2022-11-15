@@ -125,12 +125,12 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
     }
 
     //最大値はClient側menuよりthis.menuとして入手
-    private void nextPage() {
+    public void nextPage() {
         if(page < (((IStorageChangable) Minecraft.getInstance().player.getInventory()).getMaxPage())) page++;
         //ここでもスロットの更新(表示，非表示の切り替え)をかける？
     }
 
-    private void previousPage() {
+    public void previousPage() {
         if(page > 0) page--;
         //ここでもスロットの更新(表示，非表示の切り替え)をかける？
     }
@@ -165,8 +165,6 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         int j = this.getBlitOffset();
         this.setBlitOffset(-90);
 
-        //スロット減少時にページを強制的に巻き戻す
-        boolean existActiveSlot = false;
         for(int k = 0; k < this.menu.slots.size(); ++k) {
             Slot slot = this.menu.slots.get(k);
 
@@ -184,18 +182,15 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
             if(!((ISlotHidable) slot).isShowing()) {
                 patchSlot(((IHasSlotType) slot).getType(), poseStack, slot);
-            } else if(((IHasSlotType) slot).getType() == SlotType.INVENTORY) {
-                existActiveSlot = true;
             }
 
         }
 
         this.setBlitOffset(j);
-        if(!existActiveSlot) {
-            previousPage();
-            Messager.sendToServer(new PageChangedPacket(page));
-            this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
-        }
+
+        //ここがクリエのバグの原因かも
+        //アーマーを脱ぎ着したときにページを戻す操作を別の方法で実装する
+
     }
 
     private void patchSlot(SlotType type, PoseStack poseStack, Slot slot) {

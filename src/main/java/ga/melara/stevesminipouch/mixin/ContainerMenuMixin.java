@@ -1,5 +1,6 @@
 package ga.melara.stevesminipouch.mixin;
 
+import com.google.common.base.Suppliers;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
 import ga.melara.stevesminipouch.event.PageChangeEvent;
@@ -8,6 +9,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.util.thread.SidedThreadGroups;
@@ -17,6 +19,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.function.Supplier;
 
 @Mixin(AbstractContainerMenu.class)
 public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchronizer {
@@ -43,9 +47,26 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     //Todo 閉鎖時はスロットを強制的に1に，その他の機能も全て閉鎖する(オフハンドを除く)
 
 
+    //Todo メニューの初期化がおかしい
+    //元あったインベントリ36枠とアーマーの枠，オフハンドの枠はちゃんと読み込まれる
+    //追加枠が一部だけ読み込まれない現象が起きる？
+    //ページ変更しても読み込まれない->そもそもクライアント側インベントリにアイテムが入っていない？
+    //枠のみが同期されてアイテムの同期が遅れている？
+
+
     @Shadow
     public NonNullList<Slot> slots;
 
+
+    @Shadow public abstract void sendAllDataToRemote();
+
+    @Shadow public abstract void broadcastChanges();
+
+    @Shadow public abstract void broadcastFullState();
+
+    @Shadow public void triggerSlotListeners(int p_150408_, ItemStack p_150409_, Supplier<ItemStack> p_150410_){}
+
+    @Shadow protected abstract void synchronizeSlotToRemote(int p_150436_, ItemStack p_150437_, Supplier<ItemStack> p_150438_);
 
     //こいつを使ってクライアントにデータを送る
     StatsSynchronizer synchronizer;
@@ -78,8 +99,8 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     @Inject(method = "initializeContents(ILjava/util/List;Lnet/minecraft/world/item/ItemStack;)V", at = @At(value = "RETURN"), cancellable = true)
     public void oninitContent(CallbackInfo ci) {
         //ここでスロットの初期設定をする？
-//        System.out.println("initialize Contents");
-//
+        System.out.println("initialize Contents");
+
 
         System.out.println(Thread.currentThread().getThreadGroup() == SidedThreadGroups.CLIENT ? "client menu!" : "server menu");
 
@@ -105,20 +126,36 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
     @SubscribeEvent
     public void onPageChange(PageChangeEvent e) {
+
         //System.out.println("hello! from abstractcontainermenu! " + e.getPage());
         //送られてきたページ変数が正しいかどうかの処理はスロット側で行う
         //ここでは変な値が送られてきたとしても無視
+
+        int i=0;
         for(Slot s : this.slots) {
             //スロットに対してページ変更を報告
             ((IHasSlotPage) s).setPage(e.getPage());
 
+            System.out.printf("setpage %d: item->%s\n",((IHasSlotPage) s).getPage(),s.getItem());
 
             //スロットを再度初期化
+            //まさかまたスレッド関係の問題か
+            //
             //if(e.getPage() > 0)s.initialize(s.container.getItem(s.getSlotIndex() + e.getPage()*27 + 5));
             //System.out.println(s.getItem().getDisplayName().toString());
+
+            i++;
         }
 
-        //broadcastFullState();
+
+        //Todo なぜかsendAllDataでアイテムがつまめなくなる？
+        //Todo クリエスロットのアイテムがつまめないだけ？
+        //Todo とりあえずページ変更時にアイテムが抜ける問題だけはこれで解決可能
+
+        //Todo クリエのときだけページセットが無限ループしている？
+
+        sendAllDataToRemote();
+
 
         //System.out.println("page flipped to " + e.getPage());
     }
@@ -202,12 +239,16 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     }
 
     @Override
-    public void changeStorageSize(int change, Player player) {
+    public void changeStorageSize(int change, int maxpage, Player player) {
         //36スロットより少ないとき，slots内のSlotType.INVENTORYを後ろから無効化
+
+        //Todo もし最大ページが縮んだ場合ページを巻き戻す
+
+
         for(Slot slot : this.slots) {
             if(((IHasSlotType) slot).getType() == SlotType.INVENTORY || ((IHasSlotType) slot).getType() == SlotType.HOTBAR) {
-                ((IHasSlotPage) slot).setPage(((IHasSlotPage) slot).getPage());
-                System.out.println("change storage size");
+                int page = ((IHasSlotPage) slot).getPage();
+                ((IHasSlotPage) slot).setPage(page>maxpage? page-1 : page);
             }
         }
         //……しようかなとおもったけど面倒なのでitemsのlockリストをスロット側から入手する

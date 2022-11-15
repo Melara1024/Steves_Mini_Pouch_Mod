@@ -21,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Final;
@@ -81,7 +82,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         @Override
         public Iterator<NonNullList<ItemStack>> iterator()
         {
-            System.out.println("called iterator");
             synchronized (this)
             {
                 return super.iterator();
@@ -284,11 +284,14 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 //Fixme このオブザーバーは呼ばれていない
                 System.out.println("called observer!!");
                 System.out.println(player.getLevel().isClientSide());
+
+
                 enchantSize = 0;
                 armor.forEach(
                         (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
                 );
                 updateStorageSize();
+
             });
             compartments.add(1, armor);
         }
@@ -443,7 +446,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             compartments.add(0, items);
         }
 
-        ((IMenuChangable) player.containerMenu).changeStorageSize(change, player);
+        ((IMenuChangable) player.containerMenu).changeStorageSize(change,getMaxPage(),  player);
 
 
         //サーバーにこれを送信しようとしたときにも通信エラーの同じようなのが出る？　やっぱり間違った方面での送信が原因なのでは
@@ -663,6 +666,18 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             }
         }
 
+    }
+
+    //なんかsurvival inventoryのボタンを押すとxが消える？
+    //さわれない状態は継続
+
+    @SubscribeEvent
+    public void oncommand(ClientChatEvent e)
+    {
+        for (int i=0; i<items.size(); i++)
+        {
+            System.out.printf("id %d: %s\n", i, items.get(i));
+        }
     }
 
     @Inject(method = "getItem(I)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "HEAD"), cancellable = true)

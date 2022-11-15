@@ -19,5 +19,5 @@ public interface IMenuChangable {
 
     abstract void toggleOffhand(Player player);
 
-    abstract void changeStorageSize(int change, Player player);
+    abstract void changeStorageSize(int change, int maxpage, Player player);
 }

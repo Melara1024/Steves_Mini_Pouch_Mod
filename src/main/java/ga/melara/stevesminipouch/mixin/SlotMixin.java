@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Optional;
 
 @Mixin(Slot.class)
-public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
+public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
     /*
     Todo スロットのアクティブ状態を変更できるようにする，新変数closedSlotを追加，これによって閉じられたスロットを表現する
 
@@ -59,6 +59,8 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
     public void setChanged() {
     }
 
+    @Shadow public abstract void initialize(ItemStack p_219997_);
+
     private boolean isShowing = true;
 
 
@@ -82,6 +84,7 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
                 hide();
             }
         }
+
     }
 
     @Override
@@ -163,6 +166,8 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
         if(this.type == SlotType.RESULT) {
 
         }
+
+
     }
 
     @Inject(method = "set(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
@@ -198,13 +203,15 @@ public class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
         //System.out.println("called slot is " + (this.slot + 27*page + 5));
         if(this.type == SlotType.INVENTORY && page > 0) {
             if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()
-                    && ((IStorageChangable) container).isValidSlot(this.slot + 27 * page + 5)) {
+                    && ((IStorageChangable) container).isValidSlot(this.slot + 27 * page + 5)
+            ) {
                 this.show();
                 //System.out.println("set item to " +  (this.slot + 27*page + 5) + " name " + this.container.getItem(this.slot + 27*page + 5));
                 cir.setReturnValue(this.container.getItem(this.slot + 27 * page + 5));
             } else {
                 //スロットが指す位置のアイテムがそもそも範囲外だった場合
                 this.hide();
+                //Fix me slotからgetするときにこれによってairが入ったか
                 cir.setReturnValue(ItemStack.EMPTY);
             }
         }
