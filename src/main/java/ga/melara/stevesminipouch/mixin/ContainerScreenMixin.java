@@ -2,6 +2,8 @@ package ga.melara.stevesminipouch.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import ga.melara.stevesminipouch.event.PageChangeEvent;
+import ga.melara.stevesminipouch.event.PageReduceEvent;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.stats.PageChangedPacket;
 import ga.melara.stevesminipouch.util.*;
@@ -16,6 +18,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -69,6 +73,11 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
     //dummy
     protected ContainerScreenMixin(Component p_96550_) {
         super(p_96550_);
+    }
+
+    @Inject(method = "<init>", at = @At(value = "RETURN"), cancellable = true)
+    public void onInit(CallbackInfo ci) {
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Inject(method = "renderSlot(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/inventory/Slot;)V", at = @At(value = "HEAD"), cancellable = true)
@@ -168,6 +177,8 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         for(int k = 0; k < this.menu.slots.size(); ++k) {
             Slot slot = this.menu.slots.get(k);
 
+
+
             SlotType.setHiding(slot);
 
             if(((IHasSlotType) slot).getType() == SlotType.UNDEFINED) {
@@ -191,6 +202,16 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
         //ここがクリエのバグの原因かも
         //アーマーを脱ぎ着したときにページを戻す操作を別の方法で実装する
+
+    }
+
+    @SubscribeEvent
+    public void onPageChange(PageReduceEvent e) {
+
+        System.out.printf("Page reduced on %s\n", Thread.currentThread().toString());
+        page = 0;
+        Messager.sendToServer(new PageChangedPacket(page));
+        this.menu.slots.forEach(slot -> {if(((IHasSlotType)slot).getType() == SlotType.INVENTORY) ((IHasSlotPage) slot).setPage(page);});
 
     }
 

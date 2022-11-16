@@ -1,10 +1,12 @@
 package ga.melara.stevesminipouch.mixin;
 
 import com.google.common.base.Suppliers;
+import ga.melara.stevesminipouch.event.PageReduceEvent;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
 import ga.melara.stevesminipouch.event.PageChangeEvent;
 import ga.melara.stevesminipouch.util.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -133,26 +135,9 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
         int i=0;
         for(Slot s : this.slots) {
-            //スロットに対してページ変更を報告
             ((IHasSlotPage) s).setPage(e.getPage());
-
-            System.out.printf("setpage %d: item->%s\n",((IHasSlotPage) s).getPage(),s.getItem());
-
-            //スロットを再度初期化
-            //まさかまたスレッド関係の問題か
-            //
-            //if(e.getPage() > 0)s.initialize(s.container.getItem(s.getSlotIndex() + e.getPage()*27 + 5));
-            //System.out.println(s.getItem().getDisplayName().toString());
-
             i++;
         }
-
-
-        //Todo なぜかsendAllDataでアイテムがつまめなくなる？
-        //Todo クリエスロットのアイテムがつまめないだけ？
-        //Todo とりあえずページ変更時にアイテムが抜ける問題だけはこれで解決可能
-
-        //Todo クリエのときだけページセットが無限ループしている？
 
         sendAllDataToRemote();
 
@@ -251,14 +236,18 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
         //maxpageが負になる問題も解決する
 
-
-        for(Slot slot : this.slots) {
-            if(((IHasSlotType) slot).getType() == SlotType.INVENTORY || ((IHasSlotType) slot).getType() == SlotType.HOTBAR) {
-                int page = ((IHasSlotPage) slot).getPage();
-                ((IHasSlotPage) slot).setPage(page>maxpage? page-1 : page);
+        if(player.getLevel().isClientSide())
+        {
+            for(Slot s : slots)
+            {
+                if(((IHasSlotPage)s).getPage() > maxpage)
+                {
+                    MinecraftForge.EVENT_BUS.post(new PageReduceEvent(maxpage));
+                    return;
+                }
             }
+            //ページ変更イベント発火
         }
-        //……しようかなとおもったけど面倒なのでitemsのlockリストをスロット側から入手する
     }
 
     @Inject(method = "addSlot(Lnet/minecraft/world/inventory/Slot;)Lnet/minecraft/world/inventory/Slot;", at = @At("RETURN"), cancellable = true)
