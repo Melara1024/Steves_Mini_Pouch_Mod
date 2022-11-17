@@ -23,6 +23,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -617,7 +618,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 }
             }
 
-            //items.forEach(System.out::println);
+
         }
 
         //System.out.println("load finished...");
@@ -674,6 +675,17 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @SubscribeEvent
     public void oncommand(ClientChatEvent e)
     {
+        System.out.println("client chat");
+        for (int i=0; i<items.size(); i++)
+        {
+            System.out.printf("id %d: %s\n", i, items.get(i));
+        }
+    }
+
+    @SubscribeEvent
+    public void oncommand(ServerChatEvent e)
+    {
+        System.out.println("server chat");
         for (int i=0; i<items.size(); i++)
         {
             System.out.printf("id %d: %s\n", i, items.get(i));
@@ -797,6 +809,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 tag.add(compoundtag);
             }
         }
+
+
+
         return tag;
     }
 
@@ -812,6 +827,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 }
             }
         }
+
+        items.forEach(System.out::println);
+
     }
 
 

@@ -70,6 +70,8 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
     @Shadow protected abstract void synchronizeSlotToRemote(int p_150436_, ItemStack p_150437_, Supplier<ItemStack> p_150438_);
 
+    @Shadow public abstract ItemStack getCarried();
+
     //こいつを使ってクライアントにデータを送る
     StatsSynchronizer synchronizer;
 
@@ -150,7 +152,13 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
         //インベントリ消滅の原因は処理が遅くて表示に間に合わないせい？
 
-        //sendAllDataToRemote();
+        //setCarriedより先にsendが発生しているせい
+        //setCarriedの後にsendAllDataが発火されるように調整する
+        System.out.println("get carried");
+        System.out.println(getCarried());
+        sendAllDataToRemote();
+
+
 
         //消えなくはなったけどエフェクトがログイン時に再適用されない
         //ページ変更時にスロットの初期化がおかしいのも変わらない
