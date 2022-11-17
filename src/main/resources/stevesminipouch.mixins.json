@@ -17,7 +17,12 @@
   "client": [
     "GuiMixin",
     "MinecraftMixin",
-    "TutorialMixin"
+    "TutorialMixin",
+    "prevent_throw.AbstractFurnaceScreenMixin",
+    "prevent_throw.CraftingScreenMixin",
+    "prevent_throw.CreativeModeInventoryScreenMixin",
+    "prevent_throw.InventoryScreenMixin",
+    "prevent_throw.LoomScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

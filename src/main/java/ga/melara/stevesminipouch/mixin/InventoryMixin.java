@@ -135,9 +135,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         ((IMenuChangable) player.containerMenu).toggleCraft(player);
     }
 
-    public void initServer(int slot, boolean inv, boolean arm, boolean off, boolean cft) {
+    public void initServer(int slot, int effect, boolean inv, boolean arm, boolean off, boolean cft) {
         //System.out.println("init server");
-        initMiniPouch(slot, this.effectSize, inv, arm, off, cft);
+        initMiniPouch(slot, effect, inv, arm, off, cft);
     }
 
     @Override
@@ -436,7 +436,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
             itementity.setDefaultPickUpDelay();
             itementity.setThrower(player.getUUID());
-            level.addFreshEntity(itementity);
+            //level.addFreshEntity(itementity);
         }
 
         //最後にitemsを更新，参照をcompartmentsに挿入して終了
@@ -762,6 +762,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public CompoundTag saveStatus(CompoundTag tag) {
         tag.putInt("inventorysize", inventorySize);
+        tag.putInt("effectsize", effectSize);
         tag.putBoolean("activateinventory", isActiveInventory);
         tag.putBoolean("activateoffhand", isActiveOffhand);
         tag.putBoolean("craftable", isActiveCraft);
@@ -773,15 +774,16 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void loadStatus(CompoundTag tag) {
         int slt = tag.contains("inventorysize") ? tag.getInt("inventorysize") : Config.DEFAULT_SIZE.get();
+        int efc = tag.contains("effectsize") ? tag.getInt("effectsize") : 0;
         boolean inv = tag.contains("activateinventory") ? tag.getBoolean("activateinventory") : Config.DEFAULT_INVENTORY.get();
         boolean off = tag.contains("activateoffhand") ? tag.getBoolean("activateoffhand") : Config.DEFAULT_OFFHAND.get();
         boolean cft = tag.contains("craftable") ? tag.getBoolean("craftable") : Config.DEFAULT_CRAFT.get();
         boolean arm = tag.contains("equippable") ? tag.getBoolean("equippable") : Config.DEFAULT_ARMOR.get();
 
-        initServer(slt, inv, arm, off, cft);
+        initServer(slt, efc, inv, arm, off, cft);
 
         ServerPlayer serverPlayer = (ServerPlayer) player;
-        ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(slt, this.effectSize, inv, off, cft, arm));
+        ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(slt, efc, inv, off, cft, arm));
     }
 
     @Override

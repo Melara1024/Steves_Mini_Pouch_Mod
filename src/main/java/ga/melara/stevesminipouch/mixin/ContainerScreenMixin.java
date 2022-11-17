@@ -19,6 +19,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,11 +27,12 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
 @Mixin(AbstractContainerScreen.class)
-public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> extends Screen {
+public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> extends Screen implements IHasPageButton{
 
     /*
     Todo ページ変更システム，ボタンを押してページ変数のインクリメント，デクリメント
@@ -201,6 +203,43 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         this.setBlitOffset(j);
     }
 
+    @Override
+    public int getButtonX()
+    {
+        return upButton.x;
+    }
+
+    @Override
+    public int getButtonWidth()
+    {
+        return upButton.getWidth();
+    }
+
+    @Override
+    public int getButtonY()
+    {
+        return upButton.y;
+    }
+
+    @Override
+    public int getButtonHeight()
+    {
+        return downButton.getHeight()*3;
+    }
+
+    @Inject(method = "hasClickedOutside(DDIII)Z", at = @At(value = "HEAD"), cancellable = true)
+    protected void onClickedOutside(double mouseX, double mouseY, int leftPos, int RightPos, int p_97761_, CallbackInfoReturnable<Boolean> cir)
+    {
+        System.out.println("onClickedOutside");
+        System.out.printf("mouseX: %f, mouseY: %f, leftPos: %d, rightPos: %d, upButton.x: %d, dounButton.y: %d", mouseX, mouseY, leftPos, RightPos, upButton.x, downButton.y);
+        if(mouseX < getButtonX()+getButtonHeight() && mouseX > getButtonX() &&
+                mouseY < getButtonY()+getButtonHeight() && mouseY > getButtonY()
+        )
+        {
+            System.out.println("button");
+            cir.setReturnValue(false);
+        }
+    }
     @SubscribeEvent
     public void onPageReduce(PageReduceEvent e) {
         page = 0;

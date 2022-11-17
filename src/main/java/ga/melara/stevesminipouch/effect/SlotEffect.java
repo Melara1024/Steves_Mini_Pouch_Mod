@@ -35,6 +35,8 @@ public class SlotEffect extends MobEffect {
         //Todo エフェクトスロット数を何処かに保存しておく？
         //Todo PlayerかInventoryに保存しておくべき値
 
+        System.out.printf("called remove effect -> %d\n", p_19419_);
+
         if(livingentity instanceof Player player) {
             //System.out.printf("SlotEffect Removed! level -> %d%n", p_19419_);
             //Todo スロットエフェクト除去処理
@@ -50,7 +52,12 @@ public class SlotEffect extends MobEffect {
 
     @Override
     public void addAttributeModifiers(LivingEntity livingentity, AttributeMap p_19422_, int p_19423_) {
+
+        //Todo ログイン時に再現されているのはエフェクトがついていたという事実のみ？
+        //Todo エフェクトスロットも追加でNBTに一次保存する必要がある
         //Todo スロットを増やす
+
+        System.out.printf("called add effect -> %d\n", p_19423_);
 
         if(livingentity instanceof Player player) {
             //System.out.printf("SlotEffect Added! level -> %d%n", p_19423_);
@@ -64,6 +71,7 @@ public class SlotEffect extends MobEffect {
 
         System.out.println("");
         System.out.printf("attributemap -> %s\n", p_19422_.toString());
+
         super.addAttributeModifiers(livingentity, p_19422_, p_19423_);
     }
 

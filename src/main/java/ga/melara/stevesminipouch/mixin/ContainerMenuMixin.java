@@ -143,7 +143,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
         for(Slot s : this.slots) {
             ((IHasSlotPage) s).setPage(e.getPage());
-            System.out.println(s.getItem());
+            //System.out.println(s.getItem());
         }
 
 
