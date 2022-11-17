@@ -24,13 +24,15 @@ public enum SlotType {
         SlotType type = ((IHasSlotType) target).getType();
         int slot = target.getSlotIndex();
 
-        if(type == SlotType.INVENTORY && page > 0) {
+        if(type == SlotType.INVENTORY) {
             if(slot + 27 * page < ((IStorageChangable) container).getInventorySize()
-                    && ((IStorageChangable) container).isValidSlot(slot + 27 * page + 5)) {
+                    && ((IStorageChangable) container).isValidSlot(slot + 27 * page + page>0?5:0)) {
                 ((ISlotHidable) target).show();
             } else {
                 ((ISlotHidable) target).hide();
             }
+            //ここが呼ばれていない？
+
         }
         if(type == SlotType.HOTBAR) {
             if(((IStorageChangable) container).isValidSlot(slot)) {
@@ -63,7 +65,6 @@ public enum SlotType {
             }
             if(targetSlot.getSlotIndex() >= 9 && targetSlot.getSlotIndex() < 36) {
                 ((IHasSlotType) targetSlot).setType(SlotType.INVENTORY);
-                ((IHasSlotPage) targetSlot).setPage(0);
             }
             if(targetSlot.getSlotIndex() >= 36 && targetSlot.getSlotIndex() < 40) {
                 ((IHasSlotType) targetSlot).setType(SlotType.ARMOR);
@@ -82,6 +83,5 @@ public enum SlotType {
             //クラフティングの完成品スロットの場合
             ((IHasSlotType) targetSlot).setType(SlotType.RESULT);
         }
-
     }
 }

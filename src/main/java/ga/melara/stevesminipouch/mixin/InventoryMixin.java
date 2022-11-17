@@ -136,15 +136,15 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     }
 
     public void initServer(int slot, boolean inv, boolean arm, boolean off, boolean cft) {
-        System.out.println("init server");
+        //System.out.println("init server");
         initMiniPouch(slot, this.effectSize, inv, arm, off, cft);
     }
 
     @Override
     @SubscribeEvent
     public void initClient(InventorySyncEvent e) {
-        System.out.println(player);
-        System.out.println("init client");
+        //System.out.println(player);
+        //System.out.println("init client");
 
         PlayerInventorySizeData data = e.getData();
         initMiniPouch(data.getSlot(),
@@ -172,12 +172,12 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         items = LockableItemStackList.withSize(inventorySize, (Inventory) (Object) this, false);
         armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, false);
         ((LockableItemStackList) armor).setObserver((detectItem) -> {
-            System.out.println(player.getLevel().isClientSide ? "client" : "server");
+            //System.out.println(player.getLevel().isClientSide ? "client" : "server");
             enchantSize = 0;
             armor.forEach(
                     (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
             );
-            System.out.printf("enchantSize = %d\n", enchantSize);
+            //System.out.printf("enchantSize = %d\n", enchantSize);
             updateStorageSize();
         });
         offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, false);
@@ -237,7 +237,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         setStorageSize(1, this.player);
 
         isActiveInventory = !isActiveInventory;
-        System.out.printf("isActivateInvetory -> %b\n", isActiveInventory);
+        //System.out.printf("isActivateInvetory -> %b\n", isActiveInventory);
 
         ((IMenuChangable) this.player.containerMenu).toggleInventory(this.player);
 
@@ -253,7 +253,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void toggleArmor(Player player) {
 
-        System.out.println(player.getLevel().isClientSide ? "client inventory!" : "server inventory!");
+        //System.out.println(player.getLevel().isClientSide ? "client inventory!" : "server inventory!");
         //アーマーリストの無効化
         //溢れたアイテムを撒き散らす
         //menu.slotsを回してSlotType.ARMORを無効化・隠蔽処理有効化
@@ -282,8 +282,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, false);
             ((LockableItemStackList) armor).setObserver((detectItem) -> {
                 //Fixme このオブザーバーは呼ばれていない
-                System.out.println("called observer!!");
-                System.out.println(player.getLevel().isClientSide());
+                //System.out.println("called observer!!");
+                //System.out.println(player.getLevel().isClientSide());
 
 
                 enchantSize = 0;
@@ -409,7 +409,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
             for(int i = 0; i < (36 - allSize); i++) {
                 //まず頭から順にtrueにしていく
-                System.out.printf("allsize -> %d", allSize);
+                //System.out.printf("allsize -> %d", allSize);
                 newItems.lockList.set(35 - i, true);
             }
 
@@ -458,17 +458,17 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public void updateStorageSize() {
         Thread t = Thread.currentThread();
         String name = t.getName();
-        System.out.println("name=" + name);
+        //System.out.println("name=" + name);
 
-        System.out.printf("effect -> %d%n", effectSize);
-        System.out.printf("enchant -> %d%n", enchantSize);
+        //System.out.printf("effect -> %d%n", effectSize);
+        //System.out.printf("enchant -> %d%n", enchantSize);
 
         changeStorageSize(0, player);
     }
 
     @Override
     public void changeEffectSize(int change) {
-        System.out.printf("changeEffectSize -> %s\n", player.getLevel().isClientSide() ? "client" : "server");
+        //System.out.printf("changeEffectSize -> %s\n", player.getLevel().isClientSide() ? "client" : "server");
         effectSize = change;
         updateStorageSize();
     }
@@ -476,7 +476,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void syncEffectSizeToClient(EffectSlotSyncEvent e) {
-        System.out.println("sync method");
+        //System.out.println("sync method");
         this.effectSize = e.getEffectSize();
         updateStorageSize();
     }
@@ -528,7 +528,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Inject(method = "getSuitableHotbarSlot()I", at = @At(value = "RETURN"), cancellable = true)
     public void onGetSuitableHotbarSlot(CallbackInfoReturnable<Integer> cir) {
-        System.out.println("suitableHotbar" + cir.getReturnValue());
+        // System.out.println("suitableHotbar" + cir.getReturnValue());
     }
 
     @Inject(method = "getSelectionSize()I", at = @At(value = "HEAD"), cancellable = true)
@@ -620,13 +620,13 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             //items.forEach(System.out::println);
         }
 
-        System.out.println("load finished...");
+        //System.out.println("load finished...");
         ci.cancel();
     }
 
     @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSetItem(int id, ItemStack itemStack, CallbackInfo ci) {
-        System.out.println(itemStack);
+        //System.out.println(itemStack);
         synchronized (compartments) {
             if (id < 36) {
                 if (id + 1 > items.size()) ci.cancel();

@@ -172,6 +172,9 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
 
     @Inject(method = "set(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
     public void onSetItem(ItemStack p_40240_, CallbackInfo ci) {
+
+
+
         if(this.type == SlotType.INVENTORY && page > 0) {
             if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()
                     && ((IStorageChangable) container).isValidSlot(this.slot + 27 * page + 5)) {
@@ -256,7 +259,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
 
     @Inject(method = "tryRemove(IILnet/minecraft/world/entity/player/Player;)Ljava/util/Optional;", at = @At("HEAD"), cancellable = true)
     public void onTryRemoveItem(int p_150642_, int p_150643_, Player p_150644_, CallbackInfoReturnable<Optional<ItemStack>> cir) {
-        System.out.println("try remove on " + (this.slot + this.page * 27));
+        System.out.println("try remove on " + (this.slot));
     }
 
 }

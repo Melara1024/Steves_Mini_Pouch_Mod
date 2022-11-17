@@ -15,6 +15,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
@@ -37,7 +38,13 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
     Todo できるだけイベントでこの機能を実装する
 
     Todo スロットつぶしシステム，スロットがactiveを返さないように設定，closedSlotはtrueを返す(SlotMixin)
+
     Todo スロットが上記のような状態だったときに灰色の絵で隠せるようにrenderメソッドに対してMixinを適用
+
+    Todo 消えるxマークのミステリー
+
+    Todo ボタンをアイテムで触ってもアイテムを落とさないようにする
+    Todo ページを捲るためのキーバインドを設定可能にする
      */
 
     //patch for common slot
@@ -177,45 +184,31 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         for(int k = 0; k < this.menu.slots.size(); ++k) {
             Slot slot = this.menu.slots.get(k);
 
-
-
             SlotType.setHiding(slot);
+            //何故か初期化されてページ情報が消えるせい
+            ((IHasSlotPage)slot).setPage(page);
 
-            if(((IHasSlotType) slot).getType() == SlotType.UNDEFINED) {
+
+            if(((IHasSlotType) slot).getType() == SlotType.UNDEFINED)
+            {
                 SlotType.setType(slot);
-                SlotType.setHiding(slot);
             }
-            //ARMOR,OFFHANDのhide設定がなされていない？
-            //initializeはAbstractContainerMenu内のメソッド，なのでCreativeScreenからは呼ばれない！
-
-            //System.out.println
-            // ("slotType -> " + ((IHasSlotType)slot).getType());
-            //System.out.println("slotCont -> " + slot.container);
 
             if(!((ISlotHidable) slot).isShowing()) {
-                patchSlot(((IHasSlotType) slot).getType(), poseStack, slot);
+                patchSlot(poseStack, slot);
             }
-
         }
-
         this.setBlitOffset(j);
-
-        //ここがクリエのバグの原因かも
-        //アーマーを脱ぎ着したときにページを戻す操作を別の方法で実装する
-
     }
 
     @SubscribeEvent
-    public void onPageChange(PageReduceEvent e) {
-
-        System.out.printf("Page reduced on %s\n", Thread.currentThread().toString());
+    public void onPageReduce(PageReduceEvent e) {
         page = 0;
         Messager.sendToServer(new PageChangedPacket(page));
         this.menu.slots.forEach(slot -> {if(((IHasSlotType)slot).getType() == SlotType.INVENTORY) ((IHasSlotPage) slot).setPage(page);});
-
     }
 
-    private void patchSlot(SlotType type, PoseStack poseStack, Slot slot) {
+    private void patchSlot(PoseStack poseStack, Slot slot) {
         RenderSystem.setShaderTexture(0, PATCH);
         RenderSystem.enableTexture();
         RenderSystem.enableDepthTest();

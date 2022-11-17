@@ -86,8 +86,9 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     }
 
     public void initMenu(PlayerInventorySizeData data) {
-        System.out.println("init menu");
-        System.out.println(data);
+        //System.out.println("init menu");
+
+        //System.out.println(data);
 
         this.data = data;
     }
@@ -101,10 +102,10 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     @Inject(method = "initializeContents(ILjava/util/List;Lnet/minecraft/world/item/ItemStack;)V", at = @At(value = "RETURN"), cancellable = true)
     public void oninitContent(CallbackInfo ci) {
         //ここでスロットの初期設定をする？
-        System.out.println("initialize Contents");
+        //System.out.println("initialize Contents");
 
 
-        System.out.println(Thread.currentThread().getThreadGroup() == SidedThreadGroups.CLIENT ? "client menu!" : "server menu");
+        //System.out.println(Thread.currentThread().getThreadGroup() == SidedThreadGroups.CLIENT ? "client menu!" : "server menu");
 
     }
 
@@ -129,17 +130,33 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     @SubscribeEvent
     public void onPageChange(PageChangeEvent e) {
 
+
         //System.out.println("hello! from abstractcontainermenu! " + e.getPage());
         //送られてきたページ変数が正しいかどうかの処理はスロット側で行う
         //ここでは変な値が送られてきたとしても無視
 
-        int i=0;
+        //ページ変更をイベントで飛ばすのはまずい？
+
+
+        //この部分でスロットの要素にアクセスするとRegacy Accessingが発生する
+        //多くのバグの根本的な原因はスレッドがいっぱい立っていることなのでは？
+
         for(Slot s : this.slots) {
             ((IHasSlotPage) s).setPage(e.getPage());
-            i++;
+            System.out.println(s.getItem());
         }
 
-        sendAllDataToRemote();
+
+
+        //インベントリ消滅の原因は処理が遅くて表示に間に合わないせい？
+
+        //sendAllDataToRemote();
+
+        //消えなくはなったけどエフェクトがログイン時に再適用されない
+        //ページ変更時にスロットの初期化がおかしいのも変わらない
+        //他のページがコピーされたりするのはなぜか？
+
+        //保存メソッドの影響
 
 
         //System.out.println("page flipped to " + e.getPage());
