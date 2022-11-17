@@ -151,6 +151,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
             //System.out.println(s.getItem());
         }
 
+        //carriedのみを避けて他のスロットのみ初期化できないか
 
 
         //インベントリ消滅の原因は処理が遅くて表示に間に合わないせい？
