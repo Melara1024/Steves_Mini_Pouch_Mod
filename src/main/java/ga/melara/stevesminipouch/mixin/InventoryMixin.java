@@ -179,6 +179,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                     (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
             );
             //System.out.printf("enchantSize = %d\n", enchantSize);
+
             updateStorageSize();
         });
         offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, false);

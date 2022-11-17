@@ -72,6 +72,8 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
     @Shadow public abstract ItemStack getCarried();
 
+    @Shadow protected abstract void synchronizeCarriedToRemote();
+
     //こいつを使ってクライアントにデータを送る
     StatsSynchronizer synchronizer;
 
@@ -131,6 +133,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
     @SubscribeEvent
     public void onPageChange(PageChangeEvent e) {
+        synchronizeCarriedToRemote();
 
 
         //System.out.println("hello! from abstractcontainermenu! " + e.getPage());
