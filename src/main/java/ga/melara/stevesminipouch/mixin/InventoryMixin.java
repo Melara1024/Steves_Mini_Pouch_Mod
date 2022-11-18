@@ -393,6 +393,11 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public void changeStorageSize(int change, Player player) {
+
+        //Todo インベントリを開いた状態でスロット数変更を行うとアイテムが消滅する問題
+        //Todo とりあえずエフェクトの非同期問題，スロット減少時のアイテム消失，ページ変更時のアイテム消失は解決か
+
+        //インベントリを開いた状態の場合スロットが動作に関わってくるせいか？
         inventorySize += change;
         LockableItemStackList newItems;
         //とりあえずLockableItemStackListとして宣言してから挿入する？
