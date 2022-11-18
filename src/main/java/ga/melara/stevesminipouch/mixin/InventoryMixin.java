@@ -471,16 +471,20 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void changeEffectSize(int change) {
         //System.out.printf("changeEffectSize -> %s\n", player.getLevel().isClientSide() ? "client" : "server");
-        effectSize = change;
-        updateStorageSize();
+        synchronized (compartments) {
+            effectSize = change;
+            updateStorageSize();
+        }
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void syncEffectSizeToClient(EffectSlotSyncEvent e) {
         //System.out.println("sync method");
-        this.effectSize = e.getEffectSize();
-        updateStorageSize();
+        synchronized (compartments) {
+            this.effectSize = e.getEffectSize();
+            updateStorageSize();
+        }
     }
 
     @Override

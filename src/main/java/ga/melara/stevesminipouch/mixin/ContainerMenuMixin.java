@@ -1,12 +1,13 @@
 package ga.melara.stevesminipouch.mixin;
 
-import com.google.common.base.Suppliers;
+import com.google.common.collect.Lists;
 import ga.melara.stevesminipouch.event.PageReduceEvent;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
 import ga.melara.stevesminipouch.event.PageChangeEvent;
 import ga.melara.stevesminipouch.util.*;
-import net.minecraft.client.Minecraft;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -14,7 +15,6 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.util.thread.SidedThreadGroups;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,10 +22,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.Nullable;
+import java.util.List;
 import java.util.function.Supplier;
 
 @Mixin(AbstractContainerMenu.class)
-public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchronizer {
+public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchronizer, ContainerSynchronizer {
     /*
     Todo ページが変更されたときのイベント・メッセージを受け取ってページ変数を保持する
     Todo 可能な限りイベントで実装したほうがよい(タイミングに合わせて変更できるので)
@@ -75,13 +77,26 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     @Shadow protected abstract void synchronizeCarriedToRemote();
 
     //こいつを使ってクライアントにデータを送る
-    StatsSynchronizer synchronizer;
+    StatsSynchronizer contarnerSynchronizer;
+
+    @Shadow
+    private final List<DataSlot> dataSlots = Lists.newArrayList();
+    @Shadow
+    public NonNullList<ItemStack> remoteSlots = NonNullList.create();
+    @Shadow
+    private final IntList remoteDataSlots = new IntArrayList();
+    @Shadow
+    private ItemStack remoteCarried = ItemStack.EMPTY;
+
+    @Shadow
+    @Nullable
+    private ContainerSynchronizer synchronizer;
 
     PlayerInventorySizeData data = new PlayerInventorySizeData();
 
     @Override
     public void setStatsSynchronizer(StatsSynchronizer synchronizer) {
-        this.synchronizer = synchronizer;
+        this.contarnerSynchronizer = synchronizer;
         //System.out.println("setStatsSynchronizer called from menu");
 
         //Todo どうやらワールド新規生成時はloadが呼ばれない
@@ -154,13 +169,35 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
         //carriedのみを避けて他のスロットのみ初期化できないか
 
 
+
+
         //インベントリ消滅の原因は処理が遅くて表示に間に合わないせい？
 
         //setCarriedより先にsendが発生しているせい
         //setCarriedの後にsendAllDataが発火されるように調整する
         System.out.println("get carried");
         System.out.println(getCarried());
-        sendAllDataToRemote();
+        //sendAllDataToRemote();
+
+        if (this.synchronizer != null) {
+
+
+            int i = 0;
+            for(int j = this.slots.size(); i < j; ++i) {
+                this.remoteSlots.set(i, this.slots.get(i).getItem().copy());
+                this.synchronizer.sendSlotChange((AbstractContainerMenu) (Object)this,i, this.slots.get(i).getItem().copy());
+            }
+
+            i = 0;
+
+            for(int k = this.dataSlots.size(); i < k; ++i) {
+                this.remoteDataSlots.set(i, this.dataSlots.get(i).get());
+                this.synchronizer.sendDataChange((AbstractContainerMenu) (Object)this, i,this.dataSlots.get(i).get());
+            }
+
+
+
+        }
 
 
 
