@@ -394,8 +394,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void changeStorageSize(int change, Player player) {
 
-        //Todo インベントリを開いた状態でスロット数変更を行うとアイテムが消滅する問題
+        //Todo インベントリを開いた状態でスロット数変更を行う(コマンド，エンチャント)とアイテムが消滅する問題
         //Todo とりあえずエフェクトの非同期問題，スロット減少時のアイテム消失，ページ変更時のアイテム消失は解決か
+
+        //なぜかxになっているはずのスロットがハゲる
 
         //インベントリを開いた状態の場合スロットが動作に関わってくるせいか？
         inventorySize += change;
@@ -439,11 +441,13 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         //ぶちまけ
         for(ItemStack item : items) {
+            if(item == ItemStack.EMPTY)continue;
+
             Level level = player.level;
             ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
             itementity.setDefaultPickUpDelay();
             itementity.setThrower(player.getUUID());
-            //level.addFreshEntity(itementity);
+            level.addFreshEntity(itementity);
         }
 
         //最後にitemsを更新，参照をcompartmentsに挿入して終了
@@ -457,8 +461,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
 
         //サーバーにこれを送信しようとしたときにも通信エラーの同じようなのが出る？　やっぱり間違った方面での送信が原因なのでは
-        if(player.getLevel().isClientSide())
-            player.sendSystemMessage(Component.literal(String.format("Storage Size Changed to %s", change)));
     }
 
     @Override
@@ -837,9 +839,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 }
             }
         }
-
-        items.forEach(System.out::println);
-
     }
 
 

@@ -175,8 +175,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
         //setCarriedより先にsendが発生しているせい
         //setCarriedの後にsendAllDataが発火されるように調整する
-        System.out.println("get carried");
-        System.out.println(getCarried());
+
         //sendAllDataToRemote();
 
         if (this.synchronizer != null) {
