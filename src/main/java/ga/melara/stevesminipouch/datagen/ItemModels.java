@@ -29,5 +29,4 @@ public class ItemModels extends ItemModelProvider {
         this.singleTexture("activate_offhand", parent, "layer0", modLoc("item/activate_offhand"));
         this.singleTexture("activate_craft", parent, "layer0", modLoc("item/activate_craft"));
     }
-
 }

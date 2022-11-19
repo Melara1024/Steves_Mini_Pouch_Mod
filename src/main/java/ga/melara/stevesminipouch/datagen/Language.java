@@ -25,5 +25,7 @@ public class Language extends LanguageProvider {
         add(ModRegistry.ARMOR_ACTIVATE_ITEM.get(), "Armor Orange");
         add(ModRegistry.OFFHAND_ACTIVATE_ITEM.get(), "Offhand Dorian");
         add(ModRegistry.CRAFT_ACTIVATE_ITEM.get(), "Craft Fruit");
+
+        add("commands.pouch.failed", "Pouch Command Failed");
     }
 }
