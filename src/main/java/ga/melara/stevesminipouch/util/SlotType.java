@@ -24,15 +24,13 @@ public enum SlotType {
         SlotType type = ((IHasSlotType) target).getType();
         int slot = target.getSlotIndex();
 
+
         if(type == SlotType.INVENTORY) {
-            if(slot + 27 * page < ((IStorageChangable) container).getInventorySize()
-                    && ((IStorageChangable) container).isValidSlot(slot + 27 * page + page>0?5:0)) {
+            if(slot + 27 * page < ((IStorageChangable) container).getInventorySize()) {
                 ((ISlotHidable) target).show();
             } else {
                 ((ISlotHidable) target).hide();
             }
-            //ここが呼ばれていない？
-
         }
         if(type == SlotType.HOTBAR) {
             if(((IStorageChangable) container).isValidSlot(slot)) {

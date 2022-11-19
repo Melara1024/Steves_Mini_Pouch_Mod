@@ -34,7 +34,9 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
      */
 
     public SlotType type = SlotType.UNDEFINED;
-    public int page = 0;
+
+
+    private int page = 0;
 
     @Final
     @Shadow
@@ -84,7 +86,6 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
                 hide();
             }
         }
-
     }
 
     @Override
@@ -115,7 +116,10 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
 
     @Inject(method = "isActive()Z", at = @At("HEAD"), cancellable = true)
     public void onCallIsActive(CallbackInfoReturnable<Boolean> cir) {
-        if(!this.isShowing()) cir.setReturnValue(false);
+        System.out.println(page);
+        if(!this.isShowing()) {
+            cir.setReturnValue(false);
+        }
     }
 
     @Inject(method = "mayPlace(Lnet/minecraft/world/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
@@ -132,8 +136,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
         //自身のthis.slotの値をつかってisSlotVaridを呼ぶ？
         //ページを捲る前にinitializeが呼ばれてしまっている？
         if(this.type == SlotType.INVENTORY && page > 0) {
-            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()
-                    && ((IStorageChangable) container).isValidSlot(this.slot + 27 * page + 5)) {
+            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()) {
                 this.show();
                 //System.out.println("set item to " + (this.slot + 27*page + 5) + " name " + p_40240_);
                 this.container.setItem(this.slot + 27 * page + 5, p_40240_);
@@ -176,8 +179,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
 
 
         if(this.type == SlotType.INVENTORY && page > 0) {
-            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()
-                    && ((IStorageChangable) container).isValidSlot(this.slot + 27 * page + 5)) {
+            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()) {
                 this.show();
                 this.container.setItem(this.slot + 27 * page + 5, p_40240_);
                 this.setChanged();
@@ -205,9 +207,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
     public void onGetItem(CallbackInfoReturnable<ItemStack> cir) {
         //System.out.println("called slot is " + (this.slot + 27*page + 5));
         if(this.type == SlotType.INVENTORY && page > 0) {
-            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()
-                    && ((IStorageChangable) container).isValidSlot(this.slot + 27 * page + 5)
-            ) {
+            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()) {
                 this.show();
                 //System.out.println("set item to " +  (this.slot + 27*page + 5) + " name " + this.container.getItem(this.slot + 27*page + 5));
                 cir.setReturnValue(this.container.getItem(this.slot + 27 * page + 5));
@@ -234,8 +234,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
     @Inject(method = "remove(I)Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
     public void onRemoveItem(int p_40227_, CallbackInfoReturnable<ItemStack> cir) {
         if(this.type == SlotType.INVENTORY && page > 0) {
-            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()
-                    && ((IStorageChangable) container).isValidSlot(this.slot + 27 * page + 5)) {
+            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()) {
                 this.show();
                 cir.setReturnValue(this.container.removeItem(this.slot + 27 * page + 5, p_40227_));
             } else {

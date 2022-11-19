@@ -117,14 +117,19 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
                 Component.literal("▲"), (p_96337_) -> {
             previousPage();
             Messager.sendToServer(new PageChangedPacket(page));
-            this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
+            this.menu.slots.forEach(slot ->
+            {
+                ((IHasSlotPage) slot).setPage(page);
+            });
         });
 
         downButton = new Button(this.leftPos + this.inventoryLabelX + this.imageWidth - 5, this.topPos + this.inventoryLabelY + 54, 18, 18,
                 Component.literal("▼"), (p_96337_) -> {
             nextPage();
             Messager.sendToServer(new PageChangedPacket(page));
-            this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
+            this.menu.slots.forEach(slot -> {
+                ((IHasSlotPage) slot).setPage(page);
+            });
         });
 
         pageIndicator = new Button(this.leftPos + this.inventoryLabelX + this.imageWidth - 5, this.topPos + this.inventoryLabelY + 36, 18, 18,
@@ -162,11 +167,9 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
             downButton.visible = true;
             pageIndicator.visible = true;
 
-
             upButton.x = this.leftPos + this.inventoryLabelX + this.imageWidth - 5;
             downButton.x = this.leftPos + this.inventoryLabelX + this.imageWidth - 5;
             pageIndicator.x = this.leftPos + this.inventoryLabelX + this.imageWidth - 5;
-
 
             upButton.renderButton(poseStack, mouseX, mouseY, partialTick);
             downButton.renderButton(poseStack, mouseX, mouseY, partialTick);
@@ -183,13 +186,14 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         int j = this.getBlitOffset();
         this.setBlitOffset(-90);
 
-        for(int k = 0; k < this.menu.slots.size(); ++k) {
-            Slot slot = this.menu.slots.get(k);
+        for(Slot slot: this.menu.slots) {
 
             SlotType.setHiding(slot);
-            //何故か初期化されてページ情報が消えるせい
-            ((IHasSlotPage)slot).setPage(page);
 
+            ((IHasSlotPage)slot).setPage(page);
+            System.out.print("setpage->");
+            System.out.println(page);
+            ((IHasSlotPage)slot).getPage();
 
             if(((IHasSlotType) slot).getType() == SlotType.UNDEFINED)
             {

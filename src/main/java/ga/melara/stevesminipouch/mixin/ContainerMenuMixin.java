@@ -166,6 +166,8 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
             //System.out.println(s.getItem());
         }
 
+
+
         //carriedのみを避けて他のスロットのみ初期化できないか
 
 
@@ -329,7 +331,6 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
             }
             if(targetSlot.getSlotIndex() >= 9 && targetSlot.getSlotIndex() < 36) {
                 ((IHasSlotType) targetSlot).setType(SlotType.INVENTORY);
-                ((IHasSlotPage) targetSlot).setPage(0);
             }
             if(targetSlot.getSlotIndex() >= 36 && targetSlot.getSlotIndex() < 40) {
                 ((IHasSlotType) targetSlot).setType(SlotType.ARMOR);

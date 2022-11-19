@@ -145,7 +145,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @SubscribeEvent
     public void initClient(InventorySyncEvent e) {
         //System.out.println(player);
-        //System.out.println("init client");
+        System.out.println("init client event");
 
         PlayerInventorySizeData data = e.getData();
         initMiniPouch(data.getSlot(),
@@ -416,9 +416,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             maxPage = 0;
             newItems = LockableItemStackList.withSize(36, (Inventory) (Object) this, false);
 
+            System.out.printf("allsize -> %d", allSize);
             for(int i = 0; i < (36 - allSize); i++) {
                 //まず頭から順にtrueにしていく
-                //System.out.printf("allsize -> %d", allSize);
+
                 newItems.lockList.set(35 - i, true);
             }
 
@@ -487,7 +488,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void syncEffectSizeToClient(EffectSlotSyncEvent e) {
-        //System.out.println("sync method");
+        System.out.println("sync effect event");
         synchronized (compartments) {
             this.effectSize = e.getEffectSize();
             updateStorageSize();
