@@ -16,17 +16,17 @@ public class ItemModels extends ItemModelProvider {
     @Override
     protected void registerModels() {
         ResourceLocation parent = mcLoc("item/generated");
-        this.singleTexture("slot_add_1", parent, "layer0", modLoc("item/slot_add_1"));
-        this.singleTexture("slot_add_9", parent, "layer0", modLoc("item/slot_add_9"));
-        this.singleTexture("slot_add_27", parent, "layer0", modLoc("item/slot_add_27"));
+        this.singleTexture("slot_add_lv1", parent, "layer0", modLoc("item/slot_add_lv1"));
+        this.singleTexture("slot_add_lv2", parent, "layer0", modLoc("item/slot_add_lv2"));
+        this.singleTexture("slot_add_lv3", parent, "layer0", modLoc("item/slot_add_lv3"));
 
-        this.singleTexture("slot_sub_1", parent, "layer0", modLoc("item/slot_sub_1"));
-        this.singleTexture("slot_sub_9", parent, "layer0", modLoc("item/slot_sub_9"));
-        this.singleTexture("slot_sub_27", parent, "layer0", modLoc("item/slot_sub_27"));
+        this.singleTexture("slot_sub_lv1", parent, "layer0", modLoc("item/slot_sub_lv1"));
+        this.singleTexture("slot_sub_lv2", parent, "layer0", modLoc("item/slot_sub_lv2"));
+        this.singleTexture("slot_sub_lv3", parent, "layer0", modLoc("item/slot_sub_lv3"));
 
         this.singleTexture("activate_inventory", parent, "layer0", modLoc("item/activate_inventory"));
-        this.singleTexture("activate_armor", parent, "layer0", modLoc("item/activate_armor"));
-        this.singleTexture("activate_offhand", parent, "layer0", modLoc("item/activate_offhand"));
-        this.singleTexture("activate_craft", parent, "layer0", modLoc("item/activate_craft"));
+        this.singleTexture("activate_armor"    , parent, "layer0", modLoc("item/activate_armor"));
+        this.singleTexture("activate_offhand"  , parent, "layer0", modLoc("item/activate_offhand"));
+        this.singleTexture("activate_craft"    , parent, "layer0", modLoc("item/activate_craft"));
     }
 }

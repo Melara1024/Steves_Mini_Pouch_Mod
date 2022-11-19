@@ -28,18 +28,14 @@ public class OffhandActivateItem extends FunctionFoodItem {
     @Override
     public void onEat(LivingEntity entity) {
         if(!(entity instanceof Player)) return;
-
         Player player = (Player) entity;
-
         ((IStorageChangable) player.getInventory()).toggleOffhand(player);
-
         if(!(player instanceof ServerPlayer serverPlayer)) return;
         Inventory inventory = player.getInventory();
         Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable) inventory).getAllData()), serverPlayer);
     }
 
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
-        System.out.println("Offhand!!");
         return ITEMS.register("activate_offhand", OffhandActivateItem::new);
     }
 }

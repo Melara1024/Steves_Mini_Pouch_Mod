@@ -33,9 +33,7 @@ public class LivingEntityMixin
 
         if ((LivingEntity) (Object) this instanceof Player player && p_21068_.getItem() instanceof FunctionFoodItem food)
         {
-            if((p_21068_.getItem() instanceof SlotItem ||
-                    p_21068_.getItem() instanceof CraftActivatItem ||
-                    p_21068_.getItem() instanceof ArmorActivateItem)
+            if((p_21068_.getItem() instanceof SlotItem || p_21068_.getItem() instanceof CraftActivatItem || p_21068_.getItem() instanceof ArmorActivateItem)
             && !((IStorageChangable)player.getInventory()).isActiveInventory())
             {
                 if(player.getLevel().isClientSide())

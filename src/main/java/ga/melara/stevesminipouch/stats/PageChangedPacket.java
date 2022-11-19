@@ -1,6 +1,6 @@
 package ga.melara.stevesminipouch.stats;
 
-import ga.melara.stevesminipouch.event.PageChangeEvent;
+import ga.melara.stevesminipouch.event.ServerPageChangeEvent;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkEvent;
@@ -28,7 +28,7 @@ public class PageChangedPacket {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            MinecraftForge.EVENT_BUS.post(new PageChangeEvent(page));
+            MinecraftForge.EVENT_BUS.post(new ServerPageChangeEvent(page));
 
             ctx.setPacketHandled(true);
         });

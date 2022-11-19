@@ -1,6 +1,6 @@
 package ga.melara.stevesminipouch.stats;
 
-import ga.melara.stevesminipouch.event.EffectSlotSyncEvent;
+import ga.melara.stevesminipouch.event.ClientEffectSlotSyncEvent;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkEvent;
@@ -31,7 +31,7 @@ public class EffectSlotSyncPacket {
 
             //ここからイベントを送信して初期化？
 
-            MinecraftForge.EVENT_BUS.post(new EffectSlotSyncEvent(effectSlot));
+            MinecraftForge.EVENT_BUS.post(new ClientEffectSlotSyncEvent(effectSlot));
 
             ctx.setPacketHandled(true);
         });

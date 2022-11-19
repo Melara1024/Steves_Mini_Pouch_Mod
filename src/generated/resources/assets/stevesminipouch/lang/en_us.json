@@ -1,12 +1,13 @@
 {
+  "commands.pouch.failed": "Pouch Command Failed",
   "item.stevesminipouch.activate_armor": "Armor Orange",
   "item.stevesminipouch.activate_craft": "Craft Fruit",
   "item.stevesminipouch.activate_inventory": "Inventory Rye bread",
   "item.stevesminipouch.activate_offhand": "Offhand Dorian",
-  "item.stevesminipouch.slot_add_1": "Edible Chest",
-  "item.stevesminipouch.slot_add_27": "Edible Triplechest",
-  "item.stevesminipouch.slot_add_9": "Edible Largechest",
-  "item.stevesminipouch.slot_sub_1": "Edible Air",
-  "item.stevesminipouch.slot_sub_27": "Edible Void",
-  "item.stevesminipouch.slot_sub_9": "Edible Null"
+  "item.stevesminipouch.slot_add_lv1": "Edible Chest",
+  "item.stevesminipouch.slot_add_lv2": "Edible Largechest",
+  "item.stevesminipouch.slot_add_lv3": "Edible Triplechest",
+  "item.stevesminipouch.slot_sub_lv1": "Edible Air",
+  "item.stevesminipouch.slot_sub_lv2": "Edible Null",
+  "item.stevesminipouch.slot_sub_lv3": "Edible Void"
 }

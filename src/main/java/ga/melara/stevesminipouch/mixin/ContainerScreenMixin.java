@@ -2,24 +2,18 @@ package ga.melara.stevesminipouch.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import ga.melara.stevesminipouch.event.PageChangeEvent;
 import ga.melara.stevesminipouch.event.PageReduceEvent;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.stats.PageChangedPacket;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -191,9 +185,6 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
             SlotType.setHiding(slot);
 
             ((IHasSlotPage)slot).setPage(page);
-            System.out.print("setpage->");
-            System.out.println(page);
-            ((IHasSlotPage)slot).getPage();
 
             if(((IHasSlotType) slot).getType() == SlotType.UNDEFINED)
             {

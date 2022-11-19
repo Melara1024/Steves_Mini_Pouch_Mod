@@ -2,11 +2,11 @@ package ga.melara.stevesminipouch.event;
 
 import net.minecraftforge.eventbus.api.Event;
 
-public class EffectSlotSyncEvent extends Event {
+public class ClientEffectSlotSyncEvent extends Event {
+    private final int size;
 
-    int size = 0;
-
-    public EffectSlotSyncEvent(int setSize) {
+    // Event when a slot is added by an effect.
+    public ClientEffectSlotSyncEvent(int setSize) {
         this.size = setSize;
     }
     public int getEffectSize() {

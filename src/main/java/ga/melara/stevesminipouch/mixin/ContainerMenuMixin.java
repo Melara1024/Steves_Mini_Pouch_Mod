@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import ga.melara.stevesminipouch.event.PageReduceEvent;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
-import ga.melara.stevesminipouch.event.PageChangeEvent;
+import ga.melara.stevesminipouch.event.ServerPageChangeEvent;
 import ga.melara.stevesminipouch.util.*;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -147,7 +147,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
 
     @SubscribeEvent
-    public void onPageChange(PageChangeEvent e) {
+    public void onPageChange(ServerPageChangeEvent e) {
         synchronizeCarriedToRemote();
 
 

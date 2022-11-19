@@ -116,7 +116,6 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
 
     @Inject(method = "isActive()Z", at = @At("HEAD"), cancellable = true)
     public void onCallIsActive(CallbackInfoReturnable<Boolean> cir) {
-        System.out.println(page);
         if(!this.isShowing()) {
             cir.setReturnValue(false);
         }

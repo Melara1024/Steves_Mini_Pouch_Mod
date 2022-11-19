@@ -35,19 +35,5 @@ public class FunctionFoodItem extends Item {
         super(ITEM_PROPERTIES);
     }
 
-    public void onEat(LivingEntity entity) {
-
-    }
-
-    private boolean isAllowedEat = true;
-
-    public void isAllowedEat(Player player) {
-        isAllowedEat = ((IStorageChangable) player.getInventory()).isActiveInventory();
-    }
-
-    @Override
-    public boolean isEdible() {
-        return this.isAllowedEat;
-    }
-
+    public void onEat(LivingEntity entity) {}
 }

@@ -2,7 +2,7 @@ package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.ModRegistry;
-import ga.melara.stevesminipouch.event.EffectSlotSyncEvent;
+import ga.melara.stevesminipouch.event.ClientEffectSlotSyncEvent;
 import ga.melara.stevesminipouch.stats.InventorySyncEvent;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.util.*;
@@ -16,7 +16,6 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
@@ -34,7 +33,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -487,7 +485,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public void syncEffectSizeToClient(EffectSlotSyncEvent e) {
+    public void syncEffectSizeToClient(ClientEffectSlotSyncEvent e) {
         System.out.println("sync effect event");
         synchronized (compartments) {
             this.effectSize = e.getEffectSize();

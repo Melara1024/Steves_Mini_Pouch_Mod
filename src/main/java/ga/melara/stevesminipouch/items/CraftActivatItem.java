@@ -31,19 +31,14 @@ public class CraftActivatItem extends FunctionFoodItem {
     @Override
     public void onEat(LivingEntity entity) {
         if(!(entity instanceof Player)) return;
-
         Player player = (Player) entity;
-
         ((IStorageChangable) player.getInventory()).toggleCraft(player);
-
         if(!(player instanceof ServerPlayer serverPlayer)) return;
         Inventory inventory = player.getInventory();
         Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable) inventory).getAllData()), serverPlayer);
     }
 
-
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
-        System.out.println("Craft!!");
         return ITEMS.register("activate_craft", CraftActivatItem::new);
     }
 }

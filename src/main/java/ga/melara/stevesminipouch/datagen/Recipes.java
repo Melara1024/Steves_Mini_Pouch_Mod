@@ -25,6 +25,7 @@ public class Recipes extends RecipeProvider {
                 .pattern("XXX")
                 .pattern("X X")
                 .pattern("XXX")
-                .unlockedBy("has_diamond", has(Items.DIAMOND)).save(consumer);
+                .unlockedBy("has_diamond", has(Items.DIAMOND))
+                .save(consumer);
     }
 }
