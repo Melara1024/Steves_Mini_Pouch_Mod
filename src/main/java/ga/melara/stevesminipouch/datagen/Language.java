@@ -26,6 +26,13 @@ public class Language extends LanguageProvider {
         add(ModRegistry.OFFHAND_ACTIVATE_ITEM.get(), "Offhand Dorian");
         add(ModRegistry.CRAFT_ACTIVATE_ITEM.get(), "Craft Fruit");
 
-        add("commands.pouch.failed", "Pouch Command Failed");
+        add("itemGroup.steves_mini_pouch", "Pouch Command Failed");
+
+        add("command.failed", "Pouch Command Failed");
+
+        add("message.useless", "You felt a great surge of power, but nothing happened.");
+        add("message.simple_inventory_1", "You looked at your hand.");
+        add("message.simple_inventory_2", "in main hand...");
+        add("message.simple_inventory_3", "in off hand...");
     }
 }

@@ -10,7 +10,7 @@ public class Config {
         registerClientConfig();
     }
 
-    //server settings
+
     public static ForgeConfigSpec.IntValue DEFAULT_SIZE;
     public static ForgeConfigSpec.IntValue MAX_SIZE;
     public static ForgeConfigSpec.BooleanValue FORCE_SIZE;
@@ -36,10 +36,8 @@ public class Config {
     private static void registerServerConfig() {
         ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
 
-
         SERVER_BUILDER.comment("Comment Server").push("server");
 
-        //server default slots
         DEFAULT_SIZE = SERVER_BUILDER.comment("Default Inventory Size").defineInRange("defaultsize", 36, 0, Integer.MAX_VALUE);
         MAX_SIZE = SERVER_BUILDER.comment("Max Inventory Size").defineInRange("maxsize", 90, 0, Integer.MAX_VALUE);
         FORCE_SIZE = SERVER_BUILDER.comment("Force Inventory Size to Max Size").define("isforcesize", false);
@@ -56,13 +54,6 @@ public class Config {
         DEFAULT_ARMOR = SERVER_BUILDER.comment("Default setting of equipment activate").define("isarmor", true);
         FORCE_ARMOR = SERVER_BUILDER.comment("If true, armor activate settings forced to all players.").define("forcearmor", false);
 
-
-        //server default hotbar
-        HOTBAR = SERVER_BUILDER
-                .comment("How much hotbar slots")
-                .defineInRange("hotbar slots", 9, 0, 36);
-
-
         SERVER_BUILDER.pop();
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_BUILDER.build());
     }
@@ -70,18 +61,15 @@ public class Config {
     private static void registerClientConfig() {
         ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
 
-
         CLIENT_BUILDER.comment("Comment Client").push("client");
 
-        //page button position
         RENDER_SCALE_X = CLIENT_BUILDER
-                .comment("render position of page button")
-                .defineInRange("x", 100, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                .comment("X Offset the position of the page change button")
+                .defineInRange("x", 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
         RENDER_SCALE_Y = CLIENT_BUILDER
-                .comment("render position of page button")
-                .defineInRange("y", 100, Integer.MIN_VALUE, Integer.MAX_VALUE);
-
+                .comment("Y Offset the position of the page change button")
+                .defineInRange("y", 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
         CLIENT_BUILDER.pop();
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());

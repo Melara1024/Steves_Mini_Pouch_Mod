@@ -13,16 +13,13 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CraftingContainer.class)
 public class CraftingContainerMixin implements ICraftingContainerChangable {
-
-    //Todo アイテムリストをLockableItemStackListに置き換え
-    //Todo ロック用のメソッドをダックインターフェースで実装する
 
     private boolean isActiveCraft = Config.DEFAULT_CRAFT.get();
 
@@ -31,16 +28,11 @@ public class CraftingContainerMixin implements ICraftingContainerChangable {
     @Mutable
     private NonNullList<ItemStack> items;
 
-    @Shadow
-    public AbstractContainerMenu menu;
-
-
     @Override
     public void toggleCraft(Player player) {
         if(!(((CraftingContainer) (Object) this).menu instanceof InventoryMenu)) return;
-
-
         if(this.isActiveCraft) {
+            // Handling of loss of crafting ability when an item is present in a crafting slot.
             for(ItemStack item : items) {
                 Level level = player.level;
                 ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
@@ -48,19 +40,19 @@ public class CraftingContainerMixin implements ICraftingContainerChangable {
                 itementity.setThrower(player.getUUID());
                 level.addFreshEntity(itementity);
             }
-
-
-            items = LockableItemStackList.withSize(4, ((InventoryMenu) ((CraftingContainer) (Object) this).menu).owner.getInventory(), true);
-
+            if(items instanceof LockableItemStackList lockable) lockable.allLock();
+            else items = LockableItemStackList.withSize(4, ((InventoryMenu) ((CraftingContainer) (Object) this).menu).owner.getInventory(), true);
             this.isActiveCraft = false;
             return;
         }
-
-        items = LockableItemStackList.withSize(4, ((InventoryMenu) ((CraftingContainer) (Object) this).menu).owner.getInventory(), false);
-
+        if(items instanceof LockableItemStackList lockable) lockable.allOpen();
+        else items = LockableItemStackList.withSize(4, ((InventoryMenu) ((CraftingContainer) (Object) this).menu).owner.getInventory(), false);
         this.isActiveCraft = true;
-
-        player.sendSystemMessage(Component.literal("Offhand Toggled!"));
     }
 
+    @Override
+    public boolean isActivateCraft()
+    {
+        return this.isActiveCraft;
+    }
 }

@@ -24,27 +24,9 @@ public class StevesMiniPouch {
 
     public StevesMiniPouch() {
         Config.register();
-        LOGGER.info("registered configs");
 
         Messager.register();
-        LOGGER.info("registered messager");
 
         ModRegistry.registerItems();
-        LOGGER.info("registered items");
-
-        IEventBus eventBus = MinecraftForge.EVENT_BUS;
-
-        MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(DataGenerators.class);
-        MinecraftForge.EVENT_BUS.register(PlayerInventorySizeData.class);
-
-        LOGGER.info("steve's minipouch correctry registered!");
     }
-
-
-    @SubscribeEvent
-    public void registerCommands(RegisterCommandsEvent event) {
-        SlotChangeCommand.register(event.getDispatcher());
-    }
-
 }

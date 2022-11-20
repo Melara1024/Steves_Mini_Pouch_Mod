@@ -10,17 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LoomScreen.class)
 public class LoomScreenMixin {
     @Inject(method = "hasClickedOutside(DDIII)Z", at = @At(value = "HEAD"), cancellable = true)
-    protected void onClickedOutside(double mouseX, double mouseY, int leftPos, int RightPos, int p_97761_, CallbackInfoReturnable<Boolean> cir)
+    protected void onClickedOutside(double mouseX, double mouseY, int leftPos, int rightPos, int p_97761_, CallbackInfoReturnable<Boolean> cir)
     {
-        int x = ((IHasPageButton)(Object)this).getButtonX();
-        int y = ((IHasPageButton)(Object)this).getButtonY();
-
-        int w = ((IHasPageButton)(Object)this).getButtonWidth();
-        int h = ((IHasPageButton)(Object)this).getButtonHeight();
-
-        if(mouseX < x+w && mouseX > x && mouseY < y+h && mouseY > y)
-        {
-            cir.setReturnValue(false);
-        }
+        ((IHasPageButton)this).buttonClicked(mouseX, mouseY, leftPos, rightPos, cir);
     }
 }

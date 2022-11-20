@@ -1,5 +1,6 @@
 package ga.melara.stevesminipouch.stats;
 
+import ga.melara.stevesminipouch.event.InventorySyncEvent;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkEvent;
@@ -22,28 +23,23 @@ public class InventorySyncPacket {
         int slot = buf.readInt();
         int effectSlot = buf.readInt();
 
-        this.data = new PlayerInventorySizeData(slot, effectSlot, isActivateInventory, isActiveOffhand, isActivateCraft, isActivateArmor);
+        this.data = new PlayerInventorySizeData(slot, effectSlot, isActivateInventory, isActivateArmor, isActiveOffhand, isActivateCraft);
     }
 
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeBoolean(this.data.isActiveInventory());
-        buf.writeBoolean(this.data.isEquippable());
+        buf.writeBoolean(this.data.isActivateArmor());
         buf.writeBoolean(this.data.isActiveOffhand());
-        buf.writeBoolean(this.data.isCraftable());
-        buf.writeInt(this.data.getSlot());
-        buf.writeInt(this.data.getEffectSlot());
+        buf.writeBoolean(this.data.isActivateCraft());
+        buf.writeInt(this.data.getInventorySize());
+        buf.writeInt(this.data.getEffectSize());
     }
 
     //こいつ自身はサーバーのクラス
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-
-
-            //ここからイベントを送信して初期化？
-
             MinecraftForge.EVENT_BUS.post(new InventorySyncEvent(this.data));
-
             ctx.setPacketHandled(true);
         });
         return true;

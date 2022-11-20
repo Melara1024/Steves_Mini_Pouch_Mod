@@ -18,20 +18,6 @@ import java.util.Optional;
 
 @Mixin(Slot.class)
 public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
-    /*
-    Todo スロットのアクティブ状態を変更できるようにする，新変数closedSlotを追加，これによって閉じられたスロットを表現する
-
-    Todo ページを受け取ってinventoryからの参照を変更できるようにする(これはSlotType.INVENTORYのときのみ適用されるように実装)
-    Todo ページの数の分だけインベントリのitemsのインデックスをシフトする，もしもitemsに参照できない場合はスロットを閉じる用に設定
-
-    Todo Set Get Removeの３つについてページからたどれるように
-    スロットの変更点
-    インベントリから取得するアイテムをページ変数によってシフトする
-    プライベート変数slotによってインベントリのitemsリストとの関連付けがされている
-    Slotクラスはアイテムそのものを保持しない
-    未使用スロットには未使用アイテムを挿入，maypickupのオーバーライドでクリックとピックアップの阻止
-    カーソルのホバーに関してはレンダラーで対応可能
-     */
 
     public SlotType type = SlotType.UNDEFINED;
 
@@ -48,20 +34,10 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
     @Mutable
     public Container container;
 
-    @Shadow
-    public int index;
-
-    @Shadow
-    public int x;
-
-    @Shadow
-    public int y;
 
     @Shadow
     public void setChanged() {
     }
-
-    @Shadow public abstract void initialize(ItemStack p_219997_);
 
     private boolean isShowing = true;
 
@@ -93,7 +69,6 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
         return this.page;
     }
 
-
     @Override
     public void hide() {
         isShowing = false;
@@ -109,16 +84,50 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
         return this.isShowing;
     }
 
-    @Inject(method = "<init>", at = @At("RETURN"), cancellable = true)
-    public void onInit(Container p_40223_, int p_40224_, int p_40225_, int p_40226_, CallbackInfo ci) {
+    @Override
+    public void setHiding() {
+        Slot target = (Slot)(Object)this;
 
+        Container container = target.container;
+        int page = ((IHasSlotPage) target).getPage();
+        SlotType type = ((IHasSlotType) target).getType();
+        int slot = target.getSlotIndex();
+
+        if(container instanceof IStorageChangable inventory) {
+            if(type == SlotType.INVENTORY) {
+                if(slot + 27 * page < inventory.getInventorySize()) {
+                    ((ISlotHidable) target).show();
+                } else {
+                    ((ISlotHidable) target).hide();
+                }
+            }
+            if(type == SlotType.HOTBAR) {
+                if(slot < inventory.getInventorySize()) {
+                    ((ISlotHidable) target).show();
+                } else ((ISlotHidable) target).hide();
+            }
+            if(type == SlotType.ARMOR) {
+                if(inventory.isActiveArmor()) {
+                    ((ISlotHidable) target).show();
+                } else ((ISlotHidable) target).hide();
+            }
+            if(type == SlotType.OFFHAND) {
+                if(inventory.isActiveOffhand()) {
+                    ((ISlotHidable) target).show();
+                } else ((ISlotHidable) target).hide();
+            }
+        } else if(container instanceof ICraftingContainerChangable craftingContainer) {
+            if(type == SlotType.CRAFT || type == SlotType.RESULT) {
+                if(craftingContainer.isActivateCraft()) {
+                    ((ISlotHidable) target).show();
+                } else ((ISlotHidable) target).hide();
+            }
+        }
     }
 
     @Inject(method = "isActive()Z", at = @At("HEAD"), cancellable = true)
     public void onCallIsActive(CallbackInfoReturnable<Boolean> cir) {
-        if(!this.isShowing()) {
-            cir.setReturnValue(false);
-        }
+        if(!this.isShowing()) cir.setReturnValue(false);
     }
 
     @Inject(method = "mayPlace(Lnet/minecraft/world/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
@@ -126,23 +135,15 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
         if(!this.isShowing()) cir.setReturnValue(false);
     }
 
-
     @Inject(method = "initialize(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
     public void onInitialize(ItemStack p_40240_, CallbackInfo ci) {
-
-        //todo なんとかしてスロットからインベントリのロック状態を取得
-        //containerはinventoryなので，inventorymixin内にクエリ用メソッドを作る？
-        //自身のthis.slotの値をつかってisSlotVaridを呼ぶ？
-        //ページを捲る前にinitializeが呼ばれてしまっている？
         if(this.type == SlotType.INVENTORY && page > 0) {
             if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()) {
                 this.show();
-                //System.out.println("set item to " + (this.slot + 27*page + 5) + " name " + p_40240_);
                 this.container.setItem(this.slot + 27 * page + 5, p_40240_);
                 this.setChanged();
                 ci.cancel();
             } else {
-                //スロットが指す位置のアイテムがそもそも範囲外だった場合
                 this.hide();
                 ci.cancel();
             }
@@ -162,21 +163,10 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
                 this.show();
             } else this.hide();
         }
-        if(this.type == SlotType.CRAFT) {
-
-        }
-        if(this.type == SlotType.RESULT) {
-
-        }
-
-
     }
 
     @Inject(method = "set(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
     public void onSetItem(ItemStack p_40240_, CallbackInfo ci) {
-
-
-
         if(this.type == SlotType.INVENTORY && page > 0) {
             if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()) {
                 this.show();
@@ -184,7 +174,6 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
                 this.setChanged();
                 ci.cancel();
             } else {
-                //スロットが指す位置のアイテムがそもそも範囲外だった場合
                 this.hide();
                 ci.cancel();
             }
@@ -194,26 +183,16 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
                 this.show();
             } else this.hide();
         }
-        if(this.type == SlotType.ARMOR) {
-
-        }
-        if(this.type == SlotType.OFFHAND) {
-
-        }
     }
 
     @Inject(method = "getItem()Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
     public void onGetItem(CallbackInfoReturnable<ItemStack> cir) {
-        //System.out.println("called slot is " + (this.slot + 27*page + 5));
         if(this.type == SlotType.INVENTORY && page > 0) {
             if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()) {
                 this.show();
-                //System.out.println("set item to " +  (this.slot + 27*page + 5) + " name " + this.container.getItem(this.slot + 27*page + 5));
                 cir.setReturnValue(this.container.getItem(this.slot + 27 * page + 5));
             } else {
-                //スロットが指す位置のアイテムがそもそも範囲外だった場合
                 this.hide();
-                //Fix me slotからgetするときにこれによってairが入ったか
                 cir.setReturnValue(ItemStack.EMPTY);
             }
         }
@@ -221,12 +200,6 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
             if(((IStorageChangable) container).isValidSlot(this.slot)) {
                 this.show();
             } else this.hide();
-        }
-        if(this.type == SlotType.ARMOR) {
-
-        }
-        if(this.type == SlotType.OFFHAND) {
-
         }
     }
 
@@ -237,7 +210,6 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
                 this.show();
                 cir.setReturnValue(this.container.removeItem(this.slot + 27 * page + 5, p_40227_));
             } else {
-                //スロットが指す位置のアイテムがそもそも範囲外だった場合
                 this.hide();
                 cir.setReturnValue(ItemStack.EMPTY);
             }
@@ -247,17 +219,5 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
                 this.show();
             } else this.hide();
         }
-        if(this.type == SlotType.ARMOR) {
-
-        }
-        if(this.type == SlotType.OFFHAND) {
-
-        }
     }
-
-    @Inject(method = "tryRemove(IILnet/minecraft/world/entity/player/Player;)Ljava/util/Optional;", at = @At("HEAD"), cancellable = true)
-    public void onTryRemoveItem(int p_150642_, int p_150643_, Player p_150644_, CallbackInfoReturnable<Optional<ItemStack>> cir) {
-        System.out.println("try remove on " + (this.slot));
-    }
-
 }

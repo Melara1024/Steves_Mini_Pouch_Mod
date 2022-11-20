@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 
 public class PageChangedPacket {
 
-
     private int page;
 
     public PageChangedPacket(int page) {
@@ -24,7 +23,6 @@ public class PageChangedPacket {
         buf.writeInt(this.page);
     }
 
-    //こいつ自身はサーバーのクラス
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {

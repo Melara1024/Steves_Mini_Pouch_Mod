@@ -38,20 +38,27 @@ public class PlayerMixin {
     private
     Inventory inventory;
 
-
     @Inject(method = "readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"), cancellable = true)
     public void onReadData(CompoundTag tag, CallbackInfo ci) {
+
+        // State of inventory functions allowed to the player
         CompoundTag compoundtag = tag.getCompound("InventoryStats");
         ((IAdditionalStorage) this.inventory).loadStatus(compoundtag);
 
+        // Storage location for added slots
         ListTag listtag = tag.getList("MiniPouch", 10);
         ((IAdditionalStorage) this.inventory).loadAdditional(listtag);
+
     }
 
     @Inject(method = "addAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"), cancellable = true)
     public void onAddData(CompoundTag tag, CallbackInfo ci) {
+
+        // State of inventory functions allowed to the player
         tag.put("InventoryStats", ((IAdditionalStorage) this.inventory).saveStatus(new CompoundTag()));
 
+        // Storage location for added slots
         tag.put("MiniPouch", ((IAdditionalStorage) this.inventory).saveAdditional(new ListTag()));
+
     }
 }

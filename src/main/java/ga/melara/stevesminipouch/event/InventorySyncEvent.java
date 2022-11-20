@@ -1,13 +1,11 @@
-package ga.melara.stevesminipouch.stats;
+package ga.melara.stevesminipouch.event;
 
+import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.event.IModBusEvent;
 
 public class InventorySyncEvent extends Event implements IModBusEvent {
-
-
     PlayerInventorySizeData data;
-
     public InventorySyncEvent(PlayerInventorySizeData data) {
         this.data = data;
     }

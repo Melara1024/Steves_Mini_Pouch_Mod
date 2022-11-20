@@ -1,79 +1,70 @@
 package ga.melara.stevesminipouch.stats;
 
 
+import ga.melara.stevesminipouch.Config;
+
 //データを保持する本体
 public class PlayerInventorySizeData {
 
-    private int slot;
-
-    private int effectSlot;
+    private int inventorySize;
+    private int effectSize;
     private boolean isActiveInventory;
+    private boolean isActivateArmor;
     private boolean isActiveOffhand;
-    private boolean isCraftable;
-    private boolean isEquippable;
+    private boolean isActivateCraft;
 
     public PlayerInventorySizeData() {
-        slot = 36;
-        effectSlot = 0;
-        isActiveInventory = true;
-        isActiveOffhand = true;
-        isCraftable = true;
-        isEquippable = true;
+        inventorySize = Config.DEFAULT_SIZE.get();
+        effectSize = 0;
+        isActiveInventory = Config.DEFAULT_INVENTORY.get();
+        isActivateArmor = Config.DEFAULT_ARMOR.get();
+        isActiveOffhand = Config.DEFAULT_OFFHAND.get();
+        isActivateCraft = Config.DEFAULT_CRAFT.get();
     }
 
-    public PlayerInventorySizeData(int slot, boolean inv, boolean off, boolean cft, boolean arm) {
-        this.slot = slot;
+    public PlayerInventorySizeData(int inventorySize, int effectSize, boolean inv, boolean arm, boolean off, boolean cft) {
+        this.inventorySize = inventorySize;
+        this.effectSize = effectSize;
         this.isActiveInventory = inv;
+        this.isActivateArmor = arm;
         this.isActiveOffhand = off;
-        this.isCraftable = cft;
-        this.isEquippable = arm;
-    }
-
-    public PlayerInventorySizeData(int slot, int effectSlot, boolean inv, boolean off, boolean cft, boolean arm) {
-        this.slot = slot;
-        this.effectSlot = effectSlot;
-        this.isActiveInventory = inv;
-        this.isActiveOffhand = off;
-        this.isCraftable = cft;
-        this.isEquippable = arm;
+        this.isActivateCraft = cft;
     }
 
     public void copyFrom(PlayerInventorySizeData source) {
-        slot = source.slot;
-        effectSlot = source.effectSlot;
+        inventorySize = source.inventorySize;
+        effectSize = source.effectSize;
         isActiveInventory = source.isActiveInventory;
         isActiveOffhand = source.isActiveOffhand;
-        isCraftable = source.isCraftable;
-        isEquippable = source.isEquippable;
+        isActivateCraft = source.isActivateCraft;
+        isActivateArmor = source.isActivateArmor;
     }
 
+    public int getInventorySize() {
+        return inventorySize;
+    }
+
+    public int getEffectSize() {
+        return effectSize;
+    }
 
     public boolean isActiveInventory() {
         return isActiveInventory;
+    }
+    public boolean isActivateArmor() {
+        return isActivateArmor;
     }
 
     public boolean isActiveOffhand() {
         return isActiveOffhand;
     }
 
-    public boolean isCraftable() {
-        return isCraftable;
-    }
-
-    public boolean isEquippable() {
-        return isEquippable;
-    }
-
-    public int getSlot() {
-        return slot;
-    }
-
-    public int getEffectSlot() {
-        return effectSlot;
+    public boolean isActivateCraft() {
+        return isActivateCraft;
     }
 
     @Override
     public String toString() {
-        return String.format("player inv data -> [slot: %d, effectslot: %d, inv: %b, armor: %b, offhand: %b, craft: %b]", slot, effectSlot, isActiveInventory, isEquippable, isActiveOffhand, isCraftable);
+        return String.format("player inv data -> [main: %d, effect: %d, inv: %b, arm: %b, off: %b, cft: %b]", inventorySize, effectSize, isActiveInventory, isActivateArmor, isActiveOffhand, isActivateCraft);
     }
 }

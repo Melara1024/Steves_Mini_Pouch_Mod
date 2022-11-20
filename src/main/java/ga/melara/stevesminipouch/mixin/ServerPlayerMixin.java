@@ -24,16 +24,8 @@ public class ServerPlayerMixin {
         if(p_143400_ instanceof InventoryMenu) {
             ServerPlayer player = (ServerPlayer) (Object) this;
 
-            statsSynchronizer = new StatsSynchronizer() {
-                @Override
-                public void sendInitialData(PlayerInventorySizeData data) {
-                    Messager.sendToPlayer(new InventorySyncPacket(data), player);
-                    System.out.println("sended");
-
-                }
-            };
-
-            System.out.println("initMenu called from serverplayer");
+            // When initMenu is executed, the data is not ready, so only the synchronizer is set.
+            statsSynchronizer = data -> Messager.sendToPlayer(new InventorySyncPacket(data), player);
             ((IMenuSynchronizer) p_143400_).setStatsSynchronizer(this.statsSynchronizer);
         }
     }

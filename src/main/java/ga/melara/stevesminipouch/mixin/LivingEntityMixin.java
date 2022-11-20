@@ -37,7 +37,7 @@ public class LivingEntityMixin
             && !((IStorageChangable)player.getInventory()).isActiveInventory())
             {
                 if(player.getLevel().isClientSide())
-                    player.sendSystemMessage(Component.literal("You felt great power, but nothing happened."));
+                    player.sendSystemMessage(Component.translatable("message.useless"));
                 cir.setReturnValue(p_21068_);
             }
         }

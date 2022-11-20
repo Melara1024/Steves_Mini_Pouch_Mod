@@ -20,7 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import java.util.Collection;
 
 public class SlotChangeCommand {
-    private static final SimpleCommandExceptionType ERROR_GIVE_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.pouch.failed"));
+    private static final SimpleCommandExceptionType ERROR_GIVE_FAILED = new SimpleCommandExceptionType(Component.translatable("command.failed"));
 
     public static void register(CommandDispatcher<CommandSourceStack> p_136954_) {
 

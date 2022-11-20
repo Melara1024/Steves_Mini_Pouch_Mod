@@ -1,8 +1,8 @@
 package ga.melara.stevesminipouch.util;
 
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
 public interface IHasPageButton {
-    int getButtonX();
-    int getButtonWidth();
-    int getButtonY();
-    int getButtonHeight();
+    void buttonClicked(double mouseX, double mouseY, int leftPos, int RightPos, CallbackInfoReturnable<Boolean> cir);
+
 }

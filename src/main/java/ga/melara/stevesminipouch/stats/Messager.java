@@ -10,7 +10,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
 public class Messager {
-    public static SimpleChannel INSTANCE;
+    public static SimpleChannel channel;
 
     private static int packetId = 0;
 
@@ -27,7 +27,7 @@ public class Messager {
                 .serverAcceptedVersions(s -> true)
                 .simpleChannel();
 
-        INSTANCE = net;
+        channel = net;
 
 
         net.messageBuilder(PageChangedPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
@@ -50,10 +50,10 @@ public class Messager {
     }
 
     public static <MSG> void sendToServer(MSG message) {
-        INSTANCE.sendToServer(message);
+        channel.sendToServer(message);
     }
 
     public static <MSG> void sendToPlayer(MSG message, ServerPlayer player) {
-        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
+        channel.send(PacketDistributor.PLAYER.with(() -> player), message);
     }
 }

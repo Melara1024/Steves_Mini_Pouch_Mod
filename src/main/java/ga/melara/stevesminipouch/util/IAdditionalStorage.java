@@ -1,6 +1,6 @@
 package ga.melara.stevesminipouch.util;
 
-import ga.melara.stevesminipouch.stats.InventorySyncEvent;
+import ga.melara.stevesminipouch.event.InventorySyncEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 

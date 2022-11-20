@@ -3,15 +3,12 @@ package ga.melara.stevesminipouch.mixin;
 import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.ModRegistry;
 import ga.melara.stevesminipouch.event.ClientEffectSlotSyncEvent;
-import ga.melara.stevesminipouch.stats.InventorySyncEvent;
+import ga.melara.stevesminipouch.event.InventorySyncEvent;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -20,9 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,16 +32,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Predicate;
 
 
-//こいつはサーバー側
 @Mixin(Inventory.class)
 public abstract class InventoryMixin implements IStorageChangable, IAdditionalStorage {
-
-    /*
-
-     */
 
     private int maxPage;
 
@@ -75,17 +64,15 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Shadow
     public int selected;
 
-    //こいつの参照だけは絶対に変更するな！！
+
+    // Compartments operations are prone to thread collisions and require synchronized.
     @Shadow
     public List<NonNullList<ItemStack>> compartments = new CopyOnWriteArrayList<>() {
         @Override
-        public Iterator<NonNullList<ItemStack>> iterator()
-        {
-            synchronized (this)
-            {
+        public Iterator<NonNullList<ItemStack>> iterator() {
+            synchronized(this) {
                 return super.iterator();
             }
-
         }
     };
 
@@ -99,23 +86,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         return null;
     }
 
-    //Todo アーマースロット追加時にスロットへの反映がない，スロット追加してもなぜか溢れる(lock状態)
-    //Todo 一度メニューを閉じないとスロット状態が一切更新されない
-    //Todo インベントリ側は更新されているのにメニュー側が更新されていない？
-
-
-    @Shadow
-    public abstract void tick();
-
     @Shadow
     @Final
     @Mutable
     public Player player;
-
-    @Shadow
-    public abstract void placeItemBackInInventory(ItemStack p_150080_);
-
-    @Shadow public abstract int clearOrCountMatchingItems(Predicate<ItemStack> p_36023_, int p_36024_, Container p_36025_);
 
     public void initMiniPouch(int slot, int effectSize, boolean inv, boolean arm, boolean off, boolean cft) {
         this.effectSize = effectSize;
@@ -125,73 +99,61 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         ((IMenuChangable) player.containerMenu).toggleInventory(player);
 
         setArmor(player, arm);
-        ((IMenuChangable) player.containerMenu).toggleArmor(player);
+        ((IMenuChangable) player.containerMenu).judgeArmorHiding(player);
 
         setOffhand(player, off);
-        ((IMenuChangable) player.containerMenu).toggleOffhand(player);
+        ((IMenuChangable) player.containerMenu).judgeOffhandHiding(player);
 
         setCraft(player, cft);
-        ((IMenuChangable) player.containerMenu).toggleCraft(player);
+        ((IMenuChangable) player.containerMenu).judgeCraftHiding(player);
     }
 
     public void initServer(int slot, int effect, boolean inv, boolean arm, boolean off, boolean cft) {
-        //System.out.println("init server");
         initMiniPouch(slot, effect, inv, arm, off, cft);
     }
 
     @Override
     @SubscribeEvent
     public void initClient(InventorySyncEvent e) {
-        //System.out.println(player);
-        System.out.println("init client event");
-
         PlayerInventorySizeData data = e.getData();
-        initMiniPouch(data.getSlot(),
-                data.getEffectSlot(),
+        initMiniPouch(data.getInventorySize(),
+                data.getEffectSize(),
                 data.isActiveInventory(),
-                data.isEquippable(),
+                data.isActivateArmor(),
                 data.isActiveOffhand(),
-                data.isCraftable());
+                data.isActivateCraft());
     }
 
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))
     public void oninit(Player p_35983_, CallbackInfo ci) {
-
         MinecraftForge.EVENT_BUS.register(this);
 
         maxPage = 0;
-        //もとの数より減らしてはいけない……
         inventorySize = 36;
         hotbarSize = 9;
-
-        //正直インスタンスをnewしまくるの重すぎ
-        //基本はロックのみで済ませてページ追加のみ新しいインスタンスを作る？
 
         items = LockableItemStackList.withSize(inventorySize, (Inventory) (Object) this, false);
         armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, false);
         ((LockableItemStackList) armor).setObserver((detectItem) -> {
-            //System.out.println(player.getLevel().isClientSide ? "client" : "server");
+            // When there is a change in the list, this code is executed
+            // Code to monitor the increase in slot enchantments.
             enchantSize = 0;
             armor.forEach(
                     (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
             );
-            //System.out.printf("enchantSize = %d\n", enchantSize);
-
             updateStorageSize();
         });
         offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, false);
+
         compartments.add(0, items);
         compartments.add(1, armor);
         compartments.add(2, offhand);
-
-        //Todo プレイヤーに紐付けられたスロット数を初期化で適用する
 
         isActiveInventory = true;
         isActiveOffhand = true;
         isActiveArmor = true;
         isActiveCraft = true;
-
     }
 
 
@@ -205,6 +167,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             for(int i = 0; i < this.items.size(); ++i) {
                 if(this.hasRemainingSpaceForItem(this.items.get(i), p_36051_)) {
                     if(i < 36) cir.setReturnValue(i);
+                    // Added slots are detected as free space
                     else cir.setReturnValue(i + 5);
                 }
             }
@@ -213,10 +176,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Inject(method = "getFreeSlot()I", at = @At(value = "HEAD"), cancellable = true)
     public void onGetFreeSlot(CallbackInfoReturnable<Integer> cir) {
-        //35番にアイテムが入る問題はここのせい，空きスロットなのでEMPTYを返してしまう
         for(int i = 0; i < this.items.size(); ++i) {
             if(this.items.get(i).isEmpty() && !((LockableItemStackList) items).lockList.get(i)) {
                 if(i < 36) cir.setReturnValue(i);
+                // Added slots are detected as free space
                 else cir.setReturnValue(i + 5);
             }
         }
@@ -237,29 +200,20 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         setStorageSize(1, this.player);
 
         isActiveInventory = !isActiveInventory;
-        //System.out.printf("isActivateInvetory -> %b\n", isActiveInventory);
 
         ((IMenuChangable) this.player.containerMenu).toggleInventory(this.player);
-
-        if(this.player.getLevel().isClientSide()) this.player.sendSystemMessage(Component.literal("Inventory Toggled!"));
     }
 
     @Override
-        public void setArmor(Player player, boolean change) {
+    public void setArmor(Player player, boolean change) {
         if(change != isActiveArmor) toggleArmor(this.player);
     }
 
 
     @Override
     public void toggleArmor(Player player) {
-
-        //System.out.println(player.getLevel().isClientSide ? "client inventory!" : "server inventory!");
-        //アーマーリストの無効化
-        //溢れたアイテムを撒き散らす
-        //menu.slotsを回してSlotType.ARMORを無効化・隠蔽処理有効化
-
         if(this.isActiveArmor) {
-
+            // Scatter out what remains on the old list.
             for(ItemStack item : armor) {
                 Level level = player.level;
                 ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
@@ -267,41 +221,13 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 itementity.setThrower(player.getUUID());
                 level.addFreshEntity(itementity);
             }
-
-            synchronized(compartments) {
-                compartments.remove(armor);
-                armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, true);
-                compartments.add(1, armor);
-            }
+            ((LockableItemStackList)armor).allLock();
             this.isActiveArmor = false;
             return;
         }
-
-        synchronized (compartments) {
-            compartments.remove(armor);
-            armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, false);
-            ((LockableItemStackList) armor).setObserver((detectItem) -> {
-                //Fixme このオブザーバーは呼ばれていない
-                //System.out.println("called observer!!");
-                //System.out.println(player.getLevel().isClientSide());
-
-
-                enchantSize = 0;
-                armor.forEach(
-                        (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
-                );
-                updateStorageSize();
-
-            });
-            compartments.add(1, armor);
-        }
-
+        ((LockableItemStackList)armor).allOpen();
         this.isActiveArmor = true;
-
-
-        ((IMenuChangable) player.containerMenu).toggleArmor(player);
-
-        if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Armor Toggled!"));
+        ((IMenuChangable) player.containerMenu).judgeArmorHiding(player);
     }
 
     @Override
@@ -312,8 +238,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void toggleOffhand(Player player) {
         if(this.isActiveOffhand) {
-
-
+            // Scatter out what remains on the old list.
             for(ItemStack item : offhand) {
                 Level level = player.level;
                 ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
@@ -321,29 +246,14 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 itementity.setThrower(player.getUUID());
                 level.addFreshEntity(itementity);
             }
-
-            synchronized (compartments) {
-                compartments.remove(offhand);
-                offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, true);
-                compartments.add(2, offhand);
-            }
-
+            ((LockableItemStackList)offhand).allLock();
             this.isActiveOffhand = false;
-
-            return;
+        } else
+        {
+            ((LockableItemStackList)offhand).allOpen();
+            this.isActiveOffhand = true;
+            ((IMenuChangable) player.containerMenu).judgeOffhandHiding(player);
         }
-
-        synchronized (compartments) {
-            compartments.remove(offhand);
-            offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, false);
-            compartments.add(2, offhand);
-        }
-
-        this.isActiveOffhand = true;
-
-        ((IMenuChangable) player.containerMenu).toggleOffhand(player);
-
-        if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Offhand Toggled!"));
     }
 
     @Override
@@ -353,14 +263,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public void toggleCraft(Player player) {
-        //Todo アイテムリストに対しての操作はしないがisActiveCraftのトグル操作のみ行う部分
         isActiveCraft = !isActiveCraft;
-
-        ((IMenuChangable) player.inventoryMenu).toggleCraft(player);
-        ((IMenuChangable) player.containerMenu).toggleCraft(player);
+        ((IMenuChangable) player.inventoryMenu).judgeCraftHiding(player);
+        ((IMenuChangable) player.containerMenu).judgeCraftHiding(player);
         ((ICraftingContainerChangable) player.inventoryMenu.getCraftSlots()).toggleCraft(player);
-
-        if(player.getLevel().isClientSide()) player.sendSystemMessage(Component.literal("Craft Toggled!"));
     }
 
     @Override
@@ -392,93 +298,75 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void changeStorageSize(int change, Player player) {
 
-        //Todo インベントリを開いた状態でスロット数変更を行う(コマンド，エンチャント)とアイテムが消滅する問題
-        //Todo とりあえずエフェクトの非同期問題，スロット減少時のアイテム消失，ページ変更時のアイテム消失は解決か
-
-        //なぜかxになっているはずのスロットがハゲる
-
-        //インベントリを開いた状態の場合スロットが動作に関わってくるせいか？
         inventorySize += change;
         LockableItemStackList newItems;
-        //とりあえずLockableItemStackListとして宣言してから挿入する？
-
-
-        //インベントリは必ず1スロット残す
-        //インベントリをゼロスロットにするオプションはコマンドとして実装する
         if(inventorySize < 1) inventorySize = 1;
-
         hotbarSize = 9;
         int allSize = (inventorySize + effectSize + enchantSize);
 
-        if(allSize <= 36) {
-            maxPage = 0;
-            newItems = LockableItemStackList.withSize(36, (Inventory) (Object) this, false);
+        if(allSize < 9) {
+            hotbarSize = allSize;
+            if(selected > allSize) selected = allSize - 1;
+        }
 
-            System.out.printf("allsize -> %d", allSize);
-            for(int i = 0; i < (36 - allSize); i++) {
-                //まず頭から順にtrueにしていく
+        int newMaxPage = (int)Math.max(Math.floor((allSize - 10) / 27f), 0);
 
-                newItems.lockList.set(35 - i, true);
+        // When the number of pages remains the same
+        if (maxPage == newMaxPage)
+        {
+            int decrements = ((maxPage+1)*27 + 9) - allSize;
+            ((LockableItemStackList)items).allOpen();
+            for (int i=1; i<decrements+1; i++)
+            {
+                ((LockableItemStackList)items).lock(items.size()-i);
+            }
+        }
+        // When the number of pages changes
+        else
+        {
+            maxPage = newMaxPage;
+
+            newItems = LockableItemStackList.withSize((maxPage+1)*27 + 9, (Inventory) (Object) this, false);
+
+            int decrements = ((maxPage+1)*27 + 9) - allSize;
+            for (int i=0; i<decrements; i++)
+            {
+                ((LockableItemStackList)items).lock(items.size()-1-i);
             }
 
-            //減らすべき分の要素のstopperをtrueにしていく
-            //置き換えのときのsetで弾かれて自動で放り投げられるのでほかはそのままでOK?
-            if(allSize < 9) {
-                hotbarSize = allSize;
-                if(selected > allSize) selected = allSize - 1;
+            // Transfer items to the new list and scatter out what remains on the old list.
+            for(int i = 0; i < (Math.min(items.size(), newItems.size())); i++) {
+                newItems.set(i, items.get(i));
+                items.set(i, ItemStack.EMPTY);
             }
-        } else {
-            maxPage = (int) Math.floor((allSize - 9) / 27);
-            newItems = LockableItemStackList.withSize(allSize, (Inventory) (Object) this, false);
+            for(ItemStack item : items) {
+                if(item == ItemStack.EMPTY) continue;
+                Level level = player.level;
+                ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
+                itementity.setDefaultPickUpDelay();
+                itementity.setThrower(player.getUUID());
+                level.addFreshEntity(itementity);
+            }
+            synchronized(compartments) {
+                compartments.remove(items);
+                items = newItems;
+                compartments.add(0, items);
+            }
         }
-
-        //置き換え
-        for(int i = 0; i < (Math.min(items.size(), newItems.size())); i++) {
-            newItems.set(i, items.get(i));
-            items.set(i, ItemStack.EMPTY);
-        }
-
-        //ぶちまけ
-        for(ItemStack item : items) {
-            if(item == ItemStack.EMPTY)continue;
-
-            Level level = player.level;
-            ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
-            itementity.setDefaultPickUpDelay();
-            itementity.setThrower(player.getUUID());
-            level.addFreshEntity(itementity);
-        }
-
-        //最後にitemsを更新，参照をcompartmentsに挿入して終了
-        synchronized (compartments) {
-            compartments.remove(items);
-            items = newItems;
-            compartments.add(0, items);
-        }
-
-        ((IMenuChangable) player.containerMenu).changeStorageSize(change,getMaxPage(),  player);
-
-
-        //サーバーにこれを送信しようとしたときにも通信エラーの同じようなのが出る？　やっぱり間違った方面での送信が原因なのでは
+        ((IMenuChangable) player.containerMenu).judgePageReduction(change, getMaxPage(), player);
     }
 
     @Override
     public void updateStorageSize() {
-        Thread t = Thread.currentThread();
-        String name = t.getName();
-        //System.out.println("name=" + name);
-
-        //System.out.printf("effect -> %d%n", effectSize);
-        //System.out.printf("enchant -> %d%n", enchantSize);
-
+        // 0 argument can be used to update the number of slots for enchantments and effects.
         changeStorageSize(0, player);
     }
 
     @Override
     public void changeEffectSize(int change) {
-        //System.out.printf("changeEffectSize -> %s\n", player.getLevel().isClientSide() ? "client" : "server");
-        synchronized (compartments) {
-            effectSize = change;
+        // Server-side effect slots are handled here
+        synchronized(compartments) {
+            this.effectSize = change;
             updateStorageSize();
         }
     }
@@ -486,8 +374,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void syncEffectSizeToClient(ClientEffectSlotSyncEvent e) {
-        System.out.println("sync effect event");
-        synchronized (compartments) {
+        // Client-side effect slots are handled here
+        synchronized(compartments) {
             this.effectSize = e.getEffectSize();
             updateStorageSize();
         }
@@ -495,59 +383,36 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public boolean isValidSlot(int id) {
+        // 0-35 are vanilla item slots.
         if(id < 36) {
             return !((LockableItemStackList) items).lockList.get(id);
         }
-        //armor
-        else if(id >= 36 && id < 40) {
+        // 36-39 are vanilla armor slots.
+        else if(id < 40) {
             return !((LockableItemStackList) armor).lockList.get(id - 36);
         }
-        //offhand
+        // 40 is vanilla offhand slot.
         else if(id == 40) {
-            return !((LockableItemStackList) offhand).lockList.get(id - 40);
+            return !((LockableItemStackList) offhand).lockList.get(0);
         }
-        //minipouch
-        else if(id > 40) {
+        // 41 and above are additional slots.
+        // To avoid id collisions, this mod treats the id as the sum of 5(armor+offhand).
+        else {
             return !((LockableItemStackList) items).lockList.get(id - 5);
         }
-        return true;
-    }
-
-
-    @Inject(method = "isHotbarSlot(I)Z", at = @At(value = "HEAD"), cancellable = true)
-    private static void onDetectHotbarSlot(int p_36046_, CallbackInfoReturnable<Boolean> cir) {
-        //単にスロットをホットバーとして認識しなくなるだけ，とくにいらないかも？
-        //とりあえずホットバーの最大値はここで指定する
-        cir.setReturnValue(p_36046_ >= 0 && p_36046_ < 9);
     }
 
     @Inject(method = "swapPaint(D)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSwapaint(double p_35989_, CallbackInfo ci) {
-
-
-        //こいついじると選択不能になる！！ ただしマウスのみ
+        // When the hot bar is scrolled
         int i = (int) Math.signum(p_35989_);
-
-        for(this.selected -= i; this.selected < 0; this.selected += hotbarSize) {
-        }
+        for(this.selected -= i; this.selected < 0; this.selected += hotbarSize) {}
 
         while(this.selected >= hotbarSize) {
             this.selected -= hotbarSize;
         }
-
         ci.cancel();
     }
-
-    @Inject(method = "getSuitableHotbarSlot()I", at = @At(value = "RETURN"), cancellable = true)
-    public void onGetSuitableHotbarSlot(CallbackInfoReturnable<Integer> cir) {
-        // System.out.println("suitableHotbar" + cir.getReturnValue());
-    }
-
-    @Inject(method = "getSelectionSize()I", at = @At(value = "HEAD"), cancellable = true)
-    private static void onGetSelectionSize(CallbackInfoReturnable<Integer> cir) {
-
-    }
-
 
     @Override
     public int getMaxPage() {
@@ -566,32 +431,142 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public PlayerInventorySizeData getAllData() {
-        return new PlayerInventorySizeData(inventorySize, isActiveInventory, isActiveOffhand, isActiveCraft, isActiveArmor);
+        return new PlayerInventorySizeData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
+    }
+
+    @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At(value = "HEAD"), cancellable = true)
+    public void onSetItem(int id, ItemStack itemStack, CallbackInfo ci) {
+        synchronized(compartments) {
+            // 0-35 are vanilla item slots.
+            if(id < 36) {
+                if(id + 1 > items.size()) ci.cancel();
+                else {
+                    items.set(id, itemStack);
+                }
+                ci.cancel();
+            }
+            // 36-39 are vanilla armor slots.
+            else if(id < 40) {
+                if(id - 35 > armor.size()) ci.cancel();
+                else {
+                    armor.set(id - 36, itemStack);
+                }
+                ci.cancel();
+            }
+            // 40 is vanilla offhand slot.
+            else if(id == 40) {
+                if(id - 39 > offhand.size()) ci.cancel();
+                else {
+                    offhand.set(0, itemStack);
+                }
+                ci.cancel();
+            }
+            // 41 and above are additional slots.
+            // To avoid id collisions, this mod treats the id as the sum of 5(armor+offhand).
+            else {
+                if(id - 40 > items.size()) ci.cancel();
+                else {
+                    items.set(id - 5, itemStack);
+                }
+                ci.cancel();
+            }
+        }
+    }
+
+    @Inject(method = "getItem(I)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "HEAD"), cancellable = true)
+    public void onGetItem(int id, CallbackInfoReturnable<ItemStack> cir) {
+
+        synchronized(compartments) {
+            // 0-35 are vanilla item slots.
+            if(id < 36) {
+                if(id + 1 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
+                else {
+                    cir.setReturnValue(items.get(id));
+                }
+            }
+            // 36-39 are vanilla armor slots.
+            else if(id < 40) {
+                if(id - 35 > armor.size()) cir.setReturnValue(ItemStack.EMPTY);
+                else {
+                    cir.setReturnValue(armor.get(id - 36));
+                }
+            }
+            // 40 is vanilla offhand slot.
+            else if(id == 40) {
+                if(id - 39 > offhand.size()) cir.setReturnValue(ItemStack.EMPTY);
+                else {
+                    cir.setReturnValue(offhand.get(0));
+                }
+            }
+            // 41 and above are additional slots.
+            // To avoid id collisions, this mod treats the id as the sum of 5(armor+offhand).
+            else {
+                if(id - 40 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
+                else {
+                    cir.setReturnValue(items.get(id - 5));
+                }
+            }
+        }
+    }
+
+
+    @Inject(method = "removeItem(II)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "HEAD"), cancellable = true)
+    public void onRemoveItem(int id, int decrement, CallbackInfoReturnable<ItemStack> cir) {
+        synchronized(compartments) {
+            // 0-35 are vanilla item slots.
+            if(id < 36) {
+                if(id + 1 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
+                else if(!items.get(id).isEmpty()) {
+                    cir.setReturnValue(ContainerHelper.removeItem(items, id, decrement));
+                }
+            }
+            // 36-39 are vanilla armor slots.
+            else if(id < 40) {
+                if(id - 35 > armor.size()) cir.setReturnValue(ItemStack.EMPTY);
+                else if(!armor.get(id - 36).isEmpty()) {
+                    cir.setReturnValue(ContainerHelper.removeItem(armor, id - 36, decrement));
+                }
+            }
+            // 40 is vanilla offhand slot.
+            else if(id == 40) {
+                if(id - 39 > offhand.size()) cir.setReturnValue(ItemStack.EMPTY);
+                else if(!offhand.get(0).isEmpty()) {
+                    cir.setReturnValue(ContainerHelper.removeItem(offhand, 0, decrement));
+                }
+            }
+            // 41 and above are additional slots.
+            // To avoid id collisions, this mod treats the id as the sum of 5(armor+offhand).
+            else {
+                if(id - 40 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
+                else if(!items.get(id - 5).isEmpty()) {
+                    cir.setReturnValue(ContainerHelper.removeItem(items, id - 5, decrement));
+                }
+            }
+        }
     }
 
     @Inject(method = "save(Lnet/minecraft/nbt/ListTag;)Lnet/minecraft/nbt/ListTag;", at = @At(value = "HEAD"), cancellable = true)
-    public void onSave(ListTag tags, CallbackInfoReturnable<ListTag> cir) {
-        synchronized (compartments) {
-            for (int i = 0; i < 36; ++i) {
-                if (!items.get(i).isEmpty()) {
+    public void onSaveInventory(ListTag tags, CallbackInfoReturnable<ListTag> cir) {
+        synchronized(compartments) {
+            // In the original method, the armor and offhand lists conflict with the item list.
+            for(int i = 0; i < 36; ++i) {
+                if(!items.get(i).isEmpty()) {
                     CompoundTag compoundtag = new CompoundTag();
                     compoundtag.putByte("Slot", (byte) i);
                     items.get(i).save(compoundtag);
                     tags.add(compoundtag);
                 }
             }
-
-            for (int j = 0; j < this.armor.size(); ++j) {
-                if (!armor.get(j).isEmpty()) {
+            for(int j = 0; j < this.armor.size(); ++j) {
+                if(!armor.get(j).isEmpty()) {
                     CompoundTag compoundtag1 = new CompoundTag();
                     compoundtag1.putByte("Slot", (byte) (j + 100));
                     armor.get(j).save(compoundtag1);
                     tags.add(compoundtag1);
                 }
             }
-
-            for (int k = 0; k < this.offhand.size(); ++k) {
-                if (!offhand.get(k).isEmpty()) {
+            for(int k = 0; k < this.offhand.size(); ++k) {
+                if(!offhand.get(k).isEmpty()) {
                     CompoundTag compoundtag2 = new CompoundTag();
                     compoundtag2.putByte("Slot", (byte) (k + 150));
                     offhand.get(k).save(compoundtag2);
@@ -599,220 +574,39 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 }
             }
         }
-
         cir.setReturnValue(tags);
     }
 
     @Inject(method = "load(Lnet/minecraft/nbt/ListTag;)V", at = @At(value = "HEAD"), cancellable = true)
-    public void onLoad(ListTag tags, CallbackInfo ci) {
-
-        synchronized (compartments) {
+    public void onLoadInventory(ListTag tags, CallbackInfo ci) {
+        synchronized(compartments) {
             items.clear();
             armor.clear();
             offhand.clear();
-
-            //ここから入れ物の初期化を行う
-
-
-            for (int i = 0; i < tags.size(); ++i) {
+            for(int i = 0; i < tags.size(); ++i) {
                 CompoundTag compoundtag = tags.getCompound(i);
                 int j = compoundtag.getByte("Slot") & 255;
                 ItemStack itemstack = ItemStack.of(compoundtag);
-                if (!itemstack.isEmpty()) {
-                    if (j >= 0 && j < 36) {
+                if(!itemstack.isEmpty()) {
+                    // In the original method, the armor and offhand lists conflict with the item list.
+                    if(j < 36) {
                         items.set(j, itemstack);
-                    } else if (j >= 100 && j < armor.size() + 100) {
+                    } else if(j >= 100 && j < armor.size() + 100) {
                         armor.set(j - 100, itemstack);
-                    } else if (j >= 150 && j < offhand.size() + 150) {
+                    } else if(j >= 150 && j < offhand.size() + 150) {
                         offhand.set(j - 150, itemstack);
                     }
                 }
             }
-
-
         }
-
-        //System.out.println("load finished...");
         ci.cancel();
     }
 
-    @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At(value = "HEAD"), cancellable = true)
-    public void onSetItem(int id, ItemStack itemStack, CallbackInfo ci) {
-        //System.out.println(itemStack);
-        synchronized (compartments) {
-            if (id < 36) {
-                if (id + 1 > items.size()) ci.cancel();
-                else if (items != null) {
-                    items.set(id, itemStack);
-                }
-                ci.cancel();
-            }
-
-            //armor
-            else if (id >= 36 && id < 40) {
-                if (id - 35 > armor.size()) ci.cancel();
-                else if (armor != null) {
-                    armor.set(id - 36, itemStack);
-                }
-                ci.cancel();
-            }
-
-            //offhand
-            else if (id == 40) {
-                if (id - 39 > offhand.size()) ci.cancel();
-                else if (offhand != null) {
-                    offhand.set(id - 40, itemStack);
-                }
-                ci.cancel();
-            }
-
-            //minipouch
-            else if (id > 40) {
-                if (id - 40 > items.size()) ci.cancel();
-                else if (items != null) {
-                    items.set(id - 5, itemStack);
-                }
-                ci.cancel();
-            } else {
-                ci.cancel();
-            }
-        }
-
-    }
-
-    //なんかsurvival inventoryのボタンを押すとxが消える？
-    //さわれない状態は継続
-
-    @SubscribeEvent
-    public void oncommand(ClientChatEvent e)
-    {
-        System.out.println("client chat");
-        for (int i=0; i<items.size(); i++)
-        {
-            System.out.printf("id %d: %s\n", i, items.get(i));
-        }
-    }
-
-    @SubscribeEvent
-    public void oncommand(ServerChatEvent e)
-    {
-        System.out.println("server chat");
-        for (int i=0; i<items.size(); i++)
-        {
-            System.out.printf("id %d: %s\n", i, items.get(i));
-        }
-    }
-
-    @Inject(method = "getItem(I)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "HEAD"), cancellable = true)
-    public void onGetItem(int id, CallbackInfoReturnable<ItemStack> cir) {
-
-        synchronized (compartments) {
-            if (id < 36) {
-                if (id + 1 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
-                else if (items != null) {
-                    cir.setReturnValue(items.get(id));
-                }
-            }
-
-            //armor
-            else if (id >= 36 && id < 40) {
-                if (id - 35 > armor.size()) cir.setReturnValue(ItemStack.EMPTY);
-                else if (armor != null) {
-                    cir.setReturnValue(armor.get(id - 36));
-                }
-            }
-
-            //offhand
-            else if (id == 40) {
-                if (id - 39 > offhand.size()) cir.setReturnValue(ItemStack.EMPTY);
-                else if (offhand != null) {
-                    cir.setReturnValue(offhand.get(id - 40));
-                }
-            }
-
-            //minipouch
-            else if (id > 40) {
-                if (id - 40 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
-                else if (items != null) {
-                    cir.setReturnValue(items.get(id - 5));
-                }
-            }
-        }
-
-        //System.out.println(cir.getReturnValue().toString());
-    }
-
-
-    @Inject(method = "removeItem(II)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "HEAD"), cancellable = true)
-    public void onRemoveItem(int id, int decrement, CallbackInfoReturnable<ItemStack> cir) {
-        //vanilla inventory
-        synchronized (compartments) {
-            if (id < 36) {
-                if (id + 1 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
-                else if (items != null && !items.get(id).isEmpty()) {
-                    cir.setReturnValue(ContainerHelper.removeItem(items, id, decrement));
-                }
-            }
-
-            //armor
-            else if (id >= 36 && id < 40) {
-                if (id - 35 > armor.size()) cir.setReturnValue(ItemStack.EMPTY);
-                else if (armor != null && !armor.get(id - 36).isEmpty()) {
-                    cir.setReturnValue(ContainerHelper.removeItem(armor, id - 36, decrement));
-                }
-            }
-
-            //offhand
-            else if (id == 40) {
-                if (id - 39 > offhand.size()) cir.setReturnValue(ItemStack.EMPTY);
-                else if (offhand != null && !offhand.get(id - 40).isEmpty()) {
-                    cir.setReturnValue(ContainerHelper.removeItem(offhand, id - 40, decrement));
-                }
-            }
-
-            //minipouch
-            else if (id > 40) {
-                if (id - 40 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
-                else if (items != null && !items.get(id - 5).isEmpty()) {
-                    cir.setReturnValue(ContainerHelper.removeItem(items, id - 5, decrement));
-                }
-            } else {
-                cir.setReturnValue(ItemStack.EMPTY);
-            }
-        }
-    }
-
-    @Override
-    public CompoundTag saveStatus(CompoundTag tag) {
-        tag.putInt("inventorysize", inventorySize);
-        tag.putInt("effectsize", effectSize);
-        tag.putBoolean("activateinventory", isActiveInventory);
-        tag.putBoolean("activateoffhand", isActiveOffhand);
-        tag.putBoolean("craftable", isActiveCraft);
-        tag.putBoolean("equippable", isActiveArmor);
-
-        return tag;
-    }
-
-    @Override
-    public void loadStatus(CompoundTag tag) {
-        int slt = tag.contains("inventorysize") ? tag.getInt("inventorysize") : Config.DEFAULT_SIZE.get();
-        int efc = tag.contains("effectsize") ? tag.getInt("effectsize") : 0;
-        boolean inv = tag.contains("activateinventory") ? tag.getBoolean("activateinventory") : Config.DEFAULT_INVENTORY.get();
-        boolean off = tag.contains("activateoffhand") ? tag.getBoolean("activateoffhand") : Config.DEFAULT_OFFHAND.get();
-        boolean cft = tag.contains("craftable") ? tag.getBoolean("craftable") : Config.DEFAULT_CRAFT.get();
-        boolean arm = tag.contains("equippable") ? tag.getBoolean("equippable") : Config.DEFAULT_ARMOR.get();
-
-        initServer(slt, efc, inv, arm, off, cft);
-
-        ServerPlayer serverPlayer = (ServerPlayer) player;
-        ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(slt, efc, inv, off, cft, arm));
-    }
 
     @Override
     public ListTag saveAdditional(ListTag tag) {
+        // Save added slots (when there are 37 slots or more)
         for(int i = 36; i < items.size(); ++i) {
-            //System.out.println("saveAdditional " + i);
             if(!items.get(i).isEmpty()) {
                 CompoundTag compoundtag = new CompoundTag();
                 compoundtag.putInt("Slot", i);
@@ -820,38 +614,46 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 tag.add(compoundtag);
             }
         }
-
-
-
         return tag;
     }
 
     @Override
     public void loadAdditional(ListTag tag) {
+        // Load added slots (when there are 37 slots or more)
         for(int i = 0; i < tag.size(); ++i) {
             CompoundTag compoundtag = tag.getCompound(i);
-            int j = compoundtag.getInt("Slot");
+            int slotNumber = compoundtag.getInt("Slot");
             ItemStack itemstack = ItemStack.of(compoundtag);
             if(!itemstack.isEmpty()) {
-                if(j < items.size()) {
-                    items.set(j, itemstack);
+                if(slotNumber < items.size()) {
+                    items.set(slotNumber, itemstack);
                 }
             }
         }
     }
 
+    @Override
+    public CompoundTag saveStatus(CompoundTag tag) {
+        tag.putInt(    "inventorysize", inventorySize);
+        tag.putInt(    "effectsize"   , effectSize);
+        tag.putBoolean("inventory"    , isActiveInventory);
+        tag.putBoolean("armor"        , isActiveArmor);
+        tag.putBoolean("offhand"      , isActiveOffhand);
+        tag.putBoolean("craft"        , isActiveCraft);
 
-    //エンチャントスロット数の確認と更新
-    //このメソッドをload/save，setitemなどに挟む
+        return tag;
+    }
 
-    //Todo エンチャスロット・エフェクトスロットに保存されたアイテムはログイン時にどうなる？
+    @Override
+    public void loadStatus(CompoundTag tag) {
+        int     inventorySize       = tag.contains("inventorysize") ? tag.getInt("inventorysize") : Config.DEFAULT_SIZE.get();
+        int     effectSize          = tag.contains("effectsize")    ? tag.getInt("effectsize")    : 0;
+        boolean isActivateInventory = tag.contains("inventory")     ? tag.getBoolean("inventory") : Config.DEFAULT_INVENTORY.get();
+        boolean isActivateArmor     = tag.contains("armor")         ? tag.getBoolean("armor")     : Config.DEFAULT_ARMOR.get();
+        boolean isActivateOffhand   = tag.contains("offhand")       ? tag.getBoolean("offhand")   : Config.DEFAULT_OFFHAND.get();
+        boolean isActivateCraft     = tag.contains("craft")         ? tag.getBoolean("craft")     : Config.DEFAULT_CRAFT.get();
 
-    //Todo エンチャスロット->アイテムをarmorリストに読むときに確認
-    //Todo エフェクトスロット->エフェクトの再開がどのタイミングで行われるのか確認すべき
-    //Todo もしエフェクトの再開がアイテムリスト初期化より遅いなら，エフェクト再開側から
-    //Todo インベントリの挿入を行う？
-
-    //Todo NBTにログアウト時のエンチャスロット数とエフェクトスロット数を保持，setItem時にぶちまけずに一時リストに保存？
-
-
+        initServer(inventorySize, effectSize, isActivateInventory, isActivateArmor, isActivateOffhand, isActivateCraft);
+        ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, effectSize, isActivateInventory, isActivateArmor, isActivateOffhand, isActivateCraft));
+    }
 }

@@ -1,10 +1,15 @@
 package ga.melara.stevesminipouch.util;
 
+import net.minecraft.world.Container;
+import net.minecraft.world.inventory.Slot;
+
 public interface ISlotHidable {
 
-    abstract void hide();
+    void hide();
 
-    abstract void show();
+    void show();
 
-    abstract boolean isShowing();
+    boolean isShowing();
+
+    void setHiding();
 }

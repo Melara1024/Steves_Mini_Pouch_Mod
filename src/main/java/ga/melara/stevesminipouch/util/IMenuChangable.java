@@ -1,23 +1,16 @@
 package ga.melara.stevesminipouch.util;
 
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 public interface IMenuChangable {
 
-    abstract void toggleInventory(Player player);
+    void toggleInventory(Player player);
 
-    void setArmor(boolean change, Player player);
+    void judgeArmorHiding(Player player);
 
-    abstract void toggleArmor(Player player);
+    void judgeCraftHiding(Player player);
 
-    void setCraft(boolean change, Player player);
+    void judgeOffhandHiding(Player player);
 
-    abstract void toggleCraft(Player player);
-
-    void setOffhand(boolean change, Player player);
-
-    abstract void toggleOffhand(Player player);
-
-    abstract void changeStorageSize(int change, int maxpage, Player player);
+    void judgePageReduction(int change, int maxpage, Player player);
 }

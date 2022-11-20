@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Mutable;
 
 public interface IHasSlotType {
 
-    abstract void setType(SlotType type);
+    void setType(SlotType type);
 
-    abstract SlotType getType();
+    SlotType getType();
 }

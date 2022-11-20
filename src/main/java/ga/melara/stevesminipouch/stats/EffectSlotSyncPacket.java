@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 
 public class EffectSlotSyncPacket {
 
-
     private int effectSlot;
 
     public EffectSlotSyncPacket(int setSize) {
@@ -24,15 +23,10 @@ public class EffectSlotSyncPacket {
         buf.writeInt(effectSlot);
     }
 
-    //こいつ自身はサーバーのクラス
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-
-            //ここからイベントを送信して初期化？
-
             MinecraftForge.EVENT_BUS.post(new ClientEffectSlotSyncEvent(effectSlot));
-
             ctx.setPacketHandled(true);
         });
         return true;

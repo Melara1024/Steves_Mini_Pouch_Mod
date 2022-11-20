@@ -15,8 +15,9 @@ public class TutorialMixin {
     @Shadow
     @Final
     private Minecraft minecraft;
+
     @Inject(method = "onOpenInventory", at = @At("HEAD"), cancellable = true)
     public void onOpenInventory(CallbackInfo ci) {
-        if(!((IStorageChangable)minecraft.player.getInventory()).isActiveInventory()) ci.cancel();
+        if(!((IStorageChangable) minecraft.player.getInventory()).isActiveInventory()) ci.cancel();
     }
 }

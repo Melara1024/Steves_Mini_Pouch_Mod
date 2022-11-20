@@ -20,31 +20,15 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class LockableItemStackList extends NonNullList<ItemStack> {
-    //インベントリ枠をロックするためのブール値リスト
-    //主にインベントリのスロット数が36を切ったときに使用
-    public List<Boolean> lockList = new ArrayList<Boolean>();
 
-    //Todo 変更可能リストを使って追加，削除をもうちょっと自在にやる
     private List<ItemStack> mutableList;
 
-    //Todo inventory<36のとき用に要素ごとにアクセスを制限可能にする
-    //Todo メソッドのオーバーロードでアクセスを指定できるようにする
-
-    private boolean stopper = false;
-
-
-    //ロックされているときにアイテムをぶちまけるため，自身の所属するインベントリの参照を持っておく
     private Inventory inventory;
 
-    //private static final ItemStack defaultItem = new ItemStack(ModRegistry.DUMMY_ITEM::get, 1);
     private static final ItemStack defaultItem = ItemStack.EMPTY;
 
-    private Consumer<ItemStack> observer = new Consumer<ItemStack>() {
-        @Override
-        public void accept(ItemStack itemStack) {
+    private Consumer<ItemStack> observer = itemStack -> {};
 
-        }
-    };
     private boolean isActivateObserver = false;
 
     public void setObserver(Consumer<ItemStack> observer) {
@@ -52,78 +36,97 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
         isActivateObserver = true;
     }
 
+
+    public List<Boolean> lockList = new ArrayList<Boolean>() {
+        @Override
+        public Boolean set(int index, Boolean element) {
+            if (!element && Objects.nonNull(inventory))
+            {
+                Level level = inventory.player.level;
+                Player entity = inventory.player;
+                ItemStack item = LockableItemStackList.this.get(index);
+                ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), item);
+                itementity.setDefaultPickUpDelay();
+                itementity.setThrower(entity.getUUID());
+                level.addFreshEntity(itementity);
+            }
+            return super.set(index, element);
+        }
+    };
+
+    public void allLock() {
+        this.lockList.replaceAll(ignored -> true);
+    }
+
+    public void allOpen() {
+        this.lockList.replaceAll(ignored -> false);
+    }
+
+    public void lock(int target) {
+        lockList.set(target, true);
+    }
+
+    public void open(int target) {
+        lockList.set(target, false);
+    }
+
+
+
     public static LockableItemStackList create(Inventory inventory, boolean stopper) {
         return new LockableItemStackList(Lists.newArrayList(), inventory, stopper);
     }
 
-    public static LockableItemStackList withSize(int p_122781_, Inventory inventory, boolean stopper) {
-        ItemStack[] aobject = new ItemStack[p_122781_];
+    public static LockableItemStackList withSize(int size, Inventory inventory, boolean stopper) {
+        ItemStack[] aobject = new ItemStack[size];
         Arrays.fill(aobject, defaultItem);
         return new LockableItemStackList(Arrays.asList(aobject), inventory, stopper);
     }
 
     @SafeVarargs
-    public static LockableItemStackList of(Inventory inventory, boolean stopper, ItemStack... p_122785_) {
-        return new LockableItemStackList(Arrays.asList(p_122785_), inventory, stopper);
+    public static LockableItemStackList of(Inventory inventory, boolean stopper, ItemStack... itemArray) {
+        return new LockableItemStackList(Arrays.asList(itemArray), inventory, stopper);
     }
 
-    protected LockableItemStackList(List<ItemStack> p_122777_, Inventory inventory, boolean stopper) {
-        super(p_122777_, defaultItem);
+    protected LockableItemStackList(List<ItemStack> itemList, Inventory inventory, boolean initLock) {
+        super(itemList, defaultItem);
         this.inventory = inventory;
-        this.stopper = stopper;
 
-        for(ItemStack item : p_122777_) {
-            lockList.add(stopper);
+        for(ItemStack item : itemList) {
+            lockList.add(initLock);
         }
     }
 
+
     @Override
     @Nonnull
-    public ItemStack get(int p_122791_) {
-        if(stopper || lockList.get(p_122791_)) return defaultItem;
-        return super.get(p_122791_);
+    public ItemStack get(int id) {
+        if(lockList.get(id)) return defaultItem;
+        return super.get(id);
     }
 
     @Override
-    public ItemStack set(int p_122795_, ItemStack p_122796_) {
-        //System.out.println("set to " + p_122795_ + " item " + p_122796_ + " locklist " + lockList.get(p_122795_));
-        if(stopper || lockList.get(p_122795_)) {
+    public ItemStack set(int id, ItemStack itemStack) {
+        // If the slot is locked, throw the item in its place.
+        if(lockList.get(id)) {
             Level level = inventory.player.level;
             Player entity = inventory.player;
-            ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), p_122796_);
+            ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), itemStack);
             itementity.setDefaultPickUpDelay();
             itementity.setThrower(entity.getUUID());
             level.addFreshEntity(itementity);
             return defaultItem;
         }
 
-        ItemStack result = super.set(p_122795_, p_122796_);
-        if(isActivateObserver) this.observer.accept(p_122796_);
+        ItemStack result = super.set(id, itemStack);
+        if(isActivateObserver) this.observer.accept(itemStack);
         return result;
     }
 
     @Override
-    public ItemStack remove(int p_122793_) {
-        if(stopper || lockList.get(p_122793_)) return defaultItem;
-        ItemStack result = super.remove(p_122793_);
+    public ItemStack remove(int id) {
+        if(lockList.get(id)) return defaultItem;
+        ItemStack result = super.remove(id);
         if(isActivateObserver) this.observer.accept(ItemStack.EMPTY);
         return result;
     }
-
-    public void allLock() {
-        this.lockList.forEach((i) -> i = false);
-    }
-
-    public void allOpen() {
-        this.lockList.forEach((i) -> i = true);
-    }
-
-    public void lock(int target) {
-        lockList.set(target, false);
-    }
-
-    public void open(int target) {
-        lockList.set(target, true);
-    }
-
 }

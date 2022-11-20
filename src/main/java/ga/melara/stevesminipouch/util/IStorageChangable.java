@@ -6,41 +6,40 @@ import net.minecraft.world.entity.player.Player;
 public interface IStorageChangable {
 
     void setInventory(Player player, boolean set);
-    abstract void toggleInventory(Player player);
+    void toggleInventory(Player player);
 
     void setArmor(Player player, boolean set);
-    abstract void toggleArmor(Player player);
+    void toggleArmor(Player player);
 
     void setOffhand(Player player, boolean set);
-    abstract void toggleOffhand(Player player);
+    void toggleOffhand(Player player);
 
     void setCraft(Player player, boolean set);
-    abstract void toggleCraft(Player player);
+    void toggleCraft(Player player);
 
-    abstract boolean isActiveInventory();
+    boolean isActiveInventory();
 
-    abstract boolean isActiveArmor();
+    boolean isActiveArmor();
 
-    abstract boolean isActiveOffhand();
+    boolean isActiveOffhand();
 
-    abstract boolean isActiveCraft();
+    boolean isActiveCraft();
 
     void setStorageSize(int set, Player player);
 
-    abstract void changeStorageSize(int change, Player player);
+    void changeStorageSize(int change, Player player);
 
-    abstract void updateStorageSize();
+    void updateStorageSize();
 
-    abstract void changeEffectSize(int change);
+    void changeEffectSize(int change);
 
-    abstract boolean isValidSlot(int id);
+    boolean isValidSlot(int id);
 
-    abstract int getMaxPage();
+    int getMaxPage();
 
-    abstract int getInventorySize();
+    int getInventorySize();
 
-    abstract int getHotbarSize();
-
+    int getHotbarSize();
 
     PlayerInventorySizeData getAllData();
 }
