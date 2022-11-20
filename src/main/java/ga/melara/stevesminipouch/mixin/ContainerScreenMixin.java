@@ -2,6 +2,7 @@ package ga.melara.stevesminipouch.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.event.PageReduceEvent;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.stats.PageChangedPacket;
@@ -53,8 +54,8 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
     Button downButton;
     Button pageIndicator;
 
-    protected ContainerScreenMixin(Component p_96550_) {
-        super(p_96550_);
+    protected ContainerScreenMixin(Component component) {
+        super(component);
     }
 
     @Inject(method = "<init>", at = @At(value = "RETURN"), cancellable = true)
@@ -85,26 +86,30 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         this.setBlitOffset(100);
         this.itemRenderer.blitOffset = 100.0F;
 
+        int buttonX = this.leftPos + this.inventoryLabelX + this.imageWidth - 5 + Config.RENDER_OFFSET_X.get();
+        int buttonY = this.topPos + this.inventoryLabelY + 9 + Config.RENDER_OFFSET_Y.get();
+
         // Page change button settings
-        upButton = new Button(this.leftPos + this.inventoryLabelX + this.imageWidth - 5, this.topPos + this.inventoryLabelY + 18, 18, 18,
-                Component.literal("▲"), (p_96337_) -> {
+        upButton = new Button(buttonX, buttonY, 18, 18,
+                Component.literal("▲"), (button) -> {
             previousPage();
             Messager.sendToServer(new PageChangedPacket(page));
             this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
         });
 
-        downButton = new Button(this.leftPos + this.inventoryLabelX + this.imageWidth - 5, this.topPos + this.inventoryLabelY + 54, 18, 18,
-                Component.literal("▼"), (p_96337_) -> {
+        // Button only for page display
+        pageIndicator = new Button(buttonX, buttonY+upButton.getHeight(), 18, 18,
+                Component.literal(String.valueOf(page + 1)), (button) -> {
+        });
+        pageIndicator.active = false;
+
+        downButton = new Button(buttonX, buttonY+upButton.getHeight()+pageIndicator.getHeight(), 18, 18,
+                Component.literal("▼"), (button) -> {
             nextPage();
             Messager.sendToServer(new PageChangedPacket(page));
             this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
         });
 
-        // Button only for page display
-        pageIndicator = new Button(this.leftPos + this.inventoryLabelX + this.imageWidth - 5, this.topPos + this.inventoryLabelY + 36, 18, 18,
-                Component.literal(String.valueOf(page + 1)), (p_96337_) -> {
-        });
-        pageIndicator.active = false;
 
         this.addRenderableWidget(upButton);
         this.addRenderableWidget(pageIndicator);
@@ -133,10 +138,11 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
             }
 
             // Shift the button position when the recipe book is opened.
-            if(pageIndicator.x != this.leftPos + this.inventoryLabelX + this.imageWidth - 5) {
-                upButton.x = this.leftPos + this.inventoryLabelX + this.imageWidth - 5;
-                downButton.x = this.leftPos + this.inventoryLabelX + this.imageWidth - 5;
-                pageIndicator.x = this.leftPos + this.inventoryLabelX + this.imageWidth - 5;
+            int buttonX = this.leftPos + this.inventoryLabelX + this.imageWidth - 5 + Config.RENDER_OFFSET_X.get();
+            if(pageIndicator.x != buttonX) {
+                upButton.x = buttonX;
+                downButton.x = buttonX;
+                pageIndicator.x = buttonX;
             }
 
             upButton.renderButton(poseStack, mouseX, mouseY, partialTick);

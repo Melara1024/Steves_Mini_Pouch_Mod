@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(CreativeModeInventoryScreen.class)
 public class CreativeModeInventoryScreenMixin {
     @Inject(method = "hasClickedOutside(DDIII)Z", at = @At(value = "HEAD"), cancellable = true)
-    protected void onClickedOutside(double mouseX, double mouseY, int leftPos, int rightPos, int p_97761_, CallbackInfoReturnable<Boolean> cir)
+    protected void onClickedOutside(double mouseX, double mouseY, int leftPos, int rightPos, int ___, CallbackInfoReturnable<Boolean> cir)
     {
         ((IHasPageButton)this).buttonClicked(mouseX, mouseY, leftPos, rightPos, cir);
     }

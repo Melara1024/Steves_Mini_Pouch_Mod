@@ -28,14 +28,13 @@ public class GuiMixin extends GuiComponent {
 
     private static ResourceLocation HOTBARS_LOCATION = new ResourceLocation(StevesMiniPouch.MODID, "textures/gui/hotbars.png");
 
-
     @Shadow
     protected int screenWidth;
     @Shadow
     protected int screenHeight;
 
     @Inject(method = "renderHotbar", at = @At(value = "RETURN"), cancellable = true)
-    public void onRenderHotbar(float p_93010_, PoseStack p_93011_, CallbackInfo ci) {
+    public void onRenderHotbar(float pPartialTick, PoseStack poseStack, CallbackInfo ci) {
         // Replace and rendering hotbar texture
 
         int hotbarSize = ((IStorageChangable) Minecraft.getInstance().player.getInventory()).getHotbarSize();
@@ -45,14 +44,14 @@ public class GuiMixin extends GuiComponent {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, HOTBARS_LOCATION);
 
-        int j = this.getBlitOffset();
+        int blitOffset = this.getBlitOffset();
         this.setBlitOffset(-90);
 
-        int i = this.screenWidth / 2;
-        this.blit(p_93011_, i - 91, this.screenHeight - 22, 0, (9 - hotbarSize) * 22, 182, (9 - hotbarSize) * 22 + 22);
+        int w2 = this.screenWidth / 2;
+        this.blit(poseStack, w2 - 91, this.screenHeight - 22, 0, (9 - hotbarSize) * 22, 182, (9 - hotbarSize) * 22 + 22);
         RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
-        this.blit(p_93011_, i - 91 - 1 + player.getInventory().selected * 20, this.screenHeight - 22 - 1, 0, 22, 24, 22);
+        this.blit(poseStack, w2 - 91 - 1 + player.getInventory().selected * 20, this.screenHeight - 22 - 1, 0, 22, 24, 22);
 
-        this.setBlitOffset(j);
+        this.setBlitOffset(blitOffset);
     }
 }

@@ -25,23 +25,23 @@ public class SlotEffect extends MobEffect {
     }
 
     @Override
-    public void removeAttributeModifiers(LivingEntity livingentity, AttributeMap p_19418_, int p_19419_) {
+    public void removeAttributeModifiers(LivingEntity livingentity, AttributeMap attributeMap, int effectPower) {
         if(livingentity instanceof Player player) {
             ((IStorageChangable) player.getInventory()).changeEffectSize(0);
             if(player instanceof ServerPlayer serverPlayer)
                 Messager.sendToPlayer(new EffectSlotSyncPacket(0), serverPlayer);
         }
-        super.removeAttributeModifiers(livingentity, p_19418_, p_19419_);
+        super.removeAttributeModifiers(livingentity, attributeMap, effectPower);
     }
 
     @Override
-    public void addAttributeModifiers(LivingEntity livingentity, AttributeMap p_19422_, int p_19423_) {
+    public void addAttributeModifiers(LivingEntity livingentity, AttributeMap attributeMap, int effectPower) {
         if(livingentity instanceof Player player) {
-            ((IStorageChangable) player.getInventory()).changeEffectSize(p_19423_);
+            ((IStorageChangable) player.getInventory()).changeEffectSize(effectPower);
             if(player instanceof ServerPlayer serverPlayer)
-                Messager.sendToPlayer(new EffectSlotSyncPacket(p_19423_), serverPlayer);
+                Messager.sendToPlayer(new EffectSlotSyncPacket(effectPower), serverPlayer);
         }
-        super.addAttributeModifiers(livingentity, p_19422_, p_19423_);
+        super.addAttributeModifiers(livingentity, attributeMap, effectPower);
     }
 
     public static RegistryObject<MobEffect> buildInTo(DeferredRegister<MobEffect> MOB_EFFECT) {

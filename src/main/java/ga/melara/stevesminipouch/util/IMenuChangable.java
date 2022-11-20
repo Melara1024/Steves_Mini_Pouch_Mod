@@ -4,7 +4,7 @@ import net.minecraft.world.entity.player.Player;
 
 public interface IMenuChangable {
 
-    void toggleInventory(Player player);
+    void judgeInventoryHiding(Player player);
 
     void judgeArmorHiding(Player player);
 

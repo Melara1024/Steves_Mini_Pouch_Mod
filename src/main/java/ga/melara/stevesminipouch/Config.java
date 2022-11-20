@@ -30,8 +30,8 @@ public class Config {
     public static ForgeConfigSpec.IntValue HOTBAR;
 
     //client settings
-    public static ForgeConfigSpec.IntValue RENDER_SCALE_X;
-    public static ForgeConfigSpec.IntValue RENDER_SCALE_Y;
+    public static ForgeConfigSpec.IntValue RENDER_OFFSET_X;
+    public static ForgeConfigSpec.IntValue RENDER_OFFSET_Y;
 
     private static void registerServerConfig() {
         ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
@@ -63,11 +63,11 @@ public class Config {
 
         CLIENT_BUILDER.comment("Comment Client").push("client");
 
-        RENDER_SCALE_X = CLIENT_BUILDER
+        RENDER_OFFSET_X = CLIENT_BUILDER
                 .comment("X Offset the position of the page change button")
                 .defineInRange("x", 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
-        RENDER_SCALE_Y = CLIENT_BUILDER
+        RENDER_OFFSET_Y = CLIENT_BUILDER
                 .comment("Y Offset the position of the page change button")
                 .defineInRange("y", 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
 

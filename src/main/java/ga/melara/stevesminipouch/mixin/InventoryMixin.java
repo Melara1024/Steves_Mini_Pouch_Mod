@@ -77,7 +77,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     };
 
     @Shadow
-    private boolean hasRemainingSpaceForItem(ItemStack p_36015_, ItemStack p_36016_) {
+    private boolean hasRemainingSpaceForItem(ItemStack itemStack, ItemStack itemStack1) {
         return false;
     }
 
@@ -91,25 +91,25 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Mutable
     public Player player;
 
-    public void initMiniPouch(int slot, int effectSize, boolean inv, boolean arm, boolean off, boolean cft) {
+    public void initMiniPouch(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActivateArmor, boolean isActivateOffhand, boolean isActivateCraft) {
         this.effectSize = effectSize;
-        setStorageSize(slot, player);
+        setStorageSize(inventorySize, player);
 
-        setInventory(player, inv);
-        ((IMenuChangable) player.containerMenu).toggleInventory(player);
+        setInventory(player, isActiveInventory);
+        ((IMenuChangable) player.containerMenu).judgeInventoryHiding(player);
 
-        setArmor(player, arm);
+        setArmor(player, isActivateArmor);
         ((IMenuChangable) player.containerMenu).judgeArmorHiding(player);
 
-        setOffhand(player, off);
+        setOffhand(player, isActivateOffhand);
         ((IMenuChangable) player.containerMenu).judgeOffhandHiding(player);
 
-        setCraft(player, cft);
+        setCraft(player, isActivateCraft);
         ((IMenuChangable) player.containerMenu).judgeCraftHiding(player);
     }
 
-    public void initServer(int slot, int effect, boolean inv, boolean arm, boolean off, boolean cft) {
-        initMiniPouch(slot, effect, inv, arm, off, cft);
+    public void initServer(int inventorySize, int effectSize, boolean isActivateInventory, boolean isActivateArmor, boolean isActivateOffhand, boolean isActivateCraft) {
+        initMiniPouch(inventorySize, effectSize, isActivateInventory, isActivateArmor, isActivateOffhand, isActivateCraft);
     }
 
     @Override
@@ -129,9 +129,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public void oninit(Player p_35983_, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.register(this);
 
-        maxPage = 0;
-        inventorySize = 36;
-        hotbarSize = 9;
+        inventorySize = Config.DEFAULT_SIZE.get();
+        maxPage = (int)Math.max(Math.floor((inventorySize - 10) / 27f), 0);
+        hotbarSize = Math.min(inventorySize, 9);
 
         items = LockableItemStackList.withSize(inventorySize, (Inventory) (Object) this, false);
         armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, false);
@@ -150,10 +150,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         compartments.add(1, armor);
         compartments.add(2, offhand);
 
-        isActiveInventory = true;
-        isActiveOffhand = true;
-        isActiveArmor = true;
-        isActiveCraft = true;
+        isActiveInventory = Config.DEFAULT_INVENTORY.get();
+        isActiveArmor = Config.DEFAULT_ARMOR.get();
+        isActiveOffhand = Config.DEFAULT_OFFHAND.get();
+        isActiveCraft = Config.DEFAULT_CRAFT.get();
     }
 
 
@@ -195,13 +195,15 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public void toggleInventory(Player player) {
+        if (Config.FORCE_INVENTORY.get() && this.isActiveInventory == Config.DEFAULT_INVENTORY.get()) return;
+
         setArmor(this.player, false);
         setCraft(this.player, false);
         setStorageSize(1, this.player);
 
         isActiveInventory = !isActiveInventory;
 
-        ((IMenuChangable) this.player.containerMenu).toggleInventory(this.player);
+        ((IMenuChangable) this.player.containerMenu).judgeInventoryHiding(this.player);
     }
 
     @Override
@@ -212,6 +214,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public void toggleArmor(Player player) {
+        if (Config.FORCE_ARMOR.get() && this.isActiveArmor == Config.DEFAULT_ARMOR.get()) return;
+
         if(this.isActiveArmor) {
             // Scatter out what remains on the old list.
             for(ItemStack item : armor) {
@@ -237,6 +241,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public void toggleOffhand(Player player) {
+        if (Config.FORCE_OFFHAND.get() && this.isActiveOffhand == Config.DEFAULT_OFFHAND.get()) return;
+
         if(this.isActiveOffhand) {
             // Scatter out what remains on the old list.
             for(ItemStack item : offhand) {
@@ -263,6 +269,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public void toggleCraft(Player player) {
+        if (Config.FORCE_CRAFT.get() && this.isActiveCraft == Config.DEFAULT_CRAFT.get()) return;
+
         isActiveCraft = !isActiveCraft;
         ((IMenuChangable) player.inventoryMenu).judgeCraftHiding(player);
         ((IMenuChangable) player.containerMenu).judgeCraftHiding(player);
@@ -297,10 +305,13 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public void changeStorageSize(int change, Player player) {
+        if (Config.FORCE_SIZE.get() && this.inventorySize == Config.MAX_SIZE.get()) return;
 
         inventorySize += change;
         LockableItemStackList newItems;
         if(inventorySize < 1) inventorySize = 1;
+        if(inventorySize >= Config.MAX_SIZE.get()) inventorySize = Config.MAX_SIZE.get();
+
         hotbarSize = 9;
         int allSize = (inventorySize + effectSize + enchantSize);
 
@@ -320,12 +331,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             {
                 ((LockableItemStackList)items).lock(items.size()-1-i);
             }
-            int k=0;
-            for (boolean b :((LockableItemStackList)items).lockList)
-            {
-                System.out.print(k++);
-                System.out.print(b);
-            }
         }
         // When the number of pages changes
         else
@@ -338,12 +343,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             for (int i=0; i<decrements; i++)
             {
                 ((LockableItemStackList)items).lock(items.size()-1-i);
-            }
-            int k=0;
-            for (boolean b :((LockableItemStackList)items).lockList)
-            {
-                System.out.print(k++);
-                System.out.print(b);
             }
 
             // Transfer items to the new list and scatter out what remains on the old list.
@@ -653,17 +652,25 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         tag.putBoolean("offhand"      , isActiveOffhand);
         tag.putBoolean("craft"        , isActiveCraft);
 
+        initServer(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
+        ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
         return tag;
     }
 
     @Override
     public void loadStatus(CompoundTag tag) {
-        int     inventorySize       = tag.contains("inventorysize") ? tag.getInt("inventorysize") : Config.DEFAULT_SIZE.get();
         int     effectSize          = tag.contains("effectsize")    ? tag.getInt("effectsize")    : 0;
-        boolean isActivateInventory = tag.contains("inventory")     ? tag.getBoolean("inventory") : Config.DEFAULT_INVENTORY.get();
-        boolean isActivateArmor     = tag.contains("armor")         ? tag.getBoolean("armor")     : Config.DEFAULT_ARMOR.get();
-        boolean isActivateOffhand   = tag.contains("offhand")       ? tag.getBoolean("offhand")   : Config.DEFAULT_OFFHAND.get();
-        boolean isActivateCraft     = tag.contains("craft")         ? tag.getBoolean("craft")     : Config.DEFAULT_CRAFT.get();
+
+        int     inventorySize       = Config.FORCE_SIZE.get()       ? Config.MAX_SIZE.get() :
+                                      tag.contains("inventorysize") ? tag.getInt("inventorysize") : Config.DEFAULT_SIZE.get();
+        boolean isActivateInventory = Config.FORCE_INVENTORY.get()  ? Config.DEFAULT_INVENTORY.get()    :
+                                      tag.contains("inventory")     ? tag.getBoolean("inventory") : Config.DEFAULT_INVENTORY.get();
+        boolean isActivateArmor     = Config.FORCE_ARMOR.get()      ? Config.DEFAULT_ARMOR.get()        :
+                                      tag.contains("armor")         ? tag.getBoolean("armor")     : Config.DEFAULT_ARMOR.get();
+        boolean isActivateOffhand   = Config.FORCE_OFFHAND.get()    ? Config.DEFAULT_OFFHAND.get()      :
+                                      tag.contains("offhand")       ? tag.getBoolean("offhand")   : Config.DEFAULT_OFFHAND.get();
+        boolean isActivateCraft     = Config.FORCE_CRAFT.get()      ? Config.DEFAULT_CRAFT.get()        :
+                                      tag.contains("craft")         ? tag.getBoolean("craft")     : Config.DEFAULT_CRAFT.get();
 
         initServer(inventorySize, effectSize, isActivateInventory, isActivateArmor, isActivateOffhand, isActivateCraft);
         ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, effectSize, isActivateInventory, isActivateArmor, isActivateOffhand, isActivateCraft));

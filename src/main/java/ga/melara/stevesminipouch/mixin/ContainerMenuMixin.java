@@ -29,7 +29,6 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     @Shadow
     public NonNullList<Slot> slots;
 
-
     StatsSynchronizer statsSynchronizer;
 
     @Shadow
@@ -58,7 +57,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     }
 
     @Inject(method = "<init>", at = @At("RETURN"), cancellable = true)
-    public void onConstruct(MenuType p_38851_, int p_38852_, CallbackInfo ci) {
+    public void onConstruct(MenuType menuType, int pContainerId, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
@@ -87,7 +86,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
 
     @Override
-    public void toggleInventory(Player player) {
+    public void judgeInventoryHiding(Player player) {
         if(!((IStorageChangable) player.getInventory()).isActiveInventory()) {
             judgeArmorHiding(player);
             judgeCraftHiding(player);
