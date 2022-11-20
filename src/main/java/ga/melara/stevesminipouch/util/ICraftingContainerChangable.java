@@ -3,7 +3,7 @@ package ga.melara.stevesminipouch.util;
 import net.minecraft.world.entity.player.Player;
 
 public interface ICraftingContainerChangable {
-    void toggleCraft(Player player);
+    void setCraft(boolean isActiveCraft, Player player);
 
     boolean isActivateCraft();
 }

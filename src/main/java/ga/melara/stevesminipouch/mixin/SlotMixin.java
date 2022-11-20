@@ -3,6 +3,7 @@ package ga.melara.stevesminipouch.mixin;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
@@ -117,7 +118,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
                 } else ((ISlotHidable) target).hide();
             }
         } else if(container instanceof ICraftingContainerChangable craftingContainer) {
-            if(type == SlotType.CRAFT || type == SlotType.RESULT) {
+            if(type == SlotType.CRAFT) {
                 if(craftingContainer.isActivateCraft()) {
                     ((ISlotHidable) target).show();
                 } else ((ISlotHidable) target).hide();

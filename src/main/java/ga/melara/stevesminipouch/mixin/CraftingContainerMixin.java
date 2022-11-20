@@ -29,9 +29,10 @@ public class CraftingContainerMixin implements ICraftingContainerChangable {
     private NonNullList<ItemStack> items;
 
     @Override
-    public void toggleCraft(Player player) {
+    public void setCraft(boolean isActiveCraft, Player player) {
         if(!(((CraftingContainer) (Object) this).menu instanceof InventoryMenu)) return;
-        if(this.isActiveCraft) {
+
+        if(!isActiveCraft) {
             // Handling of loss of crafting ability when an item is present in a crafting slot.
             for(ItemStack item : items) {
                 Level level = player.level;
