@@ -659,10 +659,27 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public void loadStatus(CompoundTag tag) {
-        int     effectSize          = tag.contains("effectsize")    ? tag.getInt("effectsize")    : 0;
+        int effectSize = tag.contains("effectsize") ? tag.getInt("effectsize") : 0;
 
-        int     inventorySize       = Config.FORCE_SIZE.get()       ? Config.MAX_SIZE.get() :
-                                      tag.contains("inventorysize") ? tag.getInt("inventorysize") : Config.DEFAULT_SIZE.get();
+        int inventorySize;
+        if (Config.FORCE_SIZE.get()) {
+            inventorySize = Config.MAX_SIZE.get();
+        }
+        else if(tag.contains("inventorysize"))
+        {
+            int size = tag.getInt("inventorysize");
+            if(size > Config.MAX_SIZE.get()) {
+                inventorySize = Config.MAX_SIZE.get();
+            }
+            else {
+                inventorySize = size;
+            }
+        }
+        else
+        {
+            inventorySize = Math.min(Config.DEFAULT_SIZE.get(), Config.MAX_SIZE.get());
+        }
+
         boolean isActivateInventory = Config.FORCE_INVENTORY.get()  ? Config.DEFAULT_INVENTORY.get()    :
                                       tag.contains("inventory")     ? tag.getBoolean("inventory") : Config.DEFAULT_INVENTORY.get();
         boolean isActivateArmor     = Config.FORCE_ARMOR.get()      ? Config.DEFAULT_ARMOR.get()        :
