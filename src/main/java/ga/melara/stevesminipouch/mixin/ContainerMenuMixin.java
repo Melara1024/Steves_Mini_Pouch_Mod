@@ -1,12 +1,10 @@
 package ga.melara.stevesminipouch.mixin;
 
-import com.google.common.collect.Lists;
 import ga.melara.stevesminipouch.event.PageReduceEvent;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
 import ga.melara.stevesminipouch.event.ServerPageChangeEvent;
 import ga.melara.stevesminipouch.util.*;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
@@ -14,6 +12,7 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,17 +29,17 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     @Shadow
     public NonNullList<Slot> slots;
 
-    @Shadow
-    protected abstract void synchronizeCarriedToRemote();
 
     StatsSynchronizer statsSynchronizer;
 
     @Shadow
-    private final List<DataSlot> dataSlots = Lists.newArrayList();
+    @Final
+    private List<DataSlot> dataSlots;
     @Shadow
-    public NonNullList<ItemStack> remoteSlots = NonNullList.create();
+    public NonNullList<ItemStack> remoteSlots;
     @Shadow
-    private final IntList remoteDataSlots = new IntArrayList();
+    @Final
+    private IntList remoteDataSlots;
     @Shadow
     @Nullable
     private ContainerSynchronizer synchronizer;

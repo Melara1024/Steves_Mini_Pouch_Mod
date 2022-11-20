@@ -11,7 +11,7 @@ public class Add27SlotItem extends SlotItem {
     public static Item.Properties PROPERTIES = new Item.Properties()
             .tab(ModRegistry.ITEM_GROUP)
             .rarity(Rarity.EPIC)
-            .stacksTo(1)
+            .stacksTo(27)
             .food(FOOD_PROPERTIES);
 
     public Add27SlotItem() {

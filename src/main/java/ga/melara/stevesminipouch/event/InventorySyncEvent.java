@@ -6,6 +6,8 @@ import net.minecraftforge.fml.event.IModBusEvent;
 
 public class InventorySyncEvent extends Event implements IModBusEvent {
     PlayerInventorySizeData data;
+
+    // Event when inventory state is synchronized to the client.
     public InventorySyncEvent(PlayerInventorySizeData data) {
         this.data = data;
     }

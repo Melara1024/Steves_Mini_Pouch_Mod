@@ -316,9 +316,15 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         {
             int decrements = ((maxPage+1)*27 + 9) - allSize;
             ((LockableItemStackList)items).allOpen();
-            for (int i=1; i<decrements+1; i++)
+            for (int i=0; i<decrements; i++)
             {
-                ((LockableItemStackList)items).lock(items.size()-i);
+                ((LockableItemStackList)items).lock(items.size()-1-i);
+            }
+            int k=0;
+            for (boolean b :((LockableItemStackList)items).lockList)
+            {
+                System.out.print(k++);
+                System.out.print(b);
             }
         }
         // When the number of pages changes
@@ -332,6 +338,12 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             for (int i=0; i<decrements; i++)
             {
                 ((LockableItemStackList)items).lock(items.size()-1-i);
+            }
+            int k=0;
+            for (boolean b :((LockableItemStackList)items).lockList)
+            {
+                System.out.print(k++);
+                System.out.print(b);
             }
 
             // Transfer items to the new list and scatter out what remains on the old list.

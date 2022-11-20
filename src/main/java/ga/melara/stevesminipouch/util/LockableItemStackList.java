@@ -40,7 +40,7 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
     public List<Boolean> lockList = new ArrayList<Boolean>() {
         @Override
         public Boolean set(int index, Boolean element) {
-            if (!element && Objects.nonNull(inventory))
+            if (element && Objects.nonNull(inventory))
             {
                 Level level = inventory.player.level;
                 Player entity = inventory.player;
@@ -49,17 +49,24 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
                 itementity.setDefaultPickUpDelay();
                 itementity.setThrower(entity.getUUID());
                 level.addFreshEntity(itementity);
+                LockableItemStackList.this.set(index, ItemStack.EMPTY);
             }
             return super.set(index, element);
         }
     };
 
     public void allLock() {
-        this.lockList.replaceAll(ignored -> true);
+        for (int i=0; i<this.lockList.size(); i++)
+        {
+            this.lockList.set(i, true);
+        }
     }
 
     public void allOpen() {
-        this.lockList.replaceAll(ignored -> false);
+        for (int i=0; i<this.lockList.size(); i++)
+        {
+            this.lockList.set(i, false);
+        }
     }
 
     public void lock(int target) {

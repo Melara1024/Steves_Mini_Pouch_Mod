@@ -6,8 +6,8 @@ public class ClientEffectSlotSyncEvent extends Event {
     private final int size;
 
     // Event when a slot is added by an effect.
-    public ClientEffectSlotSyncEvent(int setSize) {
-        this.size = setSize;
+    public ClientEffectSlotSyncEvent(int increment) {
+        this.size = increment;
     }
     public int getEffectSize() {
         return this.size;

@@ -21,14 +21,17 @@ public class Language extends LanguageProvider {
         add(ModRegistry.SLOT_SHRINK9_ITEM.get(), "Edible Null");
         add(ModRegistry.SLOT_SHRINK27_ITEM.get(), "Edible Void");
 
-        add(ModRegistry.INVENTORY_ACTIVATE_ITEM.get(), "Inventory Rye bread");
-        add(ModRegistry.ARMOR_ACTIVATE_ITEM.get(), "Armor Orange");
-        add(ModRegistry.OFFHAND_ACTIVATE_ITEM.get(), "Offhand Dorian");
-        add(ModRegistry.CRAFT_ACTIVATE_ITEM.get(), "Craft Fruit");
+        add(ModRegistry.INVENTORY_ACTIVATE_ITEM.get(), "Inventorye bread");
+        add(ModRegistry.ARMOR_ACTIVATE_ITEM.get(), "Armorange");
+        add(ModRegistry.OFFHAND_ACTIVATE_ITEM.get(), "Offhandorian");
+        add(ModRegistry.CRAFT_ACTIVATE_ITEM.get(), "Crafruit");
 
-        add("itemGroup.steves_mini_pouch", "Pouch Command Failed");
+        add("itemGroup.steves_mini_pouch", "Steve's Mini Pouch");
 
-        add("command.failed", "Pouch Command Failed");
+        add("enchantment.stevesminipouch.slot_enchant", "Cramming");
+        add("effect.stevesminipouch.slot_effect", "Cramming");
+
+        add("command.failed", "Pouch Command Failed.");
 
         add("message.useless", "You felt a great surge of power, but nothing happened.");
         add("message.simple_inventory_1", "You looked at your hand.");
