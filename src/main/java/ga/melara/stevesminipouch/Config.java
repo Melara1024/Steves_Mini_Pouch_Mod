@@ -36,22 +36,22 @@ public class Config {
     private static void registerServerConfig() {
         ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
 
-        SERVER_BUILDER.comment("Comment Server").push("server");
+        SERVER_BUILDER.comment("If you edit this Config, please do so with care. Some combinations may cause unintended behavior.").push("server");
 
-        DEFAULT_SIZE = SERVER_BUILDER.comment("Default Inventory Size").defineInRange("defaultsize", 36, 0, Integer.MAX_VALUE);
+        DEFAULT_SIZE = SERVER_BUILDER.comment("Default Inventory Size").defineInRange("defaultsize", 18, 0, Integer.MAX_VALUE);
         MAX_SIZE = SERVER_BUILDER.comment("Max Inventory Size").defineInRange("maxsize", 90, 0, Integer.MAX_VALUE);
         FORCE_SIZE = SERVER_BUILDER.comment("Force Inventory Size to Max Size").define("isforcesize", false);
 
         DEFAULT_INVENTORY = SERVER_BUILDER.comment("Default setting of inventory activate").define("isinventory", true);
         FORCE_INVENTORY = SERVER_BUILDER.comment("If true, inventory activate settings forced to all players.").define("forceinventory", false);
 
-        DEFAULT_OFFHAND = SERVER_BUILDER.comment("Default setting of offhand activate").define("isoffhand", true);
+        DEFAULT_OFFHAND = SERVER_BUILDER.comment("Default setting of offhand activate").define("isoffhand", false);
         FORCE_OFFHAND = SERVER_BUILDER.comment("If true, offhand activate settings forced to all players.").define("forceoffhand", false);
 
-        DEFAULT_CRAFT = SERVER_BUILDER.comment("Default setting of inventory crafting activate").define("iscraft", true);
+        DEFAULT_CRAFT = SERVER_BUILDER.comment("Default setting of inventory crafting activate").define("iscraft", false);
         FORCE_CRAFT = SERVER_BUILDER.comment("If true, 2x2 craft activate settings forced to all players.").define("forcecraft", false);
 
-        DEFAULT_ARMOR = SERVER_BUILDER.comment("Default setting of equipment activate").define("isarmor", true);
+        DEFAULT_ARMOR = SERVER_BUILDER.comment("Default setting of equipment activate").define("isarmor", false);
         FORCE_ARMOR = SERVER_BUILDER.comment("If true, armor activate settings forced to all players.").define("forcearmor", false);
 
         SERVER_BUILDER.pop();
@@ -61,7 +61,7 @@ public class Config {
     private static void registerClientConfig() {
         ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
 
-        CLIENT_BUILDER.comment("Comment Client").push("client");
+        CLIENT_BUILDER.comment("If you edit this Config, please do so with care. Some combinations may cause unintended behavior.").push("client");
 
         RENDER_OFFSET_X = CLIENT_BUILDER
                 .comment("X Offset the position of the page change button")

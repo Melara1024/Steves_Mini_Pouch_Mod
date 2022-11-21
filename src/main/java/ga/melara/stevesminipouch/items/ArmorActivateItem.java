@@ -25,24 +25,26 @@ public class ArmorActivateItem extends FunctionFoodItem {
             .stacksTo(1)
             .food(FOOD_PROPERTIES);
 
-    public ArmorActivateItem()
-    {
+    public ArmorActivateItem() {
         super(PROPERTIES);
     }
 
     @Override
-    public void onEat(LivingEntity entity)
-    {
-        if(!(entity instanceof Player))return;
-        Player player = (Player)entity;
-        ((IStorageChangable)player.getInventory()).toggleArmor(player);
+    public void onEat(LivingEntity entity) {
+        if(!(entity instanceof Player)) return;
+        Player player = (Player) entity;
+        ((IStorageChangable) player.getInventory()).toggleArmor(player);
         if(!(player instanceof ServerPlayer serverPlayer)) return;
         Inventory inventory = player.getInventory();
         Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable) inventory).getAllData()), serverPlayer);
     }
 
-    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS)
-    {
+    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
         return ITEMS.register("activate_armor", ArmorActivateItem::new);
+    }
+
+    @Override
+    public int getRegistryNumber() {
+        return 1;
     }
 }

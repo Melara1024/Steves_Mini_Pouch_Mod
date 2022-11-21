@@ -35,7 +35,13 @@ public class ModRegistry {
         @Override
         public void fillItemList(NonNullList<ItemStack> pItems) {
             for(Item item : Registry.ITEM) {
-                pItems.sort((o1, o2) -> String.CASE_INSENSITIVE_ORDER.compare(o1.getItem().toString(), o2.getItem().toString()));
+                pItems.sort((o1, o2) -> {
+                    if(o1.getItem() instanceof FunctionFoodItem f1 && o2.getItem() instanceof FunctionFoodItem f2)
+                    {
+                        return Integer.compare(f1.getRegistryNumber(), f2.getRegistryNumber());
+                    }
+                    return 0;
+                });
                 item.fillItemCategory(this, pItems);
             }
         }
@@ -55,12 +61,6 @@ public class ModRegistry {
         EFFECT.register(eventBus);
     }
 
-
-    public static final RegistryObject<Item> INVENTORY_ACTIVATE_ITEM = InventoryActivateItem.buildInTo(ITEMS);
-    public static final RegistryObject<Item> CRAFT_ACTIVATE_ITEM = CraftActivatItem.buildInTo(ITEMS);
-    public static final RegistryObject<Item> ARMOR_ACTIVATE_ITEM = ArmorActivateItem.buildInTo(ITEMS);
-    public static final RegistryObject<Item> OFFHAND_ACTIVATE_ITEM = OffhandActivateItem.buildInTo(ITEMS);
-
     public static final RegistryObject<Item> SLOT_ADD1_ITEM = Add1SlotItem.buildInTo(ITEMS);
     public static final RegistryObject<Item> SLOT_ADD9_ITEM = Add9SlotItem.buildInTo(ITEMS);
     public static final RegistryObject<Item> SLOT_ADD27_ITEM = Add27SlotItem.buildInTo(ITEMS);
@@ -68,6 +68,11 @@ public class ModRegistry {
     public static final RegistryObject<Item> SLOT_SHRINK1_ITEM = Sub1SlotItem.buildInTo(ITEMS);
     public static final RegistryObject<Item> SLOT_SHRINK9_ITEM = Sub9SlotItem.buildInTo(ITEMS);
     public static final RegistryObject<Item> SLOT_SHRINK27_ITEM = Sub27SlotItem.buildInTo(ITEMS);
+
+    public static final RegistryObject<Item> INVENTORY_ACTIVATE_ITEM = InventoryActivateItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> CRAFT_ACTIVATE_ITEM = CraftActivatItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> ARMOR_ACTIVATE_ITEM = ArmorActivateItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> OFFHAND_ACTIVATE_ITEM = OffhandActivateItem.buildInTo(ITEMS);
 
 
     public static final RegistryObject<Enchantment> SLOT_ENCHANT = SlotEnchant.buildInTo(ENCHANTMENTS);

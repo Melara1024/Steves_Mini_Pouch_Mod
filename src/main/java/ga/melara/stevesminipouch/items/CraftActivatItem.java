@@ -41,4 +41,9 @@ public class CraftActivatItem extends FunctionFoodItem {
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
         return ITEMS.register("activate_craft", CraftActivatItem::new);
     }
+
+    @Override
+    public int getRegistryNumber() {
+        return 3;
+    }
 }

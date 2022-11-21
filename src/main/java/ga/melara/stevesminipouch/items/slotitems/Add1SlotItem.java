@@ -22,4 +22,10 @@ public class Add1SlotItem extends SlotItem {
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
         return ITEMS.register("slot_add_lv1", Add1SlotItem::new);
     }
+
+    @Override
+    public int getRegistryNumber()
+    {
+        return 4;
+    }
 }

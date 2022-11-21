@@ -38,4 +38,9 @@ public class InventoryActivateItem extends FunctionFoodItem {
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
         return ITEMS.register("activate_inventory", InventoryActivateItem::new);
     }
+
+    @Override
+    public int getRegistryNumber() {
+        return 0;
+    }
 }
