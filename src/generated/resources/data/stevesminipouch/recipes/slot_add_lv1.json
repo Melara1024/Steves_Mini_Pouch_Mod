@@ -2,13 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "group": "stevesminipouch",
   "key": {
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "S": {
+      "item": "minecraft:nether_star"
+    },
     "X": {
-      "item": "minecraft:diamond"
+      "item": "minecraft:bread"
     }
   },
   "pattern": [
-    "XXX",
-    "X X",
+    "XSX",
+    "XCX",
     "XXX"
   ],
   "result": {

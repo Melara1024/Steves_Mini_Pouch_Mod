@@ -24,7 +24,7 @@ public class Language extends LanguageProvider {
         add(ModRegistry.INVENTORY_ACTIVATE_ITEM.get(), "Inventorye bread");
         add(ModRegistry.ARMOR_ACTIVATE_ITEM.get(), "Armorange");
         add(ModRegistry.OFFHAND_ACTIVATE_ITEM.get(), "Offhandorian");
-        add(ModRegistry.CRAFT_ACTIVATE_ITEM.get(), "Crafruit");
+        add(ModRegistry.CRAFT_ACTIVATE_ITEM.get(), "Crafruits");
 
         add("itemGroup.steves_mini_pouch", "Steve's Mini Pouch");
 
