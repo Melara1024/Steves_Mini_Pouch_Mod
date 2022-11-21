@@ -64,9 +64,9 @@ public class ModRegistry {
     public static final RegistryObject<Item> SLOT_ADD9_ITEM = Add9SlotItem.buildInTo(ITEMS);
     public static final RegistryObject<Item> SLOT_ADD27_ITEM = Add27SlotItem.buildInTo(ITEMS);
 
-    public static final RegistryObject<Item> SLOT_SHRINK1_ITEM = Sub1SlotItem.buildInTo(ITEMS);
-    public static final RegistryObject<Item> SLOT_SHRINK9_ITEM = Sub9SlotItem.buildInTo(ITEMS);
-    public static final RegistryObject<Item> SLOT_SHRINK27_ITEM = Sub27SlotItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> SLOT_SUB1_ITEM = Sub1SlotItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> SLOT_SUB9_ITEM = Sub9SlotItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> SLOT_SUB27_ITEM = Sub27SlotItem.buildInTo(ITEMS);
 
     public static final RegistryObject<Item> INVENTORY_ACTIVATE_ITEM = InventoryActivateItem.buildInTo(ITEMS);
     public static final RegistryObject<Item> CRAFT_ACTIVATE_ITEM = CraftActivatItem.buildInTo(ITEMS);

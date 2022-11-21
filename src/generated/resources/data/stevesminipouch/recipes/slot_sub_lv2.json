@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "stevesminipouch",
+  "key": {
+    "X": {
+      "item": "stevesminipouch:slot_sub_lv1"
+    }
+  },
+  "pattern": [
+    "XXX",
+    "XXX",
+    "XXX"
+  ],
+  "result": {
+    "item": "stevesminipouch:slot_sub_lv2"
+  }
+}

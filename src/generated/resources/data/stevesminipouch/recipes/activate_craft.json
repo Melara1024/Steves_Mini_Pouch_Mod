@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "stevesminipouch",
+  "key": {
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "E": {
+      "item": "minecraft:emerald_block"
+    },
+    "X": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "XCX",
+    "CEC",
+    "XCX"
+  ],
+  "result": {
+    "item": "stevesminipouch:activate_craft"
+  }
+}

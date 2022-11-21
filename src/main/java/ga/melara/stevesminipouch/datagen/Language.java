@@ -17,9 +17,9 @@ public class Language extends LanguageProvider {
         add(ModRegistry.SLOT_ADD9_ITEM.get(), "Edible Largechest");
         add(ModRegistry.SLOT_ADD27_ITEM.get(), "Edible Triplechest");
 
-        add(ModRegistry.SLOT_SHRINK1_ITEM.get(), "Edible Air");
-        add(ModRegistry.SLOT_SHRINK9_ITEM.get(), "Edible Null");
-        add(ModRegistry.SLOT_SHRINK27_ITEM.get(), "Edible Void");
+        add(ModRegistry.SLOT_SUB1_ITEM.get(), "Edible Air");
+        add(ModRegistry.SLOT_SUB9_ITEM.get(), "Edible Null");
+        add(ModRegistry.SLOT_SUB27_ITEM.get(), "Edible Void");
 
         add(ModRegistry.INVENTORY_ACTIVATE_ITEM.get(), "Inventorye bread");
         add(ModRegistry.ARMOR_ACTIVATE_ITEM.get(), "Armorange");

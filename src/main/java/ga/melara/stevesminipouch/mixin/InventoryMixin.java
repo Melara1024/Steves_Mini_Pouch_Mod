@@ -93,20 +93,20 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Mutable
     public Player player;
 
-    public void initMiniPouch(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActivateArmor, boolean isActivateOffhand, boolean isActivateCraft) {
+    public void initMiniPouch(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft) {
         this.effectSize = effectSize;
         setStorageSize(inventorySize, player);
 
         setInventory(player, isActiveInventory);
         ((IMenuChangable) player.containerMenu).judgeInventoryHiding(player);
 
-        setArmor(player, isActivateArmor);
+        setArmor(player, isActiveArmor);
         ((IMenuChangable) player.containerMenu).judgeArmorHiding(player);
 
-        setOffhand(player, isActivateOffhand);
+        setOffhand(player, isActiveOffhand);
         ((IMenuChangable) player.containerMenu).judgeOffhandHiding(player);
 
-        setCraft(player, isActivateCraft);
+        setCraft(player, isActiveCraft);
         ((IMenuChangable) player.containerMenu).judgeCraftHiding(player);
     }
 
@@ -160,8 +160,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         compartments.add(2, offhand);
 
         if(Objects.nonNull(player.inventoryMenu)) {
-            initServer(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
-            ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
+            initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
+            ((IMenuSynchronizer) this.player.containerMenu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
         }
         System.out.print(Thread.currentThread().getName());
         System.out.println(" init finished");
@@ -208,13 +208,13 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             setCraft(this.player, false);
             setStorageSize(1, this.player);
         }
-        isActiveInventory = setFlag;
+        this.isActiveInventory = setFlag;
         ((IMenuChangable) this.player.containerMenu).judgeInventoryHiding(this.player);
     }
 
     @Override
     public void toggleInventory(Player player) {
-        setInventory(this.player, !isActiveInventory);
+        setInventory(this.player, !this.isActiveInventory);
     }
 
     @Override
@@ -234,7 +234,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public void toggleArmor(Player player) {
-        setArmor(this.player, !isActiveArmor);
+        setArmor(this.player, !this.isActiveArmor);
     }
 
     @Override
@@ -253,7 +253,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public void toggleOffhand(Player player) {
-        setOffhand(this.player, !isActiveOffhand);
+        setOffhand(this.player, !this.isActiveOffhand);
     }
 
     @Override
@@ -261,15 +261,15 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         boolean setFlag = change;
         if(Config.FORCE_CRAFT.get()) setFlag = Config.DEFAULT_CRAFT.get();
 
-        isActiveCraft = setFlag;
+        this.isActiveCraft = setFlag;
         ((IMenuChangable) player.inventoryMenu).judgeCraftHiding(player);
         ((IMenuChangable) player.containerMenu).judgeCraftHiding(player);
-        ((ICraftingContainerChangable) player.inventoryMenu.getCraftSlots()).setCraft(isActiveCraft, player);
+        ((ICraftingContainerChangable) player.inventoryMenu.getCraftSlots()).setCraft(this.isActiveCraft, player);
     }
 
     @Override
     public void toggleCraft(Player player) {
-        setCraft(this.player, !isActiveCraft);
+        setCraft(this.player, !this.isActiveCraft);
     }
 
     @Override
@@ -415,7 +415,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public PlayerInventorySizeData getAllData() {
-        return new PlayerInventorySizeData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
+        return new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
     }
 
     @Override
@@ -639,15 +639,15 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public CompoundTag saveStatus(CompoundTag tag) {
-        tag.putInt("inventorysize", inventorySize);
-        tag.putInt("effectsize", effectSize);
-        tag.putBoolean("inventory", isActiveInventory);
-        tag.putBoolean("armor", isActiveArmor);
-        tag.putBoolean("offhand", isActiveOffhand);
-        tag.putBoolean("craft", isActiveCraft);
+        tag.putInt("inventorysize", this.inventorySize);
+        tag.putInt("effectsize", this.effectSize);
+        tag.putBoolean("inventory", this.isActiveInventory);
+        tag.putBoolean("armor", this.isActiveArmor);
+        tag.putBoolean("offhand", this.isActiveOffhand);
+        tag.putBoolean("craft", this.isActiveCraft);
 
-        initServer(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
-        ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
+        initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
+        ((IMenuSynchronizer) this.player.containerMenu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
 
         System.out.print(Thread.currentThread().getName());
         System.out.println(" saveStatus");

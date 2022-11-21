@@ -48,7 +48,7 @@ public class Recipes extends RecipeProvider {
                 .unlockedBy("has_slot_add1", has(ModRegistry.SLOT_ADD1_ITEM.get()))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(ModRegistry.SLOT_SHRINK1_ITEM.get())
+        ShapedRecipeBuilder.shaped(ModRegistry.SLOT_SUB1_ITEM.get())
                 .group(MODID)
                 .define('S', Items.NETHER_STAR)
                 .define('C', Items.CHEST)
@@ -59,22 +59,22 @@ public class Recipes extends RecipeProvider {
                 .unlockedBy("has_diamond", has(Items.CHEST))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(ModRegistry.SLOT_SHRINK9_ITEM.get())
+        ShapedRecipeBuilder.shaped(ModRegistry.SLOT_SUB9_ITEM.get())
                 .group(MODID)
-                .define('X', ModRegistry.SLOT_SHRINK1_ITEM.get())
+                .define('X', ModRegistry.SLOT_SUB1_ITEM.get())
                 .pattern("XXX")
                 .pattern("XXX")
                 .pattern("XXX")
-                .unlockedBy("has_slot_sub1", has(ModRegistry.SLOT_SHRINK1_ITEM.get()))
+                .unlockedBy("has_slot_sub1", has(ModRegistry.SLOT_SUB1_ITEM.get()))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(ModRegistry.SLOT_SHRINK27_ITEM.get())
+        ShapedRecipeBuilder.shaped(ModRegistry.SLOT_SUB27_ITEM.get())
                 .group(MODID)
-                .define('X', ModRegistry.SLOT_SHRINK9_ITEM.get())
+                .define('X', ModRegistry.SLOT_SUB9_ITEM.get())
                 .pattern("XXX")
                 .pattern("XXX")
                 .pattern("XXX")
-                .unlockedBy("has_slot_sub1", has(ModRegistry.SLOT_SHRINK1_ITEM.get()))
+                .unlockedBy("has_slot_sub1", has(ModRegistry.SLOT_SUB1_ITEM.get()))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ModRegistry.INVENTORY_ACTIVATE_ITEM.get())
