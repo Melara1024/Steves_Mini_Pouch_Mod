@@ -16,13 +16,9 @@ public class ItemModels extends ItemModelProvider {
     @Override
     protected void registerModels() {
         ResourceLocation parent = mcLoc("item/generated");
-        this.singleTexture("slot_add_lv1", parent, "layer0", modLoc("item/slot_add_lv1"));
-        this.singleTexture("slot_add_lv2", parent, "layer0", modLoc("item/slot_add_lv2"));
-        this.singleTexture("slot_add_lv3", parent, "layer0", modLoc("item/slot_add_lv3"));
-
-        this.singleTexture("slot_sub_lv1", parent, "layer0", modLoc("item/slot_sub_lv1"));
-        this.singleTexture("slot_sub_lv2", parent, "layer0", modLoc("item/slot_sub_lv2"));
-        this.singleTexture("slot_sub_lv3", parent, "layer0", modLoc("item/slot_sub_lv3"));
+        ResourceLocation box_1 = modLoc("item/slot_sub_lv1");
+        this.singleTexture("slot_sub_lv2", box_1, "layer", modLoc("item/slot_sub_lv2"));
+        this.singleTexture("slot_sub_lv3", box_1, "layer", modLoc("item/slot_sub_lv3"));
 
         this.singleTexture("activate_inventory", parent, "layer0", modLoc("item/activate_inventory"));
         this.singleTexture("activate_armor", parent, "layer0", modLoc("item/activate_armor"));

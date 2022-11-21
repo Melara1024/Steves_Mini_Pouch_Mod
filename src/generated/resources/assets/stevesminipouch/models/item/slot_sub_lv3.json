@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/generated",
+  "parent": "stevesminipouch:item/slot_sub_lv1",
   "textures": {
-    "layer0": "stevesminipouch:item/slot_sub_lv3"
+    "layer": "stevesminipouch:item/slot_sub_lv3"
   }
 }
