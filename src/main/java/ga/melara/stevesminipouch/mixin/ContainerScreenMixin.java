@@ -98,12 +98,12 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         });
 
         // Button only for page display
-        pageIndicator = new Button(buttonX, buttonY+upButton.getHeight(), 18, 18,
+        pageIndicator = new Button(buttonX, buttonY + upButton.getHeight(), 18, 18,
                 Component.literal(String.valueOf(page + 1)), (button) -> {
         });
         pageIndicator.active = false;
 
-        downButton = new Button(buttonX, buttonY+upButton.getHeight()+pageIndicator.getHeight(), 18, 18,
+        downButton = new Button(buttonX, buttonY + upButton.getHeight() + pageIndicator.getHeight(), 18, 18,
                 Component.literal("▼"), (button) -> {
             nextPage();
             Messager.sendToServer(new PageChangedPacket(page));
@@ -165,7 +165,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         for(Slot slot : this.menu.slots) {
             // Update status of slots.
 
-            ((ISlotHidable)slot).setHiding();
+            ((ISlotHidable) slot).setHiding();
 
             if(((IHasSlotPage) slot).getPage() != page) ((IHasSlotPage) slot).setPage(page);
 

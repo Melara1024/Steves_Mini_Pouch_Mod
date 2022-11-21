@@ -24,8 +24,7 @@ public class Add1SlotItem extends SlotItem {
     }
 
     @Override
-    public int getRegistryNumber()
-    {
+    public int getRegistryNumber() {
         return 4;
     }
 }

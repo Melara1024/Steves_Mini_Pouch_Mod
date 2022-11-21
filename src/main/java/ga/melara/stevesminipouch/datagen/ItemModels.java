@@ -25,8 +25,8 @@ public class ItemModels extends ItemModelProvider {
         this.singleTexture("slot_sub_lv3", parent, "layer0", modLoc("item/slot_sub_lv3"));
 
         this.singleTexture("activate_inventory", parent, "layer0", modLoc("item/activate_inventory"));
-        this.singleTexture("activate_armor"    , parent, "layer0", modLoc("item/activate_armor"));
-        this.singleTexture("activate_offhand"  , parent, "layer0", modLoc("item/activate_offhand"));
-        this.singleTexture("activate_craft"    , parent, "layer0", modLoc("item/activate_craft"));
+        this.singleTexture("activate_armor", parent, "layer0", modLoc("item/activate_armor"));
+        this.singleTexture("activate_offhand", parent, "layer0", modLoc("item/activate_offhand"));
+        this.singleTexture("activate_craft", parent, "layer0", modLoc("item/activate_craft"));
     }
 }

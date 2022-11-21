@@ -27,7 +27,6 @@ public class Config {
     public static ForgeConfigSpec.BooleanValue DEFAULT_ARMOR;
     public static ForgeConfigSpec.BooleanValue FORCE_ARMOR;
 
-    public static ForgeConfigSpec.IntValue HOTBAR;
 
     //client settings
     public static ForgeConfigSpec.IntValue RENDER_OFFSET_X;
@@ -38,21 +37,21 @@ public class Config {
 
         SERVER_BUILDER.comment("If you edit this Config, please do so with care. Some combinations may cause unintended behavior.").push("server");
 
-        DEFAULT_SIZE = SERVER_BUILDER.comment("Default Inventory Size").defineInRange("defaultsize", 18, 0, Integer.MAX_VALUE);
-        MAX_SIZE = SERVER_BUILDER.comment("Max Inventory Size").defineInRange("maxsize", 90, 0, Integer.MAX_VALUE);
-        FORCE_SIZE = SERVER_BUILDER.comment("Force Inventory Size to Max Size").define("isforcesize", false);
+        DEFAULT_SIZE = SERVER_BUILDER.comment("Default Inventory Size").defineInRange("default_size", 36, 0, Integer.MAX_VALUE);
+        MAX_SIZE = SERVER_BUILDER.comment("Max Inventory Size").defineInRange("max_size", 90, 0, Integer.MAX_VALUE);
+        FORCE_SIZE = SERVER_BUILDER.comment("Force Inventory Size to Max Size").define("force_size", false);
 
-        DEFAULT_INVENTORY = SERVER_BUILDER.comment("Default setting of inventory activate").define("isinventory", true);
-        FORCE_INVENTORY = SERVER_BUILDER.comment("If true, inventory activate settings forced to all players.").define("forceinventory", false);
+        DEFAULT_INVENTORY = SERVER_BUILDER.comment("Default setting of inventory activate").define("inventory", true);
+        FORCE_INVENTORY = SERVER_BUILDER.comment("If true, The above settings are enforced on all players.").define("force_inventory", false);
 
-        DEFAULT_OFFHAND = SERVER_BUILDER.comment("Default setting of offhand activate").define("isoffhand", false);
-        FORCE_OFFHAND = SERVER_BUILDER.comment("If true, offhand activate settings forced to all players.").define("forceoffhand", false);
+        DEFAULT_OFFHAND = SERVER_BUILDER.comment("Default setting of offhand activate").define("offhand", true);
+        FORCE_OFFHAND = SERVER_BUILDER.comment("If true, The above settings are enforced on all players.").define("force_offhand", false);
 
-        DEFAULT_CRAFT = SERVER_BUILDER.comment("Default setting of inventory crafting activate").define("iscraft", false);
-        FORCE_CRAFT = SERVER_BUILDER.comment("If true, 2x2 craft activate settings forced to all players.").define("forcecraft", false);
+        DEFAULT_CRAFT = SERVER_BUILDER.comment("Default setting of 2x2 crafting activate").define("craft", true);
+        FORCE_CRAFT = SERVER_BUILDER.comment("If true, The above settings are enforced on all players.").define("force_craft", false);
 
-        DEFAULT_ARMOR = SERVER_BUILDER.comment("Default setting of equipment activate").define("isarmor", false);
-        FORCE_ARMOR = SERVER_BUILDER.comment("If true, armor activate settings forced to all players.").define("forcearmor", false);
+        DEFAULT_ARMOR = SERVER_BUILDER.comment("Default setting of armor activate").define("armor", true);
+        FORCE_ARMOR = SERVER_BUILDER.comment("If true, The above settings are enforced on all players.").define("force_armor", false);
 
         SERVER_BUILDER.pop();
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_BUILDER.build());

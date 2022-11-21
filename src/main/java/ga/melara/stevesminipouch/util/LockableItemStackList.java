@@ -27,7 +27,8 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
 
     private static final ItemStack defaultItem = ItemStack.EMPTY;
 
-    private Consumer<ItemStack> observer = itemStack -> {};
+    private Consumer<ItemStack> observer = itemStack -> {
+    };
 
     private boolean isActivateObserver = false;
 
@@ -40,8 +41,7 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
     public List<Boolean> lockList = new ArrayList<Boolean>() {
         @Override
         public Boolean set(int index, Boolean element) {
-            if (element && Objects.nonNull(inventory))
-            {
+            if(element && Objects.nonNull(inventory)) {
                 Level level = inventory.player.level;
                 Player entity = inventory.player;
                 ItemStack item = LockableItemStackList.this.get(index);
@@ -56,15 +56,13 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
     };
 
     public void allLock() {
-        for (int i=0; i<this.lockList.size(); i++)
-        {
+        for(int i = 0; i < this.lockList.size(); i++) {
             this.lockList.set(i, true);
         }
     }
 
     public void allOpen() {
-        for (int i=0; i<this.lockList.size(); i++)
-        {
+        for(int i = 0; i < this.lockList.size(); i++) {
             this.lockList.set(i, false);
         }
     }
@@ -76,7 +74,6 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
     public void open(int target) {
         lockList.set(target, false);
     }
-
 
 
     public static LockableItemStackList create(Inventory inventory, boolean stopper) {

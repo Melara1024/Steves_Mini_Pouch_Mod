@@ -36,8 +36,7 @@ public class ModRegistry {
         public void fillItemList(NonNullList<ItemStack> pItems) {
             for(Item item : Registry.ITEM) {
                 pItems.sort((o1, o2) -> {
-                    if(o1.getItem() instanceof FunctionFoodItem f1 && o2.getItem() instanceof FunctionFoodItem f2)
-                    {
+                    if(o1.getItem() instanceof FunctionFoodItem f1 && o2.getItem() instanceof FunctionFoodItem f2) {
                         return Integer.compare(f1.getRegistryNumber(), f2.getRegistryNumber());
                     }
                     return 0;

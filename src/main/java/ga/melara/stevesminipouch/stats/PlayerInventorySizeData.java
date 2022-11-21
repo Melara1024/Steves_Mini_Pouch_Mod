@@ -51,6 +51,7 @@ public class PlayerInventorySizeData {
     public boolean isActiveInventory() {
         return isActiveInventory;
     }
+
     public boolean isActivateArmor() {
         return isActivateArmor;
     }

@@ -9,6 +9,7 @@ public class ClientEffectSlotSyncEvent extends Event {
     public ClientEffectSlotSyncEvent(int increment) {
         this.size = increment;
     }
+
     public int getEffectSize() {
         return this.size;
     }

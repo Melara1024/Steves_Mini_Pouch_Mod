@@ -10,6 +10,7 @@ public class PageReduceEvent extends Event implements IModBusEvent {
     public PageReduceEvent(int page) {
         this.page = page;
     }
+
     public int getPage() {
         return this.page;
     }

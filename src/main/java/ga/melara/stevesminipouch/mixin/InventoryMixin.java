@@ -303,7 +303,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         if(Config.FORCE_SIZE.get() || inventorySize > Config.MAX_SIZE.get()) {
             inventorySize = Config.MAX_SIZE.get();
         } else {
-            inventorySize = Math.max(inventorySize+change, 1);
+            inventorySize = Math.max(inventorySize + change, 1);
         }
 
         LockableItemStackList newItems;
@@ -312,9 +312,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         if(allSize < 9) {
             hotbarSize = allSize;
             if(selected > allSize) selected = allSize - 1;
-        }
-        else
-        {
+        } else {
             hotbarSize = 9;
         }
 

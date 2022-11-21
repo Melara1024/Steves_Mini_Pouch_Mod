@@ -42,18 +42,19 @@ public class CraftingContainerMixin implements ICraftingContainerChangable {
                 level.addFreshEntity(itementity);
             }
             if(items instanceof LockableItemStackList lockable) lockable.allLock();
-            else items = LockableItemStackList.withSize(4, ((InventoryMenu) ((CraftingContainer) (Object) this).menu).owner.getInventory(), true);
+            else
+                items = LockableItemStackList.withSize(4, ((InventoryMenu) ((CraftingContainer) (Object) this).menu).owner.getInventory(), true);
             this.isActiveCraft = false;
             return;
         }
         if(items instanceof LockableItemStackList lockable) lockable.allOpen();
-        else items = LockableItemStackList.withSize(4, ((InventoryMenu) ((CraftingContainer) (Object) this).menu).owner.getInventory(), false);
+        else
+            items = LockableItemStackList.withSize(4, ((InventoryMenu) ((CraftingContainer) (Object) this).menu).owner.getInventory(), false);
         this.isActiveCraft = true;
     }
 
     @Override
-    public boolean isActivateCraft()
-    {
+    public boolean isActivateCraft() {
         return this.isActiveCraft;
     }
 }

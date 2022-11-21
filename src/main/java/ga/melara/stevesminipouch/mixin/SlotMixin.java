@@ -87,7 +87,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
 
     @Override
     public void setHiding() {
-        Slot target = (Slot)(Object)this;
+        Slot target = (Slot) (Object) this;
 
         Container container = target.container;
         int page = ((IHasSlotPage) target).getPage();
