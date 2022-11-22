@@ -28,9 +28,9 @@ public class InventorySyncPacket {
 
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeBoolean(this.data.isActiveInventory());
-        buf.writeBoolean(this.data.isActivateArmor());
+        buf.writeBoolean(this.data.isActiveArmor());
         buf.writeBoolean(this.data.isActiveOffhand());
-        buf.writeBoolean(this.data.isActivateCraft());
+        buf.writeBoolean(this.data.isActiveCraft());
         buf.writeInt(this.data.getInventorySize());
         buf.writeInt(this.data.getEffectSize());
     }

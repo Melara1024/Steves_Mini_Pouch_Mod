@@ -3,7 +3,7 @@ package ga.melara.stevesminipouch.mixin;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import ga.melara.stevesminipouch.StevesMiniPouch;
-import ga.melara.stevesminipouch.util.IStorageChangable;
+import ga.melara.stevesminipouch.util.ICustomInventory;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
@@ -37,7 +37,7 @@ public class GuiMixin extends GuiComponent {
     public void onRenderHotbar(float pPartialTick, PoseStack poseStack, CallbackInfo ci) {
         // Replace and rendering hotbar texture
 
-        int hotbarSize = ((IStorageChangable) Minecraft.getInstance().player.getInventory()).getHotbarSize();
+        int hotbarSize = ((ICustomInventory) Minecraft.getInstance().player.getInventory()).getHotbarSize();
         Player player = Minecraft.getInstance().player;
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

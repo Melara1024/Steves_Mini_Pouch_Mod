@@ -2,8 +2,6 @@ package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
@@ -14,8 +12,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Optional;
 
 @Mixin(Slot.class)
 public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
@@ -57,7 +53,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
     public void setPage(int page) {
         this.page = page;
         if(this.type == SlotType.INVENTORY) {
-            if(this.slot + (27 * page) < ((IStorageChangable) container).getInventorySize()) {
+            if(this.slot + (27 * page) < ((ICustomInventory) container).getInventorySize()) {
                 show();
             } else {
                 hide();
@@ -94,7 +90,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
         SlotType type = ((IHasSlotType) target).getType();
         int slot = target.getSlotIndex();
 
-        if(container instanceof IStorageChangable inventory) {
+        if(container instanceof ICustomInventory inventory) {
             if(type == SlotType.INVENTORY) {
                 if(slot + 27 * page < inventory.getInventorySize()) {
                     ((ISlotHidable) target).show();
@@ -139,7 +135,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
     @Inject(method = "initialize(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
     public void onInitialize(ItemStack p_40240_, CallbackInfo ci) {
         if(this.type == SlotType.INVENTORY && page > 0) {
-            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()) {
+            if(this.slot + 27 * page < ((ICustomInventory) container).getInventorySize()) {
                 this.show();
                 this.container.setItem(this.slot + 27 * page + 5, p_40240_);
                 this.setChanged();
@@ -150,17 +146,17 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
             }
         }
         if(this.type == SlotType.HOTBAR) {
-            if(((IStorageChangable) container).isValidSlot(this.slot)) {
+            if(((ICustomInventory) container).isValidSlot(this.slot)) {
                 this.show();
             } else this.hide();
         }
         if(this.type == SlotType.ARMOR) {
-            if(((IStorageChangable) container).isActiveArmor()) {
+            if(((ICustomInventory) container).isActiveArmor()) {
                 this.show();
             } else this.hide();
         }
         if(this.type == SlotType.OFFHAND) {
-            if(((IStorageChangable) container).isActiveOffhand()) {
+            if(((ICustomInventory) container).isActiveOffhand()) {
                 this.show();
             } else this.hide();
         }
@@ -169,7 +165,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
     @Inject(method = "set(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
     public void onSetItem(ItemStack p_40240_, CallbackInfo ci) {
         if(this.type == SlotType.INVENTORY && page > 0) {
-            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()) {
+            if(this.slot + 27 * page < ((ICustomInventory) container).getInventorySize()) {
                 this.show();
                 this.container.setItem(this.slot + 27 * page + 5, p_40240_);
                 this.setChanged();
@@ -180,7 +176,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
             }
         }
         if(this.type == SlotType.HOTBAR) {
-            if(((IStorageChangable) container).isValidSlot(this.slot)) {
+            if(((ICustomInventory) container).isValidSlot(this.slot)) {
                 this.show();
             } else this.hide();
         }
@@ -189,7 +185,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
     @Inject(method = "getItem()Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
     public void onGetItem(CallbackInfoReturnable<ItemStack> cir) {
         if(this.type == SlotType.INVENTORY && page > 0) {
-            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()) {
+            if(this.slot + 27 * page < ((ICustomInventory) container).getInventorySize()) {
                 this.show();
                 cir.setReturnValue(this.container.getItem(this.slot + 27 * page + 5));
             } else {
@@ -198,7 +194,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
             }
         }
         if(this.type == SlotType.HOTBAR) {
-            if(((IStorageChangable) container).isValidSlot(this.slot)) {
+            if(((ICustomInventory) container).isValidSlot(this.slot)) {
                 this.show();
             } else this.hide();
         }
@@ -207,7 +203,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
     @Inject(method = "remove(I)Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
     public void onRemoveItem(int p_40227_, CallbackInfoReturnable<ItemStack> cir) {
         if(this.type == SlotType.INVENTORY && page > 0) {
-            if(this.slot + 27 * page < ((IStorageChangable) container).getInventorySize()) {
+            if(this.slot + 27 * page < ((ICustomInventory) container).getInventorySize()) {
                 this.show();
                 cir.setReturnValue(this.container.removeItem(this.slot + 27 * page + 5, p_40227_));
             } else {
@@ -216,7 +212,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
             }
         }
         if(this.type == SlotType.HOTBAR) {
-            if(((IStorageChangable) container).isValidSlot(this.slot)) {
+            if(((ICustomInventory) container).isValidSlot(this.slot)) {
                 this.show();
             } else this.hide();
         }

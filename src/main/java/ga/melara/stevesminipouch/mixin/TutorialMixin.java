@@ -1,6 +1,6 @@
 package ga.melara.stevesminipouch.mixin;
 
-import ga.melara.stevesminipouch.util.IStorageChangable;
+import ga.melara.stevesminipouch.util.ICustomInventory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.tutorial.Tutorial;
 import org.spongepowered.asm.mixin.Final;
@@ -18,6 +18,6 @@ public class TutorialMixin {
 
     @Inject(method = "onOpenInventory", at = @At("HEAD"), cancellable = true)
     public void onOpenInventory(CallbackInfo ci) {
-        if(!((IStorageChangable) minecraft.player.getInventory()).isActiveInventory()) ci.cancel();
+        if(!((ICustomInventory) minecraft.player.getInventory()).isActiveInventory()) ci.cancel();
     }
 }

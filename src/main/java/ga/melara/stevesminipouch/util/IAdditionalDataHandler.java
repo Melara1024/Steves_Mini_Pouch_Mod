@@ -4,7 +4,7 @@ import ga.melara.stevesminipouch.event.InventorySyncEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
-public interface IAdditionalStorage {
+public interface IAdditionalDataHandler {
 
     CompoundTag saveStatus(CompoundTag tag);
 

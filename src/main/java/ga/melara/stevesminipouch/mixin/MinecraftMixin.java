@@ -1,6 +1,6 @@
 package ga.melara.stevesminipouch.mixin;
 
-import ga.melara.stevesminipouch.util.IStorageChangable;
+import ga.melara.stevesminipouch.util.ICustomInventory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -22,15 +22,15 @@ public class MinecraftMixin {
 
     @Inject(method = "handleKeybinds()V", at = @At(value = "RETURN"), cancellable = true)
     public void onGetSuitableHotbarSlot(CallbackInfo ci) {
-        if(this.player.getInventory().selected > ((IStorageChangable) this.player.getInventory()).getInventorySize() - 1)
+        if(this.player.getInventory().selected > ((ICustomInventory) this.player.getInventory()).getInventorySize() - 1)
             // When a key corresponding to a nonexistent hotbar slot is pressed.
-            this.player.getInventory().selected = ((IStorageChangable) this.player.getInventory()).getInventorySize() - 1;
+            this.player.getInventory().selected = ((ICustomInventory) this.player.getInventory()).getInventorySize() - 1;
     }
 
     @Inject(method = "setScreen", at = @At("HEAD"), cancellable = true)
     public void onSetScreen(Screen p_91153_, CallbackInfo ci) {
         // When the inventory key is pressed while the player does not have inventory capability.
-        if(p_91153_ instanceof InventoryScreen && !((IStorageChangable) player.getInventory()).isActiveInventory()) {
+        if(p_91153_ instanceof InventoryScreen && !((ICustomInventory) player.getInventory()).isActiveInventory()) {
             ItemStack main = player.getInventory().items.get(0);
             ItemStack offhand = player.getInventory().offhand.get(0);
             String mainItem = main.getItem() == Items.AIR ? "nothing" : main.getItem().toString();

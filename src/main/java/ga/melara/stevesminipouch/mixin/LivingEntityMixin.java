@@ -1,10 +1,9 @@
 package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.items.*;
-import ga.melara.stevesminipouch.util.IStorageChangable;
+import ga.melara.stevesminipouch.util.ICustomInventory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +30,7 @@ public class LivingEntityMixin {
 
         if((LivingEntity) (Object) this instanceof Player player && p_21068_.getItem() instanceof FunctionFoodItem food) {
             if((p_21068_.getItem() instanceof SlotItem || p_21068_.getItem() instanceof CraftActivatItem || p_21068_.getItem() instanceof ArmorActivateItem)
-                    && !((IStorageChangable) player.getInventory()).isActiveInventory()) {
+                    && !((ICustomInventory) player.getInventory()).isActiveInventory()) {
                 if(player.getLevel().isClientSide())
                     player.sendSystemMessage(Component.translatable("message.useless"));
                 cir.setReturnValue(p_21068_);

@@ -3,7 +3,7 @@ package ga.melara.stevesminipouch.util;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import net.minecraft.world.entity.player.Player;
 
-public interface IStorageChangable {
+public interface ICustomInventory {
 
     void setInventory(Player player, boolean set);
     void toggleInventory(Player player);

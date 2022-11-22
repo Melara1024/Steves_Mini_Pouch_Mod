@@ -21,7 +21,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,18 +34,17 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 
 @Mixin(Inventory.class)
-public abstract class InventoryMixin implements IStorageChangable, IAdditionalStorage {
+public abstract class InventoryMixin implements ICustomInventory, IAdditionalDataHandler {
 
 
     private int inventorySize = Math.min(Config.DEFAULT_SIZE.get(), Config.MAX_SIZE.get());
-
-    private int maxPage = (int) Math.max(Math.floor((inventorySize - 10) / 27f), 0);
-    ;
 
     private int enchantSize = 0;
 
     private int effectSize = 0;
     private int hotbarSize = Math.min(inventorySize, 9);
+
+    private int maxPage = (int) Math.max(Math.floor((inventorySize - 10) / 27f), 0);
 
 
     private boolean isActiveInventory = Config.DEFAULT_INVENTORY.get();
@@ -54,12 +52,13 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     private boolean isActiveOffhand = Config.DEFAULT_OFFHAND.get();
     private boolean isActiveCraft = Config.DEFAULT_CRAFT.get();
 
+
+    // The inventory status is changed by rewriting the item list.
+    // If this is overwritten by another mod, a conflict will occur.
     @Shadow
     public NonNullList<ItemStack> items;
-
     @Shadow
     public NonNullList<ItemStack> armor;
-
     @Shadow
     public NonNullList<ItemStack> offhand;
 
@@ -72,7 +71,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public List<NonNullList<ItemStack>> compartments = new CopyOnWriteArrayList<>() {
         @Override
         public Iterator<NonNullList<ItemStack>> iterator() {
-            synchronized(this) {
+            synchronized (this) {
                 return super.iterator();
             }
         }
@@ -90,7 +89,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Shadow
     @Final
-    @Mutable
     public Player player;
 
     public void initMiniPouch(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft) {
@@ -110,8 +108,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         ((IMenuChangable) player.containerMenu).judgeCraftHiding(player);
     }
 
-    public void initServer(int inventorySize, int effectSize, boolean isActivateInventory, boolean isActivateArmor, boolean isActivateOffhand, boolean isActivateCraft) {
-        initMiniPouch(inventorySize, effectSize, isActivateInventory, isActivateArmor, isActivateOffhand, isActivateCraft);
+    public void initServer(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft) {
+        initMiniPouch(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
     }
 
     @Override
@@ -121,9 +119,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         initMiniPouch(data.getInventorySize(),
                 data.getEffectSize(),
                 data.isActiveInventory(),
-                data.isActivateArmor(),
+                data.isActiveArmor(),
                 data.isActiveOffhand(),
-                data.isActivateCraft());
+                data.isActiveCraft());
     }
 
 
@@ -131,13 +129,12 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public void oninit(Player p_35983_, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.register(this);
 
-
+        // When the player first enters the world, it will be initialized according to the Config values.
         items = LockableItemStackList.withSize((maxPage + 1) * 27 + 9, (Inventory) (Object) this, false);
         int decrements = ((maxPage + 1) * 27 + 9) - inventorySize;
-        for(int i = 0; i < decrements; i++) {
-            if(items.size() > 0) ((LockableItemStackList) items).lock(items.size() - 1 - i);
+        for (int i = 0; i < decrements; i++) {
+            if (items.size() > 0) ((LockableItemStackList) items).lock(items.size() - 1 - i);
         }
-
 
         armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, Config.DEFAULT_ARMOR.get());
         ((LockableItemStackList) armor).setObserver((detectItem) -> {
@@ -155,7 +152,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         compartments.add(1, armor);
         compartments.add(2, offhand);
 
-        if(Objects.nonNull(player.inventoryMenu)) {
+        if (Objects.nonNull(player.inventoryMenu)) {
             initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
             ((IMenuSynchronizer) this.player.containerMenu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
         }
@@ -164,14 +161,14 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Inject(method = "getSlotWithRemainingSpace(Lnet/minecraft/world/item/ItemStack;)I", at = @At(value = "HEAD"), cancellable = true)
     public void onGetRemainingSpace(ItemStack p_36051_, CallbackInfoReturnable<Integer> cir) {
-        if(this.hasRemainingSpaceForItem(this.getItem(this.selected), p_36051_)) {
+        if (this.hasRemainingSpaceForItem(this.getItem(this.selected), p_36051_)) {
             cir.setReturnValue(this.selected);
-        } else if(this.hasRemainingSpaceForItem(this.getItem(40), p_36051_)) {
+        } else if (this.hasRemainingSpaceForItem(this.getItem(40), p_36051_)) {
             cir.setReturnValue(40);
         } else {
-            for(int i = 0; i < this.items.size(); ++i) {
-                if(this.hasRemainingSpaceForItem(this.items.get(i), p_36051_)) {
-                    if(i < 36) cir.setReturnValue(i);
+            for (int i = 0; i < this.items.size(); ++i) {
+                if (this.hasRemainingSpaceForItem(this.items.get(i), p_36051_)) {
+                    if (i < 36) cir.setReturnValue(i);
                         // Added slots are detected as free space
                     else cir.setReturnValue(i + 5);
                 }
@@ -181,23 +178,23 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Inject(method = "getFreeSlot()I", at = @At(value = "HEAD"), cancellable = true)
     public void onGetFreeSlot(CallbackInfoReturnable<Integer> cir) {
-        for(int i = 0; i < this.items.size(); ++i) {
-            if(this.items.get(i).isEmpty() && !((LockableItemStackList) items).lockList.get(i)) {
-                if(i < 36) cir.setReturnValue(i);
+        for (int i = 0; i < this.items.size(); ++i) {
+            if (this.items.get(i).isEmpty() && !((LockableItemStackList) items).lockList.get(i)) {
+                if (i < 36) cir.setReturnValue(i);
                     // Added slots are detected as free space
                 else cir.setReturnValue(i + 5);
             }
         }
-        if(Objects.isNull(cir.getReturnValue())) cir.setReturnValue(-1);
+        if (Objects.isNull(cir.getReturnValue())) cir.setReturnValue(-1);
     }
 
 
     @Override
     public void setInventory(Player player, boolean change) {
         boolean setFlag = change;
-        if(Config.FORCE_INVENTORY.get()) setFlag = Config.DEFAULT_INVENTORY.get();
+        if (Config.FORCE_INVENTORY.get()) setFlag = Config.DEFAULT_INVENTORY.get();
 
-        if(!setFlag) {
+        if (!setFlag) {
             setArmor(this.player, false);
             setCraft(this.player, false);
             setStorageSize(1, this.player);
@@ -214,9 +211,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void setArmor(Player player, boolean change) {
         boolean setFlag = change;
-        if(Config.FORCE_ARMOR.get()) setFlag = Config.DEFAULT_ARMOR.get();
+        if (Config.FORCE_ARMOR.get()) setFlag = Config.DEFAULT_ARMOR.get();
 
-        if(setFlag)
+        if (setFlag)
             ((LockableItemStackList) armor).allOpen();
         else
             ((LockableItemStackList) armor).allLock();
@@ -234,9 +231,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void setOffhand(Player player, boolean change) {
         boolean setFlag = change;
-        if(Config.FORCE_OFFHAND.get()) setFlag = Config.DEFAULT_OFFHAND.get();
+        if (Config.FORCE_OFFHAND.get()) setFlag = Config.DEFAULT_OFFHAND.get();
 
-        if(setFlag)
+        if (setFlag)
             ((LockableItemStackList) offhand).allOpen();
         else
             ((LockableItemStackList) offhand).allLock();
@@ -253,7 +250,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void setCraft(Player player, boolean change) {
         boolean setFlag = change;
-        if(Config.FORCE_CRAFT.get()) setFlag = Config.DEFAULT_CRAFT.get();
+        if (Config.FORCE_CRAFT.get()) setFlag = Config.DEFAULT_CRAFT.get();
 
         this.isActiveCraft = setFlag;
         ((IMenuChangable) player.inventoryMenu).judgeCraftHiding(player);
@@ -294,7 +291,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Override
     public void changeStorageSize(int change, Player player) {
-        if(Config.FORCE_SIZE.get() || inventorySize > Config.MAX_SIZE.get()) {
+        if (Config.FORCE_SIZE.get() || inventorySize > Config.MAX_SIZE.get()) {
             inventorySize = Config.MAX_SIZE.get();
         } else {
             inventorySize = Math.max(inventorySize + change, 1);
@@ -303,9 +300,9 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         LockableItemStackList newItems;
 
         int allSize = (inventorySize + effectSize + enchantSize);
-        if(allSize < 9) {
+        if (allSize < 9) {
             hotbarSize = allSize;
-            if(selected > allSize) selected = allSize - 1;
+            if (selected > allSize) selected = allSize - 1;
         } else {
             hotbarSize = 9;
         }
@@ -313,11 +310,11 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         int newMaxPage = (int) Math.max(Math.floor((allSize - 10) / 27f), 0);
 
         // When the number of pages remains the same
-        if(maxPage == newMaxPage) {
+        if (maxPage == newMaxPage) {
             int decrements = ((maxPage + 1) * 27 + 9) - allSize;
             ((LockableItemStackList) items).allOpen();
-            for(int i = 0; i < decrements; i++) {
-                if(items.size() > 0) ((LockableItemStackList) items).lock(items.size() - 1 - i);
+            for (int i = 0; i < decrements; i++) {
+                if (items.size() > 0) ((LockableItemStackList) items).lock(items.size() - 1 - i);
             }
         }
         // When the number of pages changes
@@ -327,24 +324,24 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             newItems = LockableItemStackList.withSize((maxPage + 1) * 27 + 9, (Inventory) (Object) this, false);
 
             int decrements = ((maxPage + 1) * 27 + 9) - allSize;
-            for(int i = 0; i < decrements; i++) {
-                if(items.size() > 0) ((LockableItemStackList) items).lock(items.size() - 1 - i);
+            for (int i = 0; i < decrements; i++) {
+                if (items.size() > 0) ((LockableItemStackList) items).lock(items.size() - 1 - i);
             }
 
             // Transfer items to the new list and scatter out what remains on the old list.
-            for(int i = 0; i < (Math.min(items.size(), newItems.size())); i++) {
+            for (int i = 0; i < (Math.min(items.size(), newItems.size())); i++) {
                 newItems.set(i, items.get(i));
                 items.set(i, ItemStack.EMPTY);
             }
-            for(ItemStack item : items) {
-                if(item == ItemStack.EMPTY) continue;
+            for (ItemStack item : items) {
+                if (item == ItemStack.EMPTY) continue;
                 Level level = player.level;
                 ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
                 itementity.setDefaultPickUpDelay();
                 itementity.setThrower(player.getUUID());
                 level.addFreshEntity(itementity);
             }
-            synchronized(compartments) {
+            synchronized (compartments) {
                 compartments.remove(items);
                 items = newItems;
                 compartments.add(0, items);
@@ -362,7 +359,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void changeEffectSize(int change) {
         // Server-side effect slots are handled here
-        synchronized(compartments) {
+        synchronized (compartments) {
             this.effectSize = change;
             updateStorageSize();
         }
@@ -372,7 +369,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @OnlyIn(Dist.CLIENT)
     public void syncEffectSizeToClient(ClientEffectSlotSyncEvent e) {
         // Client-side effect slots are handled here
-        synchronized(compartments) {
+        synchronized (compartments) {
             this.effectSize = e.getEffectSize();
             updateStorageSize();
         }
@@ -383,10 +380,10 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     public void onSwapaint(double p_35989_, CallbackInfo ci) {
         // When the hot bar is scrolled
         int i = (int) Math.signum(p_35989_);
-        for(this.selected -= i; this.selected < 0; this.selected += hotbarSize) {
+        for (this.selected -= i; this.selected < 0; this.selected += hotbarSize) {
         }
 
-        while(this.selected >= hotbarSize) {
+        while (this.selected >= hotbarSize) {
             this.selected -= hotbarSize;
         }
         ci.cancel();
@@ -415,15 +412,15 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public boolean isValidSlot(int id) {
         // 0-35 are vanilla item slots.
-        if(id < 36) {
+        if (id < 36) {
             return !((LockableItemStackList) items).lockList.get(id);
         }
         // 36-39 are vanilla armor slots.
-        else if(id < 40) {
+        else if (id < 40) {
             return !((LockableItemStackList) armor).lockList.get(id - 36);
         }
         // 40 is vanilla offhand slot.
-        else if(id == 40) {
+        else if (id == 40) {
             return !((LockableItemStackList) offhand).lockList.get(0);
         }
         // 41 and above are additional slots.
@@ -435,26 +432,26 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSetItem(int id, ItemStack itemStack, CallbackInfo ci) {
-        synchronized(compartments) {
+        synchronized (compartments) {
             // 0-35 are vanilla item slots.
-            if(id < 36) {
-                if(id + 1 > items.size()) ci.cancel();
+            if (id < 36) {
+                if (id + 1 > items.size()) ci.cancel();
                 else {
                     items.set(id, itemStack);
                 }
                 ci.cancel();
             }
             // 36-39 are vanilla armor slots.
-            else if(id < 40) {
-                if(id - 35 > armor.size()) ci.cancel();
+            else if (id < 40) {
+                if (id - 35 > armor.size()) ci.cancel();
                 else {
                     armor.set(id - 36, itemStack);
                 }
                 ci.cancel();
             }
             // 40 is vanilla offhand slot.
-            else if(id == 40) {
-                if(id - 39 > offhand.size()) ci.cancel();
+            else if (id == 40) {
+                if (id - 39 > offhand.size()) ci.cancel();
                 else {
                     offhand.set(0, itemStack);
                 }
@@ -463,7 +460,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             // 41 and above are additional slots.
             // To avoid id collisions, this mod treats the id as the sum of 5(armor+offhand).
             else {
-                if(id - 40 > items.size()) ci.cancel();
+                if (id - 40 > items.size()) ci.cancel();
                 else {
                     items.set(id - 5, itemStack);
                 }
@@ -475,24 +472,24 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Inject(method = "getItem(I)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "HEAD"), cancellable = true)
     public void onGetItem(int id, CallbackInfoReturnable<ItemStack> cir) {
 
-        synchronized(compartments) {
+        synchronized (compartments) {
             // 0-35 are vanilla item slots.
-            if(id < 36) {
-                if(id + 1 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
+            if (id < 36) {
+                if (id + 1 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
                 else {
                     cir.setReturnValue(items.get(id));
                 }
             }
             // 36-39 are vanilla armor slots.
-            else if(id < 40) {
-                if(id - 35 > armor.size()) cir.setReturnValue(ItemStack.EMPTY);
+            else if (id < 40) {
+                if (id - 35 > armor.size()) cir.setReturnValue(ItemStack.EMPTY);
                 else {
                     cir.setReturnValue(armor.get(id - 36));
                 }
             }
             // 40 is vanilla offhand slot.
-            else if(id == 40) {
-                if(id - 39 > offhand.size()) cir.setReturnValue(ItemStack.EMPTY);
+            else if (id == 40) {
+                if (id - 39 > offhand.size()) cir.setReturnValue(ItemStack.EMPTY);
                 else {
                     cir.setReturnValue(offhand.get(0));
                 }
@@ -500,7 +497,7 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             // 41 and above are additional slots.
             // To avoid id collisions, this mod treats the id as the sum of 5(armor+offhand).
             else {
-                if(id - 40 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
+                if (id - 40 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
                 else {
                     cir.setReturnValue(items.get(id - 5));
                 }
@@ -511,33 +508,33 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Inject(method = "removeItem(II)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "HEAD"), cancellable = true)
     public void onRemoveItem(int id, int decrement, CallbackInfoReturnable<ItemStack> cir) {
-        synchronized(compartments) {
+        synchronized (compartments) {
             // 0-35 are vanilla item slots.
-            if(id < 36) {
-                if(id + 1 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
-                else if(!items.get(id).isEmpty()) {
+            if (id < 36) {
+                if (id + 1 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
+                else if (!items.get(id).isEmpty()) {
                     cir.setReturnValue(ContainerHelper.removeItem(items, id, decrement));
                 }
             }
             // 36-39 are vanilla armor slots.
-            else if(id < 40) {
-                if(id - 35 > armor.size()) cir.setReturnValue(ItemStack.EMPTY);
-                else if(!armor.get(id - 36).isEmpty()) {
+            else if (id < 40) {
+                if (id - 35 > armor.size()) cir.setReturnValue(ItemStack.EMPTY);
+                else if (!armor.get(id - 36).isEmpty()) {
                     cir.setReturnValue(ContainerHelper.removeItem(armor, id - 36, decrement));
                 }
             }
             // 40 is vanilla offhand slot.
-            else if(id == 40) {
-                if(id - 39 > offhand.size()) cir.setReturnValue(ItemStack.EMPTY);
-                else if(!offhand.get(0).isEmpty()) {
+            else if (id == 40) {
+                if (id - 39 > offhand.size()) cir.setReturnValue(ItemStack.EMPTY);
+                else if (!offhand.get(0).isEmpty()) {
                     cir.setReturnValue(ContainerHelper.removeItem(offhand, 0, decrement));
                 }
             }
             // 41 and above are additional slots.
             // To avoid id collisions, this mod treats the id as the sum of 5(armor+offhand).
             else {
-                if(id - 40 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
-                else if(!items.get(id - 5).isEmpty()) {
+                if (id - 40 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
+                else if (!items.get(id - 5).isEmpty()) {
                     cir.setReturnValue(ContainerHelper.removeItem(items, id - 5, decrement));
                 }
             }
@@ -546,26 +543,26 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Inject(method = "save(Lnet/minecraft/nbt/ListTag;)Lnet/minecraft/nbt/ListTag;", at = @At(value = "HEAD"), cancellable = true)
     public void onSaveInventory(ListTag tags, CallbackInfoReturnable<ListTag> cir) {
-        synchronized(compartments) {
+        synchronized (compartments) {
             // In the original method, the armor and offhand lists conflict with the item list.
-            for(int i = 0; i < 36; ++i) {
-                if(!items.get(i).isEmpty()) {
+            for (int i = 0; i < 36; ++i) {
+                if (!items.get(i).isEmpty()) {
                     CompoundTag compoundtag = new CompoundTag();
                     compoundtag.putByte("Slot", (byte) i);
                     items.get(i).save(compoundtag);
                     tags.add(compoundtag);
                 }
             }
-            for(int j = 0; j < this.armor.size(); ++j) {
-                if(!armor.get(j).isEmpty()) {
+            for (int j = 0; j < this.armor.size(); ++j) {
+                if (!armor.get(j).isEmpty()) {
                     CompoundTag compoundtag1 = new CompoundTag();
                     compoundtag1.putByte("Slot", (byte) (j + 100));
                     armor.get(j).save(compoundtag1);
                     tags.add(compoundtag1);
                 }
             }
-            for(int k = 0; k < this.offhand.size(); ++k) {
-                if(!offhand.get(k).isEmpty()) {
+            for (int k = 0; k < this.offhand.size(); ++k) {
+                if (!offhand.get(k).isEmpty()) {
                     CompoundTag compoundtag2 = new CompoundTag();
                     compoundtag2.putByte("Slot", (byte) (k + 150));
                     offhand.get(k).save(compoundtag2);
@@ -578,21 +575,21 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     @Inject(method = "load(Lnet/minecraft/nbt/ListTag;)V", at = @At(value = "HEAD"), cancellable = true)
     public void onLoadInventory(ListTag tags, CallbackInfo ci) {
-        synchronized(compartments) {
+        synchronized (compartments) {
             items.clear();
             armor.clear();
             offhand.clear();
-            for(int i = 0; i < tags.size(); ++i) {
+            for (int i = 0; i < tags.size(); ++i) {
                 CompoundTag compoundtag = tags.getCompound(i);
                 int j = compoundtag.getByte("Slot") & 255;
                 ItemStack itemstack = ItemStack.of(compoundtag);
-                if(!itemstack.isEmpty()) {
+                if (!itemstack.isEmpty()) {
                     // In the original method, the armor and offhand lists conflict with the item list.
-                    if(j < 36) {
+                    if (j < 36) {
                         items.set(j, itemstack);
-                    } else if(j >= 100 && j < armor.size() + 100) {
+                    } else if (j >= 100 && j < armor.size() + 100) {
                         armor.set(j - 100, itemstack);
-                    } else if(j >= 150 && j < offhand.size() + 150) {
+                    } else if (j >= 150 && j < offhand.size() + 150) {
                         offhand.set(j - 150, itemstack);
                     }
                 }
@@ -605,8 +602,8 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public ListTag saveAdditional(ListTag tag) {
         // Save added slots (when there are 37 slots or more)
-        for(int i = 36; i < items.size(); ++i) {
-            if(!items.get(i).isEmpty()) {
+        for (int i = 36; i < items.size(); ++i) {
+            if (!items.get(i).isEmpty()) {
                 CompoundTag compoundtag = new CompoundTag();
                 compoundtag.putInt("Slot", i);
                 items.get(i).save(compoundtag);
@@ -619,12 +616,12 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
     @Override
     public void loadAdditional(ListTag tag) {
         // Load added slots (when there are 37 slots or more)
-        for(int i = 0; i < tag.size(); ++i) {
+        for (int i = 0; i < tag.size(); ++i) {
             CompoundTag compoundtag = tag.getCompound(i);
             int slotNumber = compoundtag.getInt("Slot");
             ItemStack itemstack = ItemStack.of(compoundtag);
-            if(!itemstack.isEmpty()) {
-                if(slotNumber < items.size()) {
+            if (!itemstack.isEmpty()) {
+                if (slotNumber < items.size()) {
                     items.set(slotNumber, itemstack);
                 }
             }
@@ -650,11 +647,11 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
         int effectSize = tag.contains("effectsize") ? tag.getInt("effectsize") : 0;
 
         int inventorySize;
-        if(Config.FORCE_SIZE.get()) {
+        if (Config.FORCE_SIZE.get()) {
             inventorySize = Config.MAX_SIZE.get();
-        } else if(tag.contains("inventorysize")) {
+        } else if (tag.contains("inventorysize")) {
             int size = tag.getInt("inventorysize");
-            if(size > Config.MAX_SIZE.get()) {
+            if (size > Config.MAX_SIZE.get()) {
                 inventorySize = Config.MAX_SIZE.get();
             } else {
                 inventorySize = size;
@@ -663,22 +660,22 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             inventorySize = Math.min(Config.DEFAULT_SIZE.get(), Config.MAX_SIZE.get());
         }
 
-        boolean isActivateInventory =
+        boolean isActiveInventory =
                 Config.FORCE_INVENTORY.get() ? Config.DEFAULT_INVENTORY.get() :
                         tag.contains("inventory") ? tag.getBoolean("inventory") : Config.DEFAULT_INVENTORY.get();
-        boolean isActivateArmor =
+        boolean isActiveArmor =
                 Config.FORCE_INVENTORY.get() ? false :
                         Config.FORCE_ARMOR.get() ? Config.DEFAULT_ARMOR.get() :
                                 tag.contains("armor") ? tag.getBoolean("armor") : Config.DEFAULT_ARMOR.get();
-        boolean isActivateOffhand =
+        boolean isActiveOffhand =
                 Config.FORCE_OFFHAND.get() ? Config.DEFAULT_OFFHAND.get() :
                         tag.contains("offhand") ? tag.getBoolean("offhand") : Config.DEFAULT_OFFHAND.get();
-        boolean isActivateCraft =
+        boolean isActiveCraft =
                 Config.FORCE_INVENTORY.get() ? false :
                         Config.FORCE_CRAFT.get() ? Config.DEFAULT_CRAFT.get() :
                                 tag.contains("craft") ? tag.getBoolean("craft") : Config.DEFAULT_CRAFT.get();
 
-        initServer(inventorySize, effectSize, isActivateInventory, isActivateArmor, isActivateOffhand, isActivateCraft);
-        ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, effectSize, isActivateInventory, isActivateArmor, isActivateOffhand, isActivateCraft));
+        initServer(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
+        ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
     }
 }

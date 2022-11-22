@@ -120,7 +120,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
     }
 
     public void nextPage() {
-        if(page < (((IStorageChangable) Minecraft.getInstance().player.getInventory()).getMaxPage())) page++;
+        if(page < (((ICustomInventory) Minecraft.getInstance().player.getInventory()).getMaxPage())) page++;
     }
 
     public void previousPage() {
@@ -129,7 +129,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;IIF)V", at = @At(value = "RETURN"), cancellable = true)
     public void onRender(PoseStack poseStack, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        if((((IStorageChangable) Minecraft.getInstance().player.getInventory()).getMaxPage()) > 0) {
+        if((((ICustomInventory) Minecraft.getInstance().player.getInventory()).getMaxPage()) > 0) {
             // Rendering of page change button
             if(!pageIndicator.visible) {
                 upButton.visible = true;

@@ -29,10 +29,10 @@ public class InventoryActivateItem extends FunctionFoodItem {
     public void onEat(LivingEntity entity) {
         if(!(entity instanceof Player)) return;
         Player player = (Player) entity;
-        ((IStorageChangable) player.getInventory()).toggleInventory(player);
+        ((ICustomInventory) player.getInventory()).toggleInventory(player);
         if(!(player instanceof ServerPlayer serverPlayer)) return;
         Inventory inventory = player.getInventory();
-        Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable) inventory).getAllData()), serverPlayer);
+        Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData()), serverPlayer);
     }
 
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {

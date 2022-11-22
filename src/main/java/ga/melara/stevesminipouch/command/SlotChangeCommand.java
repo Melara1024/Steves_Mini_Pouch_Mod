@@ -9,7 +9,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import ga.melara.stevesminipouch.StevesMiniPouch;
 import ga.melara.stevesminipouch.stats.InventorySyncPacket;
 import ga.melara.stevesminipouch.stats.Messager;
-import ga.melara.stevesminipouch.util.IStorageChangable;
+import ga.melara.stevesminipouch.util.ICustomInventory;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -17,7 +17,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
 
@@ -68,10 +67,10 @@ public class SlotChangeCommand {
         for(Entity entity : entities) {
             StevesMiniPouch.LOGGER.debug(entity.toString());
             if(entity instanceof ServerPlayer player) {
-                ((IStorageChangable) player.getInventory()).setInventory(player, increment);
+                ((ICustomInventory) player.getInventory()).setInventory(player, increment);
                 StevesMiniPouch.LOGGER.debug("inventory");
                 Inventory inventory = player.getInventory();
-                Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable) inventory).getAllData()), player);
+                Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData()), player);
                 StevesMiniPouch.LOGGER.debug("client");
                 applied++;
                 StevesMiniPouch.LOGGER.debug(String.valueOf(applied));
@@ -91,9 +90,9 @@ public class SlotChangeCommand {
         int applied = 0;
         for(Entity entity : entities) {
             if(entity instanceof ServerPlayer player) {
-                ((IStorageChangable) player.getInventory()).setArmor(player, increment);
+                ((ICustomInventory) player.getInventory()).setArmor(player, increment);
                 Inventory inventory = player.getInventory();
-                Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable) inventory).getAllData()), player);
+                Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData()), player);
                 applied++;
             }
         }
@@ -110,9 +109,9 @@ public class SlotChangeCommand {
         int applied = 0;
         for(Entity entity : entities) {
             if(entity instanceof ServerPlayer player) {
-                ((IStorageChangable) player.getInventory()).setOffhand(player, increment);
+                ((ICustomInventory) player.getInventory()).setOffhand(player, increment);
                 Inventory inventory = player.getInventory();
-                Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable) inventory).getAllData()), player);
+                Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData()), player);
                 applied++;
             }
         }
@@ -129,9 +128,9 @@ public class SlotChangeCommand {
         int applied = 0;
         for(Entity entity : entities) {
             if(entity instanceof ServerPlayer player) {
-                ((IStorageChangable) player.getInventory()).setCraft(player, increment);
+                ((ICustomInventory) player.getInventory()).setCraft(player, increment);
                 Inventory inventory = player.getInventory();
-                Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable) inventory).getAllData()), player);
+                Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData()), player);
                 applied++;
             }
         }
@@ -148,9 +147,9 @@ public class SlotChangeCommand {
         int applied = 0;
         for(Entity entity : entities) {
             if(entity instanceof ServerPlayer player) {
-                ((IStorageChangable) player.getInventory()).setStorageSize(increment, player);
+                ((ICustomInventory) player.getInventory()).setStorageSize(increment, player);
                 Inventory inventory = player.getInventory();
-                Messager.sendToPlayer(new InventorySyncPacket(((IStorageChangable) inventory).getAllData()), player);
+                Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData()), player);
                 applied++;
             }
         }

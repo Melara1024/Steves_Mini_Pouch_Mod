@@ -52,7 +52,7 @@ public class PlayerInventorySizeData {
         return isActiveInventory;
     }
 
-    public boolean isActivateArmor() {
+    public boolean isActiveArmor() {
         return isActivateArmor;
     }
 
@@ -60,7 +60,7 @@ public class PlayerInventorySizeData {
         return isActiveOffhand;
     }
 
-    public boolean isActivateCraft() {
+    public boolean isActiveCraft() {
         return isActivateCraft;
     }
 

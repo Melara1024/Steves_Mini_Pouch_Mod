@@ -87,7 +87,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
     @Override
     public void judgeInventoryHiding(Player player) {
-        if(!((IStorageChangable) player.getInventory()).isActiveInventory()) {
+        if(!((ICustomInventory) player.getInventory()).isActiveInventory()) {
             judgeArmorHiding(player);
             judgeCraftHiding(player);
         }
@@ -98,7 +98,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     public void judgeArmorHiding(Player player) {
         for(Slot slot : this.slots) {
             if(((IHasSlotType) slot).getType() == SlotType.ARMOR) {
-                if(!((IStorageChangable) player.getInventory()).isActiveArmor()) ((ISlotHidable) slot).hide();
+                if(!((ICustomInventory) player.getInventory()).isActiveArmor()) ((ISlotHidable) slot).hide();
                 else ((ISlotHidable) slot).show();
             }
         }
@@ -108,7 +108,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     public void judgeCraftHiding(Player player) {
         for(Slot slot : this.slots) {
             if(((IHasSlotType) slot).getType() == SlotType.CRAFT || ((IHasSlotType) slot).getType() == SlotType.RESULT) {
-                if(!((IStorageChangable) player.getInventory()).isActiveCraft()) ((ISlotHidable) slot).hide();
+                if(!((ICustomInventory) player.getInventory()).isActiveCraft()) ((ISlotHidable) slot).hide();
                 else ((ISlotHidable) slot).show();
             }
         }
@@ -118,7 +118,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     public void judgeOffhandHiding(Player player) {
         for(Slot slot : this.slots) {
             if(((IHasSlotType) slot).getType() == SlotType.OFFHAND) {
-                if(!((IStorageChangable) player.getInventory()).isActiveOffhand()) ((ISlotHidable) slot).hide();
+                if(!((ICustomInventory) player.getInventory()).isActiveOffhand()) ((ISlotHidable) slot).hide();
                 else ((ISlotHidable) slot).show();
             }
         }
