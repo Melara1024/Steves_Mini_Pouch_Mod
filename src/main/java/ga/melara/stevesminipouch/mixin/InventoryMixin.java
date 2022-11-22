@@ -112,8 +112,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
     public void initServer(int inventorySize, int effectSize, boolean isActivateInventory, boolean isActivateArmor, boolean isActivateOffhand, boolean isActivateCraft) {
         initMiniPouch(inventorySize, effectSize, isActivateInventory, isActivateArmor, isActivateOffhand, isActivateCraft);
-        System.out.print(Thread.currentThread().getName());
-        System.out.println(" initMiniPouch finished");
     }
 
     @Override
@@ -126,8 +124,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
                 data.isActivateArmor(),
                 data.isActiveOffhand(),
                 data.isActivateCraft());
-        System.out.print(Thread.currentThread().getName());
-        System.out.println(" initMiniPouch finished");
     }
 
 
@@ -163,8 +159,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
             initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
             ((IMenuSynchronizer) this.player.containerMenu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
         }
-        System.out.print(Thread.currentThread().getName());
-        System.out.println(" init finished");
     }
 
 
@@ -648,9 +642,6 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
         ((IMenuSynchronizer) this.player.containerMenu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
-
-        System.out.print(Thread.currentThread().getName());
-        System.out.println(" saveStatus");
         return tag;
     }
 
@@ -689,8 +680,5 @@ public abstract class InventoryMixin implements IStorageChangable, IAdditionalSt
 
         initServer(inventorySize, effectSize, isActivateInventory, isActivateArmor, isActivateOffhand, isActivateCraft);
         ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, effectSize, isActivateInventory, isActivateArmor, isActivateOffhand, isActivateCraft));
-
-        System.out.print(Thread.currentThread().getName());
-        System.out.println(" loadStatus");
     }
 }
