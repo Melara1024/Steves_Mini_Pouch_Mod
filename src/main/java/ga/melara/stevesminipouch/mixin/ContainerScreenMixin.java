@@ -87,8 +87,8 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         this.setBlitOffset(100);
         this.itemRenderer.blitOffset = 100.0F;
 
-        int buttonX = this.leftPos + this.inventoryLabelX + this.imageWidth - 5 + Config.RENDER_OFFSET_X.get();
-        int buttonY = this.topPos + this.inventoryLabelY + 9 + Config.RENDER_OFFSET_Y.get();
+        int buttonX = this.leftPos + this.inventoryLabelX + this.imageWidth - 9 + Config.RENDER_OFFSET_X.get();
+        int buttonY = this.topPos + this.inventoryLabelY + 18 + Config.RENDER_OFFSET_Y.get();
 
         // Page change button settings
         upButton = new Button(buttonX, buttonY, 18, 18,
@@ -139,7 +139,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
             }
 
             // Shift the button position when the recipe book is opened.
-            int buttonX = this.leftPos + this.inventoryLabelX + this.imageWidth - 5 + Config.RENDER_OFFSET_X.get();
+            int buttonX = this.leftPos + this.inventoryLabelX + this.imageWidth - 9 + Config.RENDER_OFFSET_X.get();
             if(pageIndicator.x != buttonX) {
                 upButton.x = buttonX;
                 downButton.x = buttonX;

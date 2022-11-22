@@ -291,7 +291,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     @Override
     public void changeStorageSize(int change, Player player) {
-        if (Config.FORCE_SIZE.get() || inventorySize > Config.MAX_SIZE.get()) {
+        if (Config.FORCE_SIZE.get() || inventorySize + change > Config.MAX_SIZE.get()) {
             inventorySize = Config.MAX_SIZE.get();
         } else {
             inventorySize = Math.max(inventorySize + change, 1);
@@ -320,12 +320,10 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         // When the number of pages changes
         else {
             maxPage = newMaxPage;
-
             newItems = LockableItemStackList.withSize((maxPage + 1) * 27 + 9, (Inventory) (Object) this, false);
-
             int decrements = ((maxPage + 1) * 27 + 9) - allSize;
             for (int i = 0; i < decrements; i++) {
-                if (items.size() > 0) ((LockableItemStackList) items).lock(items.size() - 1 - i);
+                if (newItems.size() > 0) newItems.lock(newItems.size() - 1 - i);
             }
 
             // Transfer items to the new list and scatter out what remains on the old list.

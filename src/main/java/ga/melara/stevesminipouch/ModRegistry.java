@@ -26,10 +26,10 @@ import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
 @Mod.EventBusSubscriber
 public class ModRegistry {
-    public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab("steves_mini_pouch") {
+    public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab("tab_minipouch") {
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(Items.BUNDLE);
+            return new ItemStack(SLOT_ADD1_ITEM.get());
         }
 
         @Override

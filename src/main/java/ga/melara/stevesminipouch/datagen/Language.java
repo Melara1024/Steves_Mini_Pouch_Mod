@@ -26,7 +26,7 @@ public class Language extends LanguageProvider {
         add(ModRegistry.OFFHAND_ACTIVATE_ITEM.get(), "Offhandorian");
         add(ModRegistry.CRAFT_ACTIVATE_ITEM.get(), "Crafruits");
 
-        add("itemGroup.steves_mini_pouch", "Steve's Mini Pouch");
+        add("itemGroup.tab_minipouch", "Steve's Mini Pouch");
 
         add("enchantment.stevesminipouch.slot_enchant", "Cramming");
         add("effect.stevesminipouch.slot_effect", "Cramming");

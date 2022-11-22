@@ -75,7 +75,7 @@ public class SlotChangeCommand {
         if(applied == 0) {
             throw ERROR_GIVE_FAILED.create();
         } else {
-            commandSourceStack.sendSuccess(Component.literal(String.format("%s players inventory", increment ? "Activated" : "Inactivated")), true);
+            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's inventory", increment ? "Activated" : "Inactivated")), true);
             return applied;
         }
     }
@@ -94,7 +94,7 @@ public class SlotChangeCommand {
         if(applied == 0) {
             throw ERROR_GIVE_FAILED.create();
         } else {
-            commandSourceStack.sendSuccess(Component.literal(String.format("%s players armor", increment ? "Activated" : "Inactivated")), true);
+            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's armor", increment ? "Activated" : "Inactivated")), true);
             return applied;
         }
     }
@@ -113,7 +113,7 @@ public class SlotChangeCommand {
         if(applied == 0) {
             throw ERROR_GIVE_FAILED.create();
         } else {
-            commandSourceStack.sendSuccess(Component.literal(String.format("%s players offhand", increment ? "Activated" : "Inactivated")), true);
+            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's offhand", increment ? "Activated" : "Inactivated")), true);
             return applied;
         }
     }
@@ -132,7 +132,7 @@ public class SlotChangeCommand {
         if(applied == 0) {
             throw ERROR_GIVE_FAILED.create();
         } else {
-            commandSourceStack.sendSuccess(Component.literal(String.format("%s players crafting ability", increment ? "Activated" : "Inactivated")), true);
+            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's crafting ability", increment ? "Activated" : "Inactivated")), true);
             return applied;
         }
     }
@@ -151,7 +151,7 @@ public class SlotChangeCommand {
         if(applied == 0) {
             throw ERROR_GIVE_FAILED.create();
         } else {
-            commandSourceStack.sendSuccess(Component.literal(String.format("%d slots %s", increment, increment < 0 ? "decreased" : "increased")), true);
+                commandSourceStack.sendSuccess(Component.literal(String.format("Set inventory size to %d slots.", increment)), true);
             return applied;
         }
     }
