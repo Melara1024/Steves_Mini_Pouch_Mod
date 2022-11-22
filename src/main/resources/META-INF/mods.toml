@@ -1,7 +1,6 @@
 modLoader="javafml"
 loaderVersion="[43,)"
 license="GNU GPL v3"
-showAsResourcePack=true
 # issueTrackerURL="http://my.issue.tracker/"
 
 [[mods]]
