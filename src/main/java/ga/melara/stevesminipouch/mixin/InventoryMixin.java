@@ -664,16 +664,14 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                 Config.FORCE_INVENTORY.get() ? Config.DEFAULT_INVENTORY.get() :
                         tag.contains("inventory") ? tag.getBoolean("inventory") : Config.DEFAULT_INVENTORY.get();
         boolean isActiveArmor =
-                Config.FORCE_INVENTORY.get() ? false :
-                        Config.FORCE_ARMOR.get() ? Config.DEFAULT_ARMOR.get() :
-                                tag.contains("armor") ? tag.getBoolean("armor") : Config.DEFAULT_ARMOR.get();
+                !Config.FORCE_INVENTORY.get() && (Config.FORCE_ARMOR.get() ? Config.DEFAULT_ARMOR.get() :
+                        tag.contains("armor") ? tag.getBoolean("armor") : Config.DEFAULT_ARMOR.get());
         boolean isActiveOffhand =
                 Config.FORCE_OFFHAND.get() ? Config.DEFAULT_OFFHAND.get() :
                         tag.contains("offhand") ? tag.getBoolean("offhand") : Config.DEFAULT_OFFHAND.get();
         boolean isActiveCraft =
-                Config.FORCE_INVENTORY.get() ? false :
-                        Config.FORCE_CRAFT.get() ? Config.DEFAULT_CRAFT.get() :
-                                tag.contains("craft") ? tag.getBoolean("craft") : Config.DEFAULT_CRAFT.get();
+                !Config.FORCE_INVENTORY.get() && (Config.FORCE_CRAFT.get() ? Config.DEFAULT_CRAFT.get() :
+                        tag.contains("craft") ? tag.getBoolean("craft") : Config.DEFAULT_CRAFT.get());
 
         initServer(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
         ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));

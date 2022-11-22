@@ -23,7 +23,7 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
 
     private List<ItemStack> mutableList;
 
-    private Inventory inventory;
+    private final Inventory inventory;
 
     private static final ItemStack defaultItem = ItemStack.EMPTY;
 

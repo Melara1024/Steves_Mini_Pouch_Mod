@@ -19,8 +19,7 @@ public class SlotItem extends FunctionFoodItem {
 
     @Override
     public void onEat(LivingEntity entity) {
-        if(!(entity instanceof Player)) return;
-        Player player = (Player) entity;
+        if(!(entity instanceof Player player)) return;
         ((ICustomInventory) player.getInventory()).changeStorageSize(incremental, player);
         if(!(player instanceof ServerPlayer serverPlayer)) return;
         Inventory inventory = player.getInventory();

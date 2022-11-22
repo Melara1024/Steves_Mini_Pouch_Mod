@@ -26,7 +26,7 @@ public class GuiMixin extends GuiComponent {
     @Mutable
     protected static ResourceLocation WIDGETS_LOCATION = new ResourceLocation(StevesMiniPouch.MODID, "textures/gui/widgets.png");
 
-    private static ResourceLocation HOTBARS_LOCATION = new ResourceLocation(StevesMiniPouch.MODID, "textures/gui/hotbars.png");
+    private static final ResourceLocation HOTBARS_LOCATION = new ResourceLocation(StevesMiniPouch.MODID, "textures/gui/hotbars.png");
 
     @Shadow
     protected int screenWidth;

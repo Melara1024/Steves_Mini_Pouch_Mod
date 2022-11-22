@@ -27,8 +27,7 @@ public class InventoryActivateItem extends FunctionFoodItem {
 
     @Override
     public void onEat(LivingEntity entity) {
-        if(!(entity instanceof Player)) return;
-        Player player = (Player) entity;
+        if(!(entity instanceof Player player)) return;
         ((ICustomInventory) player.getInventory()).toggleInventory(player);
         if(!(player instanceof ServerPlayer serverPlayer)) return;
         Inventory inventory = player.getInventory();

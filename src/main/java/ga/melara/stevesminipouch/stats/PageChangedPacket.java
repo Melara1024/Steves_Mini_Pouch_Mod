@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 public class PageChangedPacket {
 
-    private int page;
+    private final int page;
 
     public PageChangedPacket(int page) {
         this.page = page;
