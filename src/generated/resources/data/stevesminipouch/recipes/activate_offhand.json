@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "group": "stevesminipouch",
   "key": {
     "S": {
       "item": "minecraft:stick"

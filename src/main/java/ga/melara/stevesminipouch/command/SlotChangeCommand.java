@@ -63,22 +63,16 @@ public class SlotChangeCommand {
 
     private static int setInventory(CommandSourceStack commandSourceStack, Collection<? extends Entity> entities, boolean increment) throws CommandSyntaxException {
         int applied = 0;
-        StevesMiniPouch.LOGGER.debug(String.valueOf(entities.size()));
         for(Entity entity : entities) {
-            StevesMiniPouch.LOGGER.debug(entity.toString());
             if(entity instanceof ServerPlayer player) {
                 ((ICustomInventory) player.getInventory()).setInventory(player, increment);
-                StevesMiniPouch.LOGGER.debug("inventory");
                 Inventory inventory = player.getInventory();
                 Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData()), player);
-                StevesMiniPouch.LOGGER.debug("client");
                 applied++;
-                StevesMiniPouch.LOGGER.debug(String.valueOf(applied));
             }
         }
 
         if(applied == 0) {
-            StevesMiniPouch.LOGGER.debug("error");
             throw ERROR_GIVE_FAILED.create();
         } else {
             commandSourceStack.sendSuccess(Component.literal(String.format("%s players inventory", increment ? "Activated" : "Inactivated")), true);

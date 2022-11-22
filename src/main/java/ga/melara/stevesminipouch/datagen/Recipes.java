@@ -20,7 +20,6 @@ public class Recipes extends RecipeProvider {
     protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
 
         ShapedRecipeBuilder.shaped(ModRegistry.SLOT_ADD1_ITEM.get())
-                .group(MODID)
                 .define('S', Items.NETHER_STAR)
                 .define('C', Items.CHEST)
                 .define('X', Items.BREAD)
@@ -31,7 +30,6 @@ public class Recipes extends RecipeProvider {
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ModRegistry.SLOT_ADD9_ITEM.get())
-                .group(MODID)
                 .define('X', ModRegistry.SLOT_ADD1_ITEM.get())
                 .pattern("XXX")
                 .pattern("XXX")
@@ -40,7 +38,6 @@ public class Recipes extends RecipeProvider {
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ModRegistry.SLOT_ADD27_ITEM.get())
-                .group(MODID)
                 .define('X', ModRegistry.SLOT_ADD9_ITEM.get())
                 .pattern("XXX")
                 .pattern("XXX")
@@ -49,7 +46,6 @@ public class Recipes extends RecipeProvider {
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ModRegistry.SLOT_SUB1_ITEM.get())
-                .group(MODID)
                 .define('S', Items.NETHER_STAR)
                 .define('C', Items.CHEST)
                 .define('X', Items.BREAD)
@@ -60,7 +56,6 @@ public class Recipes extends RecipeProvider {
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ModRegistry.SLOT_SUB9_ITEM.get())
-                .group(MODID)
                 .define('X', ModRegistry.SLOT_SUB1_ITEM.get())
                 .pattern("XXX")
                 .pattern("XXX")
@@ -69,7 +64,6 @@ public class Recipes extends RecipeProvider {
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ModRegistry.SLOT_SUB27_ITEM.get())
-                .group(MODID)
                 .define('X', ModRegistry.SLOT_SUB9_ITEM.get())
                 .pattern("XXX")
                 .pattern("XXX")
@@ -78,7 +72,6 @@ public class Recipes extends RecipeProvider {
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ModRegistry.INVENTORY_ACTIVATE_ITEM.get())
-                .group(MODID)
                 .define('S', Items.WHEAT_SEEDS)
                 .define('X', Items.OAK_LOG)
                 .pattern("XXX")
@@ -88,7 +81,6 @@ public class Recipes extends RecipeProvider {
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ModRegistry.ARMOR_ACTIVATE_ITEM.get())
-                .group(MODID)
                 .define('S', Items.DIAMOND)
                 .define('X', Items.IRON_BLOCK)
                 .define('G', Items.AMETHYST_SHARD)
@@ -99,7 +91,6 @@ public class Recipes extends RecipeProvider {
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ModRegistry.OFFHAND_ACTIVATE_ITEM.get())
-                .group(MODID)
                 .define('S', Items.STICK)
                 .define('X', Items.MOSSY_COBBLESTONE)
                 .pattern("XSX")
@@ -109,7 +100,6 @@ public class Recipes extends RecipeProvider {
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ModRegistry.CRAFT_ACTIVATE_ITEM.get())
-                .group(MODID)
                 .define('E', Items.EMERALD_BLOCK)
                 .define('X', Items.IRON_INGOT)
                 .define('C', Items.CHEST)

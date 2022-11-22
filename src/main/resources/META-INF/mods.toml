@@ -1,17 +1,17 @@
 modLoader="javafml"
 loaderVersion="[43,)"
-license="All Rights Reserved"
+license="GNU GPL v3"
+showAsResourcePack=true
 # issueTrackerURL="http://my.issue.tracker/"
 
 [[mods]]
 modId="stevesminipouch"
 version="${file.jarVersion}"
 displayName="Steve's Mini Pouch"
-# updateJSONURL="https://www.curseforge.com/members/melara1024/projects"
 displayURL="https://www.curseforge.com/members/melara1024/projects"
+displayTest="MATCH_VERSION"
 logoFile="icon.png"
 authors="Melara1024"
-# displayTest="MATCH_VERSION"
 description='''This mod allows you to increase or decrease the number of slots and switch between inventory functions.More information will be posted on the Wiki on GitHub.'''
 
 [[dependencies.stevesminipouch]]
