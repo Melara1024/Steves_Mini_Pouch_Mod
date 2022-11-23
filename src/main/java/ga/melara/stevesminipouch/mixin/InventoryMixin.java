@@ -20,6 +20,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -93,6 +94,16 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @Final
     public Player player;
 
+    public boolean avoidMiniPouch()
+    {
+        // If an object inheriting from ServerPlayer fails, edit here.
+        if (this.player instanceof FakePlayer)
+        {
+            return true;
+        }
+        return true;
+    }
+
     public void initMiniPouch(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft) {
         this.effectSize = effectSize;
         setStorageSize(inventorySize, player);
@@ -129,6 +140,21 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))
     public void oninit(Player p_35983_, CallbackInfo ci) {
+        if (avoidMiniPouch())
+        {
+            inventorySize = 36;
+            enchantSize = 0;
+            effectSize = 0;
+            hotbarSize = 9;
+
+            maxPage = 0;
+
+            isActiveInventory = true;
+            isActiveArmor = true;
+            isActiveOffhand = true;
+            isActiveCraft = true;
+        }
+
         MinecraftForge.EVENT_BUS.register(this);
 
         // When the player first enters the world, it will be initialized according to the Config values.
@@ -138,7 +164,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             if (items.size() > 0) ((LockableItemStackList) items).lock(items.size() - 1 - i);
         }
 
-        armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, Config.DEFAULT_ARMOR.get());
+        armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, isActiveArmor);
         ((LockableItemStackList) armor).setObserver((detectItem) -> {
             // When there is a change in the list, this code is executed
             // Code to monitor the increase in slot enchantments.
@@ -148,7 +174,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             );
             updateStorageSize();
         });
-        offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, Config.DEFAULT_OFFHAND.get());
+        offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, isActiveOffhand);
 
         compartments.add(0, items);
         compartments.add(1, armor);
@@ -202,6 +228,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     public void setInventory(Player player, boolean change) {
         boolean setFlag = change;
         if (Config.FORCE_INVENTORY.get()) setFlag = Config.DEFAULT_INVENTORY.get();
+        if (avoidMiniPouch()) setFlag = true;
 
         if (!setFlag) {
             setArmor(this.player, false);
@@ -221,6 +248,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     public void setArmor(Player player, boolean change) {
         boolean setFlag = change;
         if (Config.FORCE_ARMOR.get()) setFlag = Config.DEFAULT_ARMOR.get();
+        if (avoidMiniPouch()) setFlag = true;
 
         if (setFlag)
             ((LockableItemStackList) armor).allOpen();
@@ -241,6 +269,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     public void setOffhand(Player player, boolean change) {
         boolean setFlag = change;
         if (Config.FORCE_OFFHAND.get()) setFlag = Config.DEFAULT_OFFHAND.get();
+        if (avoidMiniPouch()) setFlag = true;
 
         if (setFlag)
             ((LockableItemStackList) offhand).allOpen();
@@ -260,6 +289,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     public void setCraft(Player player, boolean change) {
         boolean setFlag = change;
         if (Config.FORCE_CRAFT.get()) setFlag = Config.DEFAULT_CRAFT.get();
+        if (avoidMiniPouch()) setFlag = true;
 
         this.isActiveCraft = setFlag;
         ((IMenuChangable) player.inventoryMenu).judgeCraftHiding(player);
@@ -304,6 +334,11 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             inventorySize = Config.MAX_SIZE.get();
         } else {
             inventorySize = Math.max(inventorySize + change, 1);
+        }
+        if (avoidMiniPouch()){
+            inventorySize = 36;
+            effectSize = 0;
+            enchantSize = 0;
         }
 
         LockableItemStackList newItems;
@@ -405,6 +440,21 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @Override
     public int getInventorySize() {
         return (inventorySize + effectSize + enchantSize);
+    }
+
+    @Override
+    public int getBaseSize(){
+        return inventorySize;
+    }
+
+    @Override
+    public int getEffectSize(){
+        return effectSize;
+    }
+
+    @Override
+    public int getEnchantSize(){
+        return enchantSize;
     }
 
     @Override

@@ -39,6 +39,12 @@ public interface ICustomInventory {
 
     int getInventorySize();
 
+    int getBaseSize();
+
+    int getEffectSize();
+
+    int getEnchantSize();
+
     int getHotbarSize();
 
     PlayerInventorySizeData getAllData();
