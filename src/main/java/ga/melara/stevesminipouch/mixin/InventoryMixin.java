@@ -3,6 +3,7 @@ package ga.melara.stevesminipouch.mixin;
 import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.ModRegistry;
 import ga.melara.stevesminipouch.event.ClientEffectSlotSyncEvent;
+import ga.melara.stevesminipouch.event.InitMenuEvent;
 import ga.melara.stevesminipouch.event.InventorySyncEvent;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.util.*;
@@ -13,6 +14,7 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
@@ -160,8 +162,14 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
             ((IMenuSynchronizer) this.player.containerMenu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
         }
-
         LOGGER.info("Constructer");
+    }
+
+    @SubscribeEvent
+    public void onInitMenu(InitMenuEvent e)
+    {
+        AbstractContainerMenu menu = e.getMenu();
+        ((IMenuSynchronizer) menu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
     }
 
 
@@ -377,6 +385,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             this.effectSize = e.getEffectSize();
             updateStorageSize();
         }
+        
     }
 
 
@@ -644,7 +653,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
         ((IMenuSynchronizer) this.player.containerMenu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
 
-        LOGGER.info("save");
+        LOGGER.warn("save");
 
         return tag;
     }
@@ -683,6 +692,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         initServer(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
         ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
 
-        LOGGER.info("load");
+        LOGGER.warn("load");
     }
 }

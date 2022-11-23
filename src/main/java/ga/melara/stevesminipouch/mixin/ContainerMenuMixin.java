@@ -1,5 +1,6 @@
 package ga.melara.stevesminipouch.mixin;
 
+import ga.melara.stevesminipouch.event.InitMenuEvent;
 import ga.melara.stevesminipouch.event.PageReduceEvent;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
@@ -22,6 +23,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 import java.util.List;
+
+import static ga.melara.stevesminipouch.StevesMiniPouch.LOGGER;
 
 @Mixin(AbstractContainerMenu.class)
 public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchronizer, ContainerSynchronizer {
@@ -59,6 +62,8 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     @Inject(method = "<init>", at = @At("RETURN"), cancellable = true)
     public void onConstruct(MenuType menuType, int pContainerId, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.post(new InitMenuEvent((AbstractContainerMenu) (Object) this));
+        LOGGER.info("menu init");
     }
 
     @SubscribeEvent
