@@ -1,5 +1,6 @@
 package ga.melara.stevesminipouch.mixin;
 
+import com.mojang.authlib.GameProfile;
 import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.ModRegistry;
 import ga.melara.stevesminipouch.event.ClientEffectSlotSyncEvent;
@@ -102,12 +103,11 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     @Shadow public abstract boolean contains(ItemStack pStack);
 
-    private String className;
-    private ArrayList<String> classList;
 
-    private String playerName;
+    private ArrayList<String> classList;
     private ArrayList<String> playerList;
-    private boolean avoidMiniPouch;
+    private boolean avoidMiniPouch = true;
+    private boolean decided = false;
     @Override
     public boolean avoidMiniPouch()
     {
@@ -115,7 +115,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         // Fixme Must be Rewrite
 
         // Mixin vanilla player inventory only, ignoring subclasses added by other mods
-        if (Objects.isNull(playerName) || Objects.isNull(className)){
+        if (!decided){
 
             //Avoid custom inventory for other mods that inherit inventory
 
@@ -127,12 +127,17 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             playerList = new ArrayList<>(Arrays.asList(
                     "net.minecraft.client.player.LocalPlayer",
                     "net.minecraft.server.level.ServerPlayer")){};
-            playerName = this.player.getClass().getName();
-            className = this.getClass().getName();
-            avoidMiniPouch = !(playerList.contains(playerName) && classList.contains(className));
+
+            Optional<String> playerName = Optional.ofNullable(this.player.getClass().getName());
+            Optional<String> className = Optional.ofNullable(this.getClass().getName());
+
+            if(playerName.isPresent() && className.isPresent()) avoidMiniPouch = !(playerList.contains(playerName.get()) && classList.contains(className.get()));
+            else avoidMiniPouch = false;
 
             if (avoidMiniPouch) LOGGER.warn(className + " is not compatible with Steve's Mini Pouch.");
             else LOGGER.info("Steve's Mini Pouch correctly applied to " + className);
+
+            decided = true;
         }
         return avoidMiniPouch;
     }
