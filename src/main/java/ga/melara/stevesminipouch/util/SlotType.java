@@ -18,18 +18,21 @@ public enum SlotType {
 
 
     public static void setType(Slot targetSlot) {
-        if(targetSlot.container instanceof Inventory) {
-            if(targetSlot.getSlotIndex() >= 0 && targetSlot.getSlotIndex() < 9) {
-                ((IHasSlotType) targetSlot).setType(SlotType.HOTBAR);
-            }
-            if(targetSlot.getSlotIndex() >= 9 && targetSlot.getSlotIndex() < 36) {
-                ((IHasSlotType) targetSlot).setType(SlotType.INVENTORY);
-            }
-            if(targetSlot.getSlotIndex() >= 36 && targetSlot.getSlotIndex() < 40) {
-                ((IHasSlotType) targetSlot).setType(SlotType.ARMOR);
-            }
-            if(targetSlot.getSlotIndex() == 40) {
-                ((IHasSlotType) targetSlot).setType(SlotType.OFFHAND);
+        if(targetSlot.container instanceof Inventory inventory) {
+
+            if (!((IInheritGuard)inventory).avoidMiniPouch()){
+                if(targetSlot.getSlotIndex() >= 0 && targetSlot.getSlotIndex() < 9) {
+                    ((IHasSlotType) targetSlot).setType(SlotType.HOTBAR);
+                }
+                if(targetSlot.getSlotIndex() >= 9 && targetSlot.getSlotIndex() < 36) {
+                    ((IHasSlotType) targetSlot).setType(SlotType.INVENTORY);
+                }
+                if(targetSlot.getSlotIndex() >= 36 && targetSlot.getSlotIndex() < 40) {
+                    ((IHasSlotType) targetSlot).setType(SlotType.ARMOR);
+                }
+                if(targetSlot.getSlotIndex() == 40) {
+                    ((IHasSlotType) targetSlot).setType(SlotType.OFFHAND);
+                }
             }
         }
         if(targetSlot.container instanceof CraftingContainer) {
