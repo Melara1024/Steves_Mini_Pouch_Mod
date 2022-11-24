@@ -5,44 +5,33 @@ import ga.melara.stevesminipouch.effect.SlotEffect;
 import ga.melara.stevesminipouch.enchant.SlotEnchant;
 import ga.melara.stevesminipouch.items.*;
 import ga.melara.stevesminipouch.items.slotitems.*;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.client.gui.screen.inventory.CreativeScreen;
+import net.minecraft.enchantment.Enchantment;
+
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.potion.Effect;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+
 
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
 @Mod.EventBusSubscriber
 public class ModRegistry {
-    public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab("tab_minipouch") {
+
+    public static final ItemGroup ITEM_GROUP = new ItemGroup("stevesminipouch") {
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(SLOT_ADD1_ITEM.get());
-        }
-
-        @Override
-        public void fillItemList(NonNullList<ItemStack> pItems) {
-            for(Item item : Registry.ITEM) {
-                pItems.sort((stack1, stack2) -> {
-                    if(stack1.getItem() instanceof FunctionFoodItem f1 && stack2.getItem() instanceof FunctionFoodItem f2) {
-                        return Integer.compare(f1.getRegistryNumber(), f2.getRegistryNumber());
-                    }
-                    return 0;
-                });
-                item.fillItemCategory(this, pItems);
-            }
+            return new ItemStack(ModRegistry.SLOT_ADD1_ITEM.get());
         }
     };
 
@@ -51,13 +40,13 @@ public class ModRegistry {
 
     private static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, MODID);
 
-    private static final DeferredRegister<MobEffect> EFFECT = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
+    //private static final DeferredRegister<Effect> EFFECT = DeferredRegister.create(ForgeRegistries.E, MODID);
 
     public static void registerItems() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ITEMS.register(eventBus);
         ENCHANTMENTS.register(eventBus);
-        EFFECT.register(eventBus);
+        //EFFECT.register(eventBus);
     }
 
     public static final RegistryObject<Item> SLOT_ADD1_ITEM = Add1SlotItem.buildInTo(ITEMS);
@@ -76,7 +65,7 @@ public class ModRegistry {
 
     public static final RegistryObject<Enchantment> SLOT_ENCHANT = SlotEnchant.buildInTo(ENCHANTMENTS);
 
-    public static final RegistryObject<MobEffect> SLOT_EFFECT = SlotEffect.buildInTo(EFFECT);
+    //public static final RegistryObject<Effect> SLOT_EFFECT = SlotEffect.buildInTo(EFFECT);
 
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {

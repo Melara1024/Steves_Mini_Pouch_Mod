@@ -2,9 +2,6 @@ package ga.melara.stevesminipouch.datagen;
 
 import ga.melara.stevesminipouch.ModRegistry;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.Items;
 
 import java.util.function.Consumer;

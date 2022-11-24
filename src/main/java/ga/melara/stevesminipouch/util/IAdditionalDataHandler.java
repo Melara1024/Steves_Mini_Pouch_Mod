@@ -1,18 +1,18 @@
 package ga.melara.stevesminipouch.util;
 
 import ga.melara.stevesminipouch.event.InventorySyncEvent;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 
 public interface IAdditionalDataHandler {
 
-    CompoundTag saveStatus(CompoundTag tag);
+    CompoundNBT saveStatus(CompoundNBT tag);
 
-    void loadStatus(CompoundTag tag);
+    void loadStatus(CompoundNBT tag);
 
-    ListTag saveAdditional(ListTag tag);
+    ListNBT saveAdditional(ListNBT tag);
 
-    void loadAdditional(ListTag tag);
+    void loadAdditional(ListNBT tag);
 
     void initClient(InventorySyncEvent e);
 }

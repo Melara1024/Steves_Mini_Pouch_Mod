@@ -1,28 +1,28 @@
 package ga.melara.stevesminipouch.items;
 
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.Food;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.Rarity;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 
 public class FunctionFoodItem extends Item {
-    public static FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
+    public static Food FOOD_PROPERTIES = new Food.Builder()
             .nutrition(2)
             .saturationMod(2)
             .alwaysEat()
-            .effect(() -> new MobEffectInstance(MobEffects.BLINDNESS, 20, 1), 1.0F)
+            .effect(() -> new EffectInstance(Effects.BLINDNESS, 20, 1), 1.0F)
             .build();
 
     public static Item.Properties ITEM_PROPERTIES = new Item.Properties()
-            .tab(CreativeModeTab.TAB_FOOD)
+            .tab(ItemGroup.TAB_FOOD)
             .rarity(Rarity.EPIC)
             .stacksTo(64)
             .food(FOOD_PROPERTIES);
 
-    public FunctionFoodItem(Properties properties) {
+    public FunctionFoodItem(Item.Properties properties) {
         super(properties);
     }
 

@@ -1,5 +1,6 @@
 package ga.melara.stevesminipouch.stats;
 
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
@@ -53,7 +54,7 @@ public class Messager {
         channel.sendToServer(message);
     }
 
-    public static <MSG> void sendToPlayer(MSG message, ServerPlayer player) {
+    public static <MSG> void sendToPlayer(MSG message, ServerPlayerEntity player) {
         channel.send(PacketDistributor.PLAYER.with(() -> player), message);
     }
 }
