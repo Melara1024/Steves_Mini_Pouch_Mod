@@ -33,8 +33,8 @@ public class MinecraftMixin {
         if(p_91153_ instanceof InventoryScreen && !((ICustomInventory) player.getInventory()).isActiveInventory()) {
             ItemStack main = player.getInventory().items.get(0);
             ItemStack offhand = player.getInventory().offhand.get(0);
-            String mainItem = main.getItem() == Items.AIR ? "nothing" : main.getItem().toString();
-            String offhandItem = offhand.getItem() == Items.AIR ? "nothing" : offhand.getItem().toString();
+            String mainItem = main.getItem() == Items.AIR ? "nothing" : main.getItem().getName(main).getString();
+            String offhandItem = offhand.getItem() == Items.AIR ? "nothing" : offhand.getItem().getName(offhand).getString();
 
             if(player.getLevel().isClientSide()) {
                 player.sendSystemMessage(Component.translatable("message.simple_inventory_1"));

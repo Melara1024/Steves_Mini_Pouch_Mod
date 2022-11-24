@@ -172,7 +172,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
             if(((IHasSlotType) slot).getType() == SlotType.UNDEFINED) SlotType.setType(slot);
 
-            // Stick "x" on an unusable slot.
+            // Render "x" on an unusable slot.
             if(!((ISlotHidable) slot).isShowing()) {
                 patchSlot(poseStack, slot);
             }
@@ -202,9 +202,9 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
     @SubscribeEvent
     public void onPageReduce(PageReduceEvent e) {
         page = 0;
-        Messager.sendToServer(new PageChangedPacket(page));
+        Messager.sendToServer(new PageChangedPacket(0));
         this.menu.slots.forEach(slot -> {
-            if(((IHasSlotType) slot).getType() == SlotType.INVENTORY) ((IHasSlotPage) slot).setPage(page);
+            if(((IHasSlotType) slot).getType() == SlotType.INVENTORY) ((IHasSlotPage) slot).setPage(0);
         });
     }
 

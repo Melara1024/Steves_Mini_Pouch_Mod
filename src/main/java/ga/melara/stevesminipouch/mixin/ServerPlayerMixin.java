@@ -19,14 +19,14 @@ public class ServerPlayerMixin {
     private StatsSynchronizer statsSynchronizer;
 
     @Inject(method = "initMenu", at = @At(value = "RETURN"), cancellable = true)
-    public void onInitMenu(AbstractContainerMenu p_143400_, CallbackInfo ci) {
+    public void onInitMenu(AbstractContainerMenu menu, CallbackInfo ci) {
 
-        if(p_143400_ instanceof InventoryMenu) {
+        if(menu instanceof InventoryMenu) {
             ServerPlayer player = (ServerPlayer) (Object) this;
 
             // When initMenu is executed, the data is not ready, so only the synchronizer is set.
             statsSynchronizer = data -> Messager.sendToPlayer(new InventorySyncPacket(data), player);
-            ((IMenuSynchronizer) p_143400_).setStatsSynchronizer(this.statsSynchronizer);
+            ((IMenuSynchronizer) menu).setStatsSynchronizer(this.statsSynchronizer);
         }
     }
 }

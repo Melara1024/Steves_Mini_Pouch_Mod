@@ -463,11 +463,11 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
 
     @Inject(method = "swapPaint(D)V", at = @At(value = "HEAD"), cancellable = true)
-    public void onSwapaint(double p_35989_, CallbackInfo ci) {
+    public void onSwapaint(double direction, CallbackInfo ci) {
 
         if(!avoidMiniPouch()){
             // When the hot bar is scrolled
-            int i = (int) Math.signum(p_35989_);
+            int i = (int) Math.signum(direction);
             for (this.selected -= i; this.selected < 0; this.selected += hotbarSize) {
             }
 
