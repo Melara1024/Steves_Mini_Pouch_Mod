@@ -192,12 +192,12 @@ public class SlotChangeCommand {
 
                     commandSourceStack.sendSuccess(Component.literal(String.format(
                             "-- %s's inventory stats --\n" +
-                            "Inventory:    %b\n" +
-                            "Armor:        %b\n" +
-                            "Offhand:      %b\n" +
-                            "Craft:        %b\n" +
-                            "Base Size:    %d\n" +
-                            "Effect Size:  %d\n" +
+                            "Inventory: %b\n" +
+                            "Armor: %b\n" +
+                            "Offhand: %b\n" +
+                            "Craft: %b\n" +
+                            "Base Size: %d\n" +
+                            "Effect Size: %d\n" +
                             "Enchant Size: %d",
                             player.getName().getString(),
                             inventory.isActiveInventory(),
