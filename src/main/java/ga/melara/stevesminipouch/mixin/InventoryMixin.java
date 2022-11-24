@@ -1,6 +1,5 @@
 package ga.melara.stevesminipouch.mixin;
 
-import com.mojang.authlib.GameProfile;
 import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.ModRegistry;
 import ga.melara.stevesminipouch.event.ClientEffectSlotSyncEvent;
@@ -8,12 +7,10 @@ import ga.melara.stevesminipouch.event.InitMenuEvent;
 import ga.melara.stevesminipouch.event.InventorySyncEvent;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.util.*;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -24,10 +21,10 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -74,8 +71,10 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
 
     // Compartments operations are prone to thread collisions and require synchronized.
+    @Final
     @Shadow
-    public List<NonNullList<ItemStack>> compartments = new CopyOnWriteArrayList<>() {
+    @Mutable
+    private List<NonNullList<ItemStack>> compartments = new CopyOnWriteArrayList<>() {
         @Override
         public Iterator<NonNullList<ItemStack>> iterator() {
             synchronized (this) {
@@ -104,8 +103,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @Shadow public abstract boolean contains(ItemStack pStack);
 
 
-    private ArrayList<String> classList;
-    private ArrayList<String> playerList;
     private boolean avoidMiniPouch = true;
     private boolean decided = false;
     @Override
@@ -119,14 +116,16 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
             //Avoid custom inventory for other mods that inherit inventory
 
-            classList = new ArrayList<>(Arrays.asList(
+            ArrayList<String> classList = new ArrayList<>(Arrays.asList(
                     "net.minecraft.world.entity.player.Inventory",
-                    "net.sistr.littlemaidrebirth.entity.LMInventorySupplier$LMInventory")){};
+                    "net.sistr.littlemaidrebirth.entity.LMInventorySupplier$LMInventory")) {
+            };
 
             //Avoid entities of other mods that inherit the player
-            playerList = new ArrayList<>(Arrays.asList(
+            ArrayList<String> playerList = new ArrayList<>(Arrays.asList(
                     "net.minecraft.client.player.LocalPlayer",
-                    "net.minecraft.server.level.ServerPlayer")){};
+                    "net.minecraft.server.level.ServerPlayer")) {
+            };
 
             Optional<String> playerName = Optional.ofNullable(this.player.getClass().getName());
             Optional<String> className = Optional.ofNullable(this.getClass().getName());
@@ -144,19 +143,21 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     public void initMiniPouch(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft) {
         this.effectSize = effectSize;
-        setStorageSize(inventorySize, player);
+        setStorageSize(inventorySize);
 
-        setInventory(player, isActiveInventory);
-        ((IMenuChangable) player.containerMenu).judgeInventoryHiding(player);
+        IMenuChangable menu = (IMenuChangable) player.containerMenu;
 
-        setArmor(player, isActiveArmor);
-        ((IMenuChangable) player.containerMenu).judgeArmorHiding(player);
+        setInventory(isActiveInventory);
+        menu.updateInventoryHiding(player);
 
-        setOffhand(player, isActiveOffhand);
-        ((IMenuChangable) player.containerMenu).judgeOffhandHiding(player);
+        setArmor(isActiveArmor);
+        menu.updateArmorHiding(player);
 
-        setCraft(player, isActiveCraft);
-        ((IMenuChangable) player.containerMenu).judgeCraftHiding(player);
+        setOffhand(isActiveOffhand);
+        menu.updateOffhandHiding(player);
+
+        setCraft(isActiveCraft);
+        menu.updateCraftHiding(player);
     }
 
     public void initServer(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft) {
@@ -268,27 +269,27 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
 
     @Override
-    public void setInventory(Player player, boolean change) {
+    public void setInventory(boolean change) {
         boolean setFlag = change;
         if (Config.FORCE_INVENTORY.get()) setFlag = Config.DEFAULT_INVENTORY.get();
         if (avoidMiniPouch()) setFlag = true;
 
         if (!setFlag) {
-            setArmor(this.player, false);
-            setCraft(this.player, false);
-            setStorageSize(1, this.player);
+            setArmor(false);
+            setCraft(false);
+            setStorageSize(1);
         }
         this.isActiveInventory = setFlag;
-        ((IMenuChangable) this.player.containerMenu).judgeInventoryHiding(this.player);
+        ((IMenuChangable) this.player.containerMenu).updateInventoryHiding(this.player);
     }
 
     @Override
-    public void toggleInventory(Player player) {
-        setInventory(this.player, !this.isActiveInventory);
+    public void toggleInventory() {
+        setInventory(!this.isActiveInventory);
     }
 
     @Override
-    public void setArmor(Player player, boolean change) {
+    public void setArmor(boolean change) {
         boolean setFlag = change;
         if (Config.FORCE_ARMOR.get()) setFlag = Config.DEFAULT_ARMOR.get();
         if (avoidMiniPouch()) setFlag = true;
@@ -299,17 +300,17 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             ((LockableItemStackList) armor).allLock();
 
         this.isActiveArmor = setFlag;
-        ((IMenuChangable) player.containerMenu).judgeArmorHiding(player);
+        ((IMenuChangable) player.containerMenu).updateArmorHiding(player);
     }
 
 
     @Override
-    public void toggleArmor(Player player) {
-        setArmor(this.player, !this.isActiveArmor);
+    public void toggleArmor() {
+        setArmor(!this.isActiveArmor);
     }
 
     @Override
-    public void setOffhand(Player player, boolean change) {
+    public void setOffhand(boolean change) {
         boolean setFlag = change;
         if (Config.FORCE_OFFHAND.get()) setFlag = Config.DEFAULT_OFFHAND.get();
         if (avoidMiniPouch()) setFlag = true;
@@ -320,29 +321,29 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             ((LockableItemStackList) offhand).allLock();
 
         this.isActiveOffhand = setFlag;
-        ((IMenuChangable) player.containerMenu).judgeOffhandHiding(player);
+        ((IMenuChangable) player.containerMenu).updateOffhandHiding(player);
     }
 
     @Override
-    public void toggleOffhand(Player player) {
-        setOffhand(this.player, !this.isActiveOffhand);
+    public void toggleOffhand() {
+        setOffhand(!this.isActiveOffhand);
     }
 
     @Override
-    public void setCraft(Player player, boolean change) {
+    public void setCraft(boolean change) {
         boolean setFlag = change;
         if (Config.FORCE_CRAFT.get()) setFlag = Config.DEFAULT_CRAFT.get();
         if (avoidMiniPouch()) setFlag = true;
 
         this.isActiveCraft = setFlag;
-        ((IMenuChangable) player.inventoryMenu).judgeCraftHiding(player);
-        ((IMenuChangable) player.containerMenu).judgeCraftHiding(player);
+        ((IMenuChangable) player.inventoryMenu).updateCraftHiding(player);
+        ((IMenuChangable) player.containerMenu).updateCraftHiding(player);
         ((ICraftingContainerChangable) player.inventoryMenu.getCraftSlots()).setCraft(this.isActiveCraft, player);
     }
 
     @Override
-    public void toggleCraft(Player player) {
-        setCraft(this.player, !this.isActiveCraft);
+    public void toggleCraft() {
+        setCraft(!this.isActiveCraft);
     }
 
     @Override
@@ -366,13 +367,13 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     }
 
     @Override
-    public void setStorageSize(int change, Player player) {
-        changeStorageSize(change - inventorySize, player);
+    public void setStorageSize(int change) {
+        changeStorageSize(change - inventorySize);
     }
 
 
     @Override
-    public void changeStorageSize(int change, Player player) {
+    public void changeStorageSize(int change) {
         if (Config.FORCE_SIZE.get() || inventorySize + change > Config.MAX_SIZE.get()) {
             inventorySize = Config.MAX_SIZE.get();
         } else {
@@ -438,7 +439,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @Override
     public void updateStorageSize() {
         // 0 argument can be used to update the number of slots for enchantments and effects.
-        changeStorageSize(0, player);
+        changeStorageSize(0);
     }
 
     @Override

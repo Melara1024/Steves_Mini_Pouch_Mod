@@ -25,52 +25,49 @@ public class SlotChangeCommand {
     public static void register(CommandDispatcher<CommandSourceStack> commandDispatcher) {
 
         commandDispatcher.register(Commands.literal("pouch")
-
-
-        .then(Commands.argument("targets", EntityArgument.entities()).requires((sender) -> {
-            return sender.hasPermission(0);
-        }).executes((command) -> {
+        .then(Commands.argument("targets", EntityArgument.entities())
+        .executes((command) -> {
             return showStats(command.getSource(), ImmutableList.of(command.getSource().getEntityOrException()));
 
 
         }).then(Commands.literal("inventory").requires((sender) -> {
             return sender.hasPermission(2);
-        }).executes((p_136982_) -> {
-            return setInventory(p_136982_.getSource(), EntityArgument.getEntities(p_136982_, "targets"), true);
-        }).then(Commands.argument("activate", BoolArgumentType.bool()).executes((p_136982_) -> {
-            return setInventory(p_136982_.getSource(), EntityArgument.getEntities(p_136982_, "targets"), BoolArgumentType.getBool(p_136982_, "activate"));
+        }).executes((command) -> {
+            return setInventory(command.getSource(), EntityArgument.getEntities(command, "targets"), true);
+        }).then(Commands.argument("activate", BoolArgumentType.bool()).executes((command) -> {
+            return setInventory(command.getSource(), EntityArgument.getEntities(command, "targets"), BoolArgumentType.getBool(command, "activate"));
 
 
         }))).then(Commands.literal("armor").requires((sender) -> {
             return sender.hasPermission(2);
-        }).executes((p_136980_) -> {
-            return setArmor(p_136980_.getSource(), EntityArgument.getEntities(p_136980_, "targets"), true);
-        }).then(Commands.argument("activate", BoolArgumentType.bool()).executes((p_136982_) -> {
-            return setArmor(p_136982_.getSource(), EntityArgument.getEntities(p_136982_, "targets"), BoolArgumentType.getBool(p_136982_, "activate"));
+        }).executes((command) -> {
+            return setArmor(command.getSource(), EntityArgument.getEntities(command, "targets"), true);
+        }).then(Commands.argument("activate", BoolArgumentType.bool()).executes((command) -> {
+            return setArmor(command.getSource(), EntityArgument.getEntities(command, "targets"), BoolArgumentType.getBool(command, "activate"));
 
 
         }))).then(Commands.literal("offhand").requires((sender) -> {
             return sender.hasPermission(2);
-        }).executes((p_136976_) -> {
-            return setOffhand(p_136976_.getSource(), EntityArgument.getEntities(p_136976_, "targets"), true);
-        }).then(Commands.argument("activate", BoolArgumentType.bool()).executes((p_136982_) -> {
-            return setOffhand(p_136982_.getSource(), EntityArgument.getEntities(p_136982_, "targets"), BoolArgumentType.getBool(p_136982_, "activate"));
+        }).executes((command) -> {
+            return setOffhand(command.getSource(), EntityArgument.getEntities(command, "targets"), true);
+        }).then(Commands.argument("activate", BoolArgumentType.bool()).executes((command) -> {
+            return setOffhand(command.getSource(), EntityArgument.getEntities(command, "targets"), BoolArgumentType.getBool(command, "activate"));
 
 
         }))).then(Commands.literal("craft").requires((sender) -> {
             return sender.hasPermission(2);
-        }).executes((p_136974_) -> {
-            return setCraft(p_136974_.getSource(), EntityArgument.getEntities(p_136974_, "targets"), true);
-        }).then(Commands.argument("activate", BoolArgumentType.bool()).executes((p_136982_) -> {
-            return setCraft(p_136982_.getSource(), EntityArgument.getEntities(p_136982_, "targets"), BoolArgumentType.getBool(p_136982_, "activate"));
+        }).executes((command) -> {
+            return setCraft(command.getSource(), EntityArgument.getEntities(command, "targets"), true);
+        }).then(Commands.argument("activate", BoolArgumentType.bool()).executes((command) -> {
+            return setCraft(command.getSource(), EntityArgument.getEntities(command, "targets"), BoolArgumentType.getBool(command, "activate"));
 
 
         }))).then(Commands.literal("slot").requires((sender) -> {
             return sender.hasPermission(2);
-        }).executes((p_136956_) -> {
-            return setSlot(p_136956_.getSource(), EntityArgument.getEntities(p_136956_, "targets"), 1);
-        }).then(Commands.argument("size", IntegerArgumentType.integer(1, Integer.MAX_VALUE)).executes((p_136982_) -> {
-            return setSlot(p_136982_.getSource(), EntityArgument.getEntities(p_136982_, "targets"), IntegerArgumentType.getInteger(p_136982_, "size"));
+        }).executes((command) -> {
+            return setSlot(command.getSource(), EntityArgument.getEntities(command, "targets"), 1);
+        }).then(Commands.argument("size", IntegerArgumentType.integer(1, Integer.MAX_VALUE)).executes((command) -> {
+            return setSlot(command.getSource(), EntityArgument.getEntities(command, "targets"), IntegerArgumentType.getInteger(command, "size"));
 
 
         }))).then(Commands.literal("stats").requires((sender) -> {
@@ -81,11 +78,11 @@ public class SlotChangeCommand {
         }))));
     }
 
-    private static int setInventory(CommandSourceStack commandSourceStack, Collection<? extends Entity> entities, boolean increment) throws CommandSyntaxException {
+    private static int setInventory(CommandSourceStack commandSourceStack, Collection<? extends Entity> entities, boolean activate) throws CommandSyntaxException {
         int applied = 0;
         for(Entity entity : entities) {
             if(entity instanceof ServerPlayer player) {
-                ((ICustomInventory) player.getInventory()).setInventory(player, increment);
+                ((ICustomInventory) player.getInventory()).setInventory(activate);
                 Inventory inventory = player.getInventory();
                 Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData()), player);
                 applied++;
@@ -95,16 +92,16 @@ public class SlotChangeCommand {
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
-            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's inventory", increment ? "Activated" : "Inactivated")), true);
+            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's inventory", activate ? "Activated" : "Inactivated")), true);
             return applied;
         }
     }
 
-    private static int setArmor(CommandSourceStack commandSourceStack, Collection<? extends Entity> entities, boolean increment) throws CommandSyntaxException {
+    private static int setArmor(CommandSourceStack commandSourceStack, Collection<? extends Entity> entities, boolean activate) throws CommandSyntaxException {
         int applied = 0;
         for(Entity entity : entities) {
             if(entity instanceof ServerPlayer player) {
-                ((ICustomInventory) player.getInventory()).setArmor(player, increment);
+                ((ICustomInventory) player.getInventory()).setArmor(activate);
                 Inventory inventory = player.getInventory();
                 Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData()), player);
                 applied++;
@@ -114,16 +111,16 @@ public class SlotChangeCommand {
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
-            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's armor", increment ? "Activated" : "Inactivated")), true);
+            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's armor", activate ? "Activated" : "Inactivated")), true);
             return applied;
         }
     }
 
-    private static int setOffhand(CommandSourceStack commandSourceStack, Collection<? extends Entity> entities, boolean increment) throws CommandSyntaxException {
+    private static int setOffhand(CommandSourceStack commandSourceStack, Collection<? extends Entity> entities, boolean activate) throws CommandSyntaxException {
         int applied = 0;
         for(Entity entity : entities) {
             if(entity instanceof ServerPlayer player) {
-                ((ICustomInventory) player.getInventory()).setOffhand(player, increment);
+                ((ICustomInventory) player.getInventory()).setOffhand(activate);
                 Inventory inventory = player.getInventory();
                 Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData()), player);
                 applied++;
@@ -133,16 +130,16 @@ public class SlotChangeCommand {
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
-            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's offhand", increment ? "Activated" : "Inactivated")), true);
+            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's offhand", activate ? "Activated" : "Inactivated")), true);
             return applied;
         }
     }
 
-    private static int setCraft(CommandSourceStack commandSourceStack, Collection<? extends Entity> entities, boolean increment) throws CommandSyntaxException {
+    private static int setCraft(CommandSourceStack commandSourceStack, Collection<? extends Entity> entities, boolean activate) throws CommandSyntaxException {
         int applied = 0;
         for(Entity entity : entities) {
             if(entity instanceof ServerPlayer player) {
-                ((ICustomInventory) player.getInventory()).setCraft(player, increment);
+                ((ICustomInventory) player.getInventory()).setCraft(activate);
                 Inventory inventory = player.getInventory();
                 Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData()), player);
                 applied++;
@@ -152,7 +149,7 @@ public class SlotChangeCommand {
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
-            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's crafting ability", increment ? "Activated" : "Inactivated")), true);
+            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's crafting ability", activate ? "Activated" : "Inactivated")), true);
             return applied;
         }
     }
@@ -161,7 +158,7 @@ public class SlotChangeCommand {
         int applied = 0;
         for(Entity entity : entities) {
             if(entity instanceof ServerPlayer player) {
-                ((ICustomInventory) player.getInventory()).setStorageSize(increment, player);
+                ((ICustomInventory) player.getInventory()).setStorageSize(increment);
                 Inventory inventory = player.getInventory();
                 Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData()), player);
                 applied++;
@@ -179,7 +176,7 @@ public class SlotChangeCommand {
     private static int showStats(CommandSourceStack commandSourceStack, Collection<? extends Entity> entities) throws CommandSyntaxException {
         int applied = 0;
         for(Entity entity : entities) {
-            if(entity instanceof ServerPlayer player) {
+            if(entity instanceof ServerPlayer) {
                 applied++;
             }
         }

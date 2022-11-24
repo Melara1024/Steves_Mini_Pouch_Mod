@@ -5,7 +5,7 @@ import net.minecraftforge.eventbus.api.Event;
 public class ClientEffectSlotSyncEvent extends Event {
     private final int size;
 
-    // Event when a slot is added by an effect.
+    // Event when slots are added by slot effect.
     public ClientEffectSlotSyncEvent(int increment) {
         this.size = increment;
     }

@@ -28,10 +28,10 @@ public class ArmorActivateItem extends FunctionFoodItem {
     @Override
     public void onEat(LivingEntity entity) {
         if(!(entity instanceof Player player)) return;
-        ((ICustomInventory) player.getInventory()).toggleArmor(player);
+        ICustomInventory inventory = (ICustomInventory) player.getInventory();
+        inventory.toggleArmor();
         if(!(player instanceof ServerPlayer serverPlayer)) return;
-        Inventory inventory = player.getInventory();
-        Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData()), serverPlayer);
+        Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData()), serverPlayer);
     }
 
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {

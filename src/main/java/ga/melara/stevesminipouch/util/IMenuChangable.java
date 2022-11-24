@@ -4,13 +4,13 @@ import net.minecraft.world.entity.player.Player;
 
 public interface IMenuChangable {
 
-    void judgeInventoryHiding(Player player);
+    void updateInventoryHiding(Player player);
 
-    void judgeArmorHiding(Player player);
+    void updateArmorHiding(Player player);
 
-    void judgeCraftHiding(Player player);
+    void updateCraftHiding(Player player);
 
-    void judgeOffhandHiding(Player player);
+    void updateOffhandHiding(Player player);
 
     void judgePageReduction(int change, int maxpage, Player player);
 }

@@ -24,8 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static ga.melara.stevesminipouch.StevesMiniPouch.LOGGER;
-
 @Mixin(AbstractContainerMenu.class)
 public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchronizer, ContainerSynchronizer {
 
@@ -90,16 +88,16 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
 
     @Override
-    public void judgeInventoryHiding(Player player) {
+    public void updateInventoryHiding(Player player) {
         if(!((ICustomInventory) player.getInventory()).isActiveInventory()) {
-            judgeArmorHiding(player);
-            judgeCraftHiding(player);
+            updateArmorHiding(player);
+            updateCraftHiding(player);
         }
     }
 
 
     @Override
-    public void judgeArmorHiding(Player player) {
+    public void updateArmorHiding(Player player) {
         for(Slot slot : this.slots) {
             if(((IHasSlotType) slot).getType() == SlotType.ARMOR) {
                 if(!((ICustomInventory) player.getInventory()).isActiveArmor()) ((ISlotHidable) slot).hide();
@@ -109,7 +107,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     }
 
     @Override
-    public void judgeCraftHiding(Player player) {
+    public void updateCraftHiding(Player player) {
         for(Slot slot : this.slots) {
             if(((IHasSlotType) slot).getType() == SlotType.CRAFT || ((IHasSlotType) slot).getType() == SlotType.RESULT) {
                 if(!((ICustomInventory) player.getInventory()).isActiveCraft()) ((ISlotHidable) slot).hide();
@@ -119,7 +117,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     }
 
     @Override
-    public void judgeOffhandHiding(Player player) {
+    public void updateOffhandHiding(Player player) {
         for(Slot slot : this.slots) {
             if(((IHasSlotType) slot).getType() == SlotType.OFFHAND) {
                 if(!((ICustomInventory) player.getInventory()).isActiveOffhand()) ((ISlotHidable) slot).hide();

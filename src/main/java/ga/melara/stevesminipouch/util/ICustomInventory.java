@@ -5,17 +5,17 @@ import net.minecraft.world.entity.player.Player;
 
 public interface ICustomInventory {
 
-    void setInventory(Player player, boolean set);
-    void toggleInventory(Player player);
+    void setInventory(boolean set);
+    void toggleInventory();
 
-    void setArmor(Player player, boolean set);
-    void toggleArmor(Player player);
+    void setArmor(boolean set);
+    void toggleArmor();
 
-    void setOffhand(Player player, boolean set);
-    void toggleOffhand(Player player);
+    void setOffhand(boolean set);
+    void toggleOffhand();
 
-    void setCraft(Player player, boolean set);
-    void toggleCraft(Player player);
+    void setCraft(boolean set);
+    void toggleCraft();
 
     boolean isActiveInventory();
 
@@ -25,9 +25,9 @@ public interface ICustomInventory {
 
     boolean isActiveCraft();
 
-    void setStorageSize(int set, Player player);
+    void setStorageSize(int set);
 
-    void changeStorageSize(int change, Player player);
+    void changeStorageSize(int change);
 
     void updateStorageSize();
 
