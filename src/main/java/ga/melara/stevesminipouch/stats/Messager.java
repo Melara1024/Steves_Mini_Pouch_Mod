@@ -33,19 +33,19 @@ public class Messager {
         net.messageBuilder(PageChangedPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(PageChangedPacket::new)
                 .encoder(PageChangedPacket::toBytes)
-                .consumerMainThread(PageChangedPacket::handle)
+                .consumer(PageChangedPacket::handle)
                 .add();
 
         net.messageBuilder(InventorySyncPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(InventorySyncPacket::new)
                 .encoder(InventorySyncPacket::toBytes)
-                .consumerMainThread(InventorySyncPacket::handle)
+                .consumer(InventorySyncPacket::handle)
                 .add();
 
         net.messageBuilder(EffectSlotSyncPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(EffectSlotSyncPacket::new)
                 .encoder(EffectSlotSyncPacket::toBytes)
-                .consumerMainThread(EffectSlotSyncPacket::handle)
+                .consumer(EffectSlotSyncPacket::handle)
                 .add();
     }
 

@@ -3,6 +3,7 @@ package ga.melara.stevesminipouch.mixin;
 import ga.melara.stevesminipouch.items.*;
 import ga.melara.stevesminipouch.util.ICustomInventory;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -32,7 +33,7 @@ public class LivingEntityMixin {
             if((itemStack.getItem() instanceof SlotItem || itemStack.getItem() instanceof CraftActivatItem || itemStack.getItem() instanceof ArmorActivateItem)
                     && !((ICustomInventory) player.getInventory()).isActiveInventory()) {
                 if(player.getLevel().isClientSide())
-                    player.sendSystemMessage(Component.translatable("message.useless"));
+                    player.sendMessage(new TranslatableComponent("message.useless"), player.getUUID());
                 cir.setReturnValue(itemStack);
             }
         }

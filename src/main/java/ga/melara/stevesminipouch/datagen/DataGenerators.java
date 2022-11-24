@@ -1,9 +1,9 @@
 package ga.melara.stevesminipouch.datagen;
 
 import net.minecraft.data.DataGenerator;
-import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
@@ -13,9 +13,9 @@ public class DataGenerators {
     public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
 
-        generator.addProvider(event.includeServer(), new Recipes(generator));
+        generator.addProvider(new Recipes(generator));
 
-        generator.addProvider(event.includeClient(), new ItemModels(generator, event.getExistingFileHelper()));
-        generator.addProvider(event.includeClient(), new Language(generator, "en_us"));
+        generator.addProvider(new ItemModels(generator, event.getExistingFileHelper()));
+        generator.addProvider(new Language(generator, "en_us"));
     }
 }

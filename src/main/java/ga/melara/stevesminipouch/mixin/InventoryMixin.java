@@ -17,6 +17,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -209,8 +211,9 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             // Code to monitor the increase in slot enchantments.
             enchantSize = 0;
             armor.forEach(
-                    (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
+                    (item) -> enchantSize += EnchantmentHelper.getItemEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get(), item)
             );
+
             updateStorageSize();
         });
         offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, isActiveOffhand);

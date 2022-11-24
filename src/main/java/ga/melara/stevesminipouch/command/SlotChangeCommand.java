@@ -13,6 +13,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
@@ -20,7 +22,7 @@ import net.minecraft.world.entity.player.Inventory;
 import java.util.Collection;
 
 public class SlotChangeCommand {
-    private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("command.failed"));
+    private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(new TranslatableComponent("command.failed"));
 
     public static void register(CommandDispatcher<CommandSourceStack> commandDispatcher) {
 
@@ -92,7 +94,7 @@ public class SlotChangeCommand {
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
-            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's inventory", activate ? "Activated" : "Inactivated")), true);
+            commandSourceStack.sendSuccess(new TextComponent(String.format("%s player's inventory", activate ? "Activated" : "Inactivated")), true);
             return applied;
         }
     }
@@ -111,7 +113,7 @@ public class SlotChangeCommand {
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
-            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's armor", activate ? "Activated" : "Inactivated")), true);
+            commandSourceStack.sendSuccess(new TextComponent(String.format("%s player's armor", activate ? "Activated" : "Inactivated")), true);
             return applied;
         }
     }
@@ -130,7 +132,7 @@ public class SlotChangeCommand {
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
-            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's offhand", activate ? "Activated" : "Inactivated")), true);
+            commandSourceStack.sendSuccess(new TextComponent(String.format("%s player's offhand", activate ? "Activated" : "Inactivated")), true);
             return applied;
         }
     }
@@ -149,7 +151,7 @@ public class SlotChangeCommand {
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
-            commandSourceStack.sendSuccess(Component.literal(String.format("%s player's crafting ability", activate ? "Activated" : "Inactivated")), true);
+            commandSourceStack.sendSuccess(new TextComponent(String.format("%s player's crafting ability", activate ? "Activated" : "Inactivated")), true);
             return applied;
         }
     }
@@ -168,7 +170,7 @@ public class SlotChangeCommand {
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
-                commandSourceStack.sendSuccess(Component.literal(String.format("Set inventory size to %d slots.", increment)), true);
+                commandSourceStack.sendSuccess(new TranslatableComponent(String.format("Set inventory size to %d slots.", increment)), true);
             return applied;
         }
     }
@@ -190,7 +192,7 @@ public class SlotChangeCommand {
                 if(entity instanceof ServerPlayer player) {
                     ICustomInventory inventory = ((ICustomInventory)player.getInventory());
 
-                    commandSourceStack.sendSuccess(Component.literal(String.format(
+                    commandSourceStack.sendSuccess(new TextComponent(String.format(
                             "-- %s's inventory stats --\n" +
                             "Inventory: %b\n" +
                             "Armor: %b\n" +

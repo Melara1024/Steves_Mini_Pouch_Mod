@@ -28,9 +28,14 @@ public class CraftingContainerMixin implements ICraftingContainerChangable {
     @Mutable
     private NonNullList<ItemStack> items;
 
+    @Shadow
+    @Final
+    @Mutable
+    private AbstractContainerMenu menu;
+
     @Override
     public void setCraft(boolean isActiveCraft, Player player) {
-        if(!(((CraftingContainer) (Object) this).menu instanceof InventoryMenu)) return;
+        if(!(menu instanceof InventoryMenu)) return;
 
         if(!isActiveCraft) {
             // Handling of loss of crafting ability when an item is present in a crafting slot.
@@ -43,13 +48,13 @@ public class CraftingContainerMixin implements ICraftingContainerChangable {
             }
             if(items instanceof LockableItemStackList lockable) lockable.allLock();
             else
-                items = LockableItemStackList.withSize(4, ((InventoryMenu) ((CraftingContainer) (Object) this).menu).owner.getInventory(), true);
+                items = LockableItemStackList.withSize(4, ((InventoryMenu) menu).owner.getInventory(), true);
             this.isActiveCraft = false;
             return;
         }
         if(items instanceof LockableItemStackList lockable) lockable.allOpen();
         else
-            items = LockableItemStackList.withSize(4, ((InventoryMenu) ((CraftingContainer) (Object) this).menu).owner.getInventory(), false);
+            items = LockableItemStackList.withSize(4, ((InventoryMenu) menu).owner.getInventory(), false);
         this.isActiveCraft = true;
     }
 

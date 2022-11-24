@@ -13,6 +13,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -92,7 +93,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
         // Page change button settings
         upButton = new Button(buttonX, buttonY, 18, 18,
-                Component.literal("▲"), (button) -> {
+                new TextComponent("▲"), (button) -> {
             previousPage();
             Messager.sendToServer(new PageChangedPacket(page));
             this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
@@ -100,12 +101,12 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
         // Button only for page display
         pageIndicator = new Button(buttonX, buttonY + upButton.getHeight(), 18, 18,
-                Component.literal(String.valueOf(page + 1)), (button) -> {
+                new TextComponent(String.valueOf(page + 1)), (button) -> {
         });
         pageIndicator.active = false;
 
         downButton = new Button(buttonX, buttonY + upButton.getHeight() + pageIndicator.getHeight(), 18, 18,
-                Component.literal("▼"), (button) -> {
+                new TextComponent("▼"), (button) -> {
             nextPage();
             Messager.sendToServer(new PageChangedPacket(page));
             this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
@@ -148,7 +149,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
             upButton.renderButton(poseStack, mouseX, mouseY, partialTick);
             downButton.renderButton(poseStack, mouseX, mouseY, partialTick);
-            pageIndicator.setMessage(Component.literal(String.valueOf(page + 1)));
+            pageIndicator.setMessage(new TextComponent(String.valueOf(page + 1)));
             pageIndicator.renderButton(poseStack, mouseX, mouseY, partialTick);
 
         } else {
