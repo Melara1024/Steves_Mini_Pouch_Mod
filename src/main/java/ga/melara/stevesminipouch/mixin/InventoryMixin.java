@@ -379,7 +379,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @Override
     public void changeStorageSize(int change) {
 
-        System.out.println("change storage size");
         if (Config.FORCE_SIZE.get() || inventorySize + change > Config.MAX_SIZE.get()) {
             inventorySize = Config.MAX_SIZE.get();
         } else {
@@ -452,7 +451,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     public void changeEffectSize(int change) {
         // Server-side effect slots are handled here
 
-        System.out.println("change effect size");
         synchronized (compartments) {
             this.effectSize = change;
             updateStorageSize();
@@ -464,7 +462,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     public void syncEffectSizeToClient(ClientEffectSlotSyncEvent e) {
         // Client-side effect slots are handled here
 
-        System.out.println("change effect size");
         synchronized (compartments) {
             this.effectSize = e.getEffectSize();
             updateStorageSize();
@@ -814,9 +811,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                 !Config.FORCE_INVENTORY.get() && (Config.FORCE_CRAFT.get() ? Config.DEFAULT_CRAFT.get() :
                         tag.contains("craft") ? tag.getBoolean("craft") : Config.DEFAULT_CRAFT.get());
 
-        System.out.println("server data load");
-        System.out.println(isActiveArmor);
-        System.out.println(isActiveOffhand);
         initServer(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
         ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
     }

@@ -46,8 +46,6 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
                 itementity.setDefaultPickUpDelay();
                 itementity.setThrower(entity.getUUID());
                 level.addFreshEntity(itementity);
-                System.out.println("locklist stash!!");
-                System.out.println(item.getItem());
                 LockableItemStackList.this.set(index, ItemStack.EMPTY);
             }
             return super.set(index, element);
@@ -111,10 +109,6 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
     public ItemStack set(int id, ItemStack itemStack) {
         // If the slot is locked, throw the item in its place.
         if(lockList.get(id)) {
-
-            System.out.println("stash!!");
-            System.out.println(itemStack.getItem());
-
             World level = inventory.player.level;
             PlayerEntity entity = inventory.player;
             ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), itemStack);
