@@ -1,9 +1,9 @@
 package ga.melara.stevesminipouch.stats;
 
 import ga.melara.stevesminipouch.event.ServerPageChangeEvent;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -15,11 +15,11 @@ public class PageChangedPacket {
         this.page = page;
     }
 
-    public PageChangedPacket(FriendlyByteBuf buf) {
+    public PageChangedPacket(PacketBuffer buf) {
         this.page = buf.readInt();
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeInt(this.page);
     }
 

@@ -1,10 +1,9 @@
 package ga.melara.stevesminipouch.mixin;
 
-import ga.melara.stevesminipouch.StevesMiniPouch;
 import ga.melara.stevesminipouch.util.*;
-import net.minecraft.world.Container;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -30,7 +29,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
     @Final
     @Shadow
     @Mutable
-    public Container container;
+    public IInventory container;
 
 
     @Shadow
@@ -86,12 +85,13 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
     public void setHiding() {
         Slot target = (Slot) (Object) this;
 
-        Container container = target.container;
+        IInventory container = target.container;
         int page = ((IHasSlotPage) target).getPage();
         SlotType type = ((IHasSlotType) target).getType();
         int slot = target.getSlotIndex();
 
-        if(container instanceof ICustomInventory inventory) {
+        if(container instanceof ICustomInventory) {
+            ICustomInventory inventory = (ICustomInventory) container;
             if(type == SlotType.INVENTORY) {
                 if(slot + 27 * page < inventory.getInventorySize()) {
                     ((ISlotHidable) target).show();
@@ -114,7 +114,8 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
                     ((ISlotHidable) target).show();
                 } else ((ISlotHidable) target).hide();
             }
-        } else if(container instanceof ICraftingContainerChangable craftingContainer) {
+        } else if(container instanceof ICraftingContainerChangable) {
+            ICraftingContainerChangable craftingContainer = (ICraftingContainerChangable) container;
             if(type == SlotType.CRAFT) {
                 if(craftingContainer.isActivateCraft()) {
                     ((ISlotHidable) target).show();
@@ -128,7 +129,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
         if(!this.isShowing()) cir.setReturnValue(false);
     }
 
-    @Inject(method = "mayPlace(Lnet/minecraft/world/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "mayPlace", at = @At("HEAD"), cancellable = true)
     public void onCallMayPlace(CallbackInfoReturnable<Boolean> cir) {
         if(!this.isShowing()) cir.setReturnValue(false);
     }
@@ -163,7 +164,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
         }
     }
 
-    @Inject(method = "set(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "set", at = @At("HEAD"), cancellable = true)
     public void onSetItem(ItemStack itemStack, CallbackInfo ci) {
         if(this.type == SlotType.INVENTORY && page > 0) {
             if(this.slot + 27 * page < ((ICustomInventory) container).getInventorySize()) {
@@ -183,7 +184,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
         }
     }
 
-    @Inject(method = "getItem()Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getItem", at = @At("HEAD"), cancellable = true)
     public void onGetItem(CallbackInfoReturnable<ItemStack> cir) {
         if(this.type == SlotType.INVENTORY && page > 0) {
             if(this.slot + 27 * page < ((ICustomInventory) container).getInventorySize()) {
@@ -201,7 +202,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
         }
     }
 
-    @Inject(method = "remove(I)Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "remove", at = @At("HEAD"), cancellable = true)
     public void onRemoveItem(int p_40227_, CallbackInfoReturnable<ItemStack> cir) {
         if(this.type == SlotType.INVENTORY && page > 0) {
             if(this.slot + 27 * page < ((ICustomInventory) container).getInventorySize()) {

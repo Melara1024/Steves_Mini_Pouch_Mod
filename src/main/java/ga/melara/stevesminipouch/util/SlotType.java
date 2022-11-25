@@ -1,11 +1,13 @@
 package ga.melara.stevesminipouch.util;
 
-import net.minecraft.world.Container;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.inventory.ResultSlot;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.CraftResultInventory;
+import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.container.CraftingResultSlot;
+import net.minecraft.inventory.container.PlayerContainer;
+import net.minecraft.inventory.container.Slot;
+
 
 public enum SlotType {
     INVENTORY,
@@ -18,7 +20,8 @@ public enum SlotType {
 
 
     public static void setType(Slot targetSlot) {
-        if(targetSlot.container instanceof Inventory inventory) {
+        if(targetSlot.container instanceof PlayerInventory) {
+            PlayerInventory inventory = (PlayerInventory) targetSlot.container;
 
             if (!((IInheritGuard)inventory).avoidMiniPouch()){
                 if(targetSlot.getSlotIndex() >= 0 && targetSlot.getSlotIndex() < 9) {
@@ -35,12 +38,12 @@ public enum SlotType {
                 }
             }
         }
-        if(targetSlot.container instanceof CraftingContainer) {
-            if(((CraftingContainer) targetSlot.container).menu instanceof InventoryMenu) {
+        if(targetSlot.container instanceof CraftingInventory) {
+            if(((CraftingInventory) targetSlot.container).menu instanceof Inventory) {
                 ((IHasSlotType) targetSlot).setType(SlotType.CRAFT);
             }
         }
-        if(targetSlot instanceof ResultSlot) {
+        if(targetSlot instanceof CraftingResultSlot) {
             ((IHasSlotType) targetSlot).setType(SlotType.RESULT);
         }
     }

@@ -2,10 +2,11 @@ package ga.melara.stevesminipouch.items.slotitems;
 
 import ga.melara.stevesminipouch.ModRegistry;
 import ga.melara.stevesminipouch.items.SlotItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
+import net.minecraft.item.Item;
+import net.minecraft.item.Rarity;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+
 
 public class Sub9SlotItem extends SlotItem {
     public static Item.Properties PROPERTIES = new Item.Properties()

@@ -1,7 +1,7 @@
 package ga.melara.stevesminipouch.event;
 
 import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.event.IModBusEvent;
+import net.minecraftforge.fml.event.lifecycle.IModBusEvent;
 
 public class ServerPageChangeEvent extends Event implements IModBusEvent {
     private final int page;

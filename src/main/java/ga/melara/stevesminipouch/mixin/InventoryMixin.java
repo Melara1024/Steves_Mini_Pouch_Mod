@@ -7,19 +7,16 @@ import ga.melara.stevesminipouch.event.InitMenuEvent;
 import ga.melara.stevesminipouch.event.InventorySyncEvent;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.util.*;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.Level;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.NonNullList;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,13 +30,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.management.ListenerNotFoundException;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static ga.melara.stevesminipouch.StevesMiniPouch.LOGGER;
+import static net.minecraft.inventory.ItemStackHelper.removeItem;
 
 
-@Mixin(Inventory.class)
+@Mixin(PlayerInventory.class)
 public abstract class InventoryMixin implements ICustomInventory, IAdditionalDataHandler, IInheritGuard {
 
 
@@ -76,7 +77,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @Final
     @Shadow
     @Mutable
-    private List<NonNullList<ItemStack>> compartments = new CopyOnWriteArrayList<>() {
+    private List<NonNullList<ItemStack>> compartments = new CopyOnWriteArrayList<NonNullList<ItemStack>>() {
         @Override
         public Iterator<NonNullList<ItemStack>> iterator() {
             synchronized (this) {
@@ -97,9 +98,8 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     @Shadow
     @Final
-    public Player player;
+    public PlayerEntity player;
 
-    @Shadow public abstract Component getName();
 
 
     @Shadow public abstract boolean contains(ItemStack pStack);
@@ -118,15 +118,16 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
             //Avoid custom inventory for other mods that inherit inventory
 
-            ArrayList<String> classList = new ArrayList<>(Arrays.asList(
-                    "net.minecraft.world.entity.player.Inventory",
+            ArrayList<String> classList = new ArrayList<String>(Arrays.asList(
+                    "net.minecraft.entity.player.PlayerInventory",
                     "net.sistr.littlemaidrebirth.entity.LMInventorySupplier$LMInventory")) {
             };
 
             //Avoid entities of other mods that inherit the player
-            ArrayList<String> playerList = new ArrayList<>(Arrays.asList(
-                    "net.minecraft.client.player.LocalPlayer",
-                    "net.minecraft.server.level.ServerPlayer")) {
+            ArrayList<String> playerList = new ArrayList<String>(Arrays.asList(
+                    "net.minecraft.client.entity.player.ClientPlayerEntity",
+                    "net.minecraft.client.entity.player.RemoteClientPlayerEntity",
+                    "net.minecraft.entity.player.ServerPlayerEntity")) {
             };
 
             Optional<String> playerName = Optional.ofNullable(this.player.getClass().getName());
@@ -180,7 +181,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))
-    public void oninit(Player p_35983_, CallbackInfo ci) {
+    public void oninit(PlayerEntity p_35983_, CallbackInfo ci) {
         if (avoidMiniPouch())
         {
             inventorySize = 36;
@@ -199,13 +200,13 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         MinecraftForge.EVENT_BUS.register(this);
 
         // When the player first enters the world, it will be initialized according to the Config values.
-        items = LockableItemStackList.withSize((maxPage + 1) * 27 + 9, (Inventory) (Object) this, false);
+        items = LockableItemStackList.withSize((maxPage + 1) * 27 + 9, (PlayerInventory) (Object) this, false);
         int decrements = ((maxPage + 1) * 27 + 9) - inventorySize;
         for (int i = 0; i < decrements; i++) {
             if (items.size() > 0) ((LockableItemStackList) items).lock(items.size() - 1 - i);
         }
 
-        armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, isActiveArmor);
+        armor = LockableItemStackList.withSize(4, (PlayerInventory) (Object) this, isActiveArmor);
         ((LockableItemStackList) armor).setObserver((detectItem) -> {
             // When there is a change in the list, this code is executed
             // Code to monitor the increase in slot enchantments.
@@ -216,7 +217,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
             updateStorageSize();
         });
-        offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, isActiveOffhand);
+        offhand = LockableItemStackList.withSize(1, (PlayerInventory) (Object) this, isActiveOffhand);
 
         compartments.add(0, items);
         compartments.add(1, armor);
@@ -231,12 +232,12 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @SubscribeEvent
     public void onInitMenu(InitMenuEvent e)
     {
-        AbstractContainerMenu menu = e.getMenu();
+        Container menu = e.getMenu();
         ((IMenuSynchronizer) menu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
     }
 
 
-    @Inject(method = "getSlotWithRemainingSpace(Lnet/minecraft/world/item/ItemStack;)I", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "getSlotWithRemainingSpace", at = @At(value = "HEAD"), cancellable = true)
     public void onGetRemainingSpace(ItemStack p_36051_, CallbackInfoReturnable<Integer> cir) {
         if (!avoidMiniPouch()){
             if (this.hasRemainingSpaceForItem(this.getItem(this.selected), p_36051_)) {
@@ -377,6 +378,8 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     @Override
     public void changeStorageSize(int change) {
+
+        System.out.println("change storage size");
         if (Config.FORCE_SIZE.get() || inventorySize + change > Config.MAX_SIZE.get()) {
             inventorySize = Config.MAX_SIZE.get();
         } else {
@@ -411,7 +414,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         // When the number of pages changes
         else {
             maxPage = newMaxPage;
-            newItems = LockableItemStackList.withSize((maxPage + 1) * 27 + 9, (Inventory) (Object) this, false);
+            newItems = LockableItemStackList.withSize((maxPage + 1) * 27 + 9, (PlayerInventory) (Object) this, false);
             int decrements = ((maxPage + 1) * 27 + 9) - allSize;
             for (int i = 0; i < decrements; i++) {
                 if (newItems.size() > 0) newItems.lock(newItems.size() - 1 - i);
@@ -424,7 +427,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             }
             for (ItemStack item : items) {
                 if (item == ItemStack.EMPTY) continue;
-                Level level = player.level;
+                World level = player.level;
                 ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
                 itementity.setDefaultPickUpDelay();
                 itementity.setThrower(player.getUUID());
@@ -448,6 +451,8 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @Override
     public void changeEffectSize(int change) {
         // Server-side effect slots are handled here
+
+        System.out.println("change effect size");
         synchronized (compartments) {
             this.effectSize = change;
             updateStorageSize();
@@ -458,6 +463,8 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @OnlyIn(Dist.CLIENT)
     public void syncEffectSizeToClient(ClientEffectSlotSyncEvent e) {
         // Client-side effect slots are handled here
+
+        System.out.println("change effect size");
         synchronized (compartments) {
             this.effectSize = e.getEffectSize();
             updateStorageSize();
@@ -538,7 +545,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         }
     }
 
-    @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "setItem", at = @At(value = "HEAD"), cancellable = true)
     public void onSetItem(int id, ItemStack itemStack, CallbackInfo ci) {
         if (!avoidMiniPouch())
         {
@@ -580,7 +587,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         }
     }
 
-    @Inject(method = "getItem(I)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "getItem", at = @At(value = "HEAD"), cancellable = true)
     public void onGetItem(int id, CallbackInfoReturnable<ItemStack> cir) {
 
         if (!avoidMiniPouch())
@@ -620,7 +627,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     }
 
 
-    @Inject(method = "removeItem(II)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "removeItem*", at = @At(value = "HEAD"), cancellable = true)
     public void onRemoveItem(int id, int decrement, CallbackInfoReturnable<ItemStack> cir) {
         if (!avoidMiniPouch())
         {
@@ -629,21 +636,21 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                 if (id < 36) {
                     if (id + 1 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
                     else if (!items.get(id).isEmpty()) {
-                        cir.setReturnValue(ContainerHelper.removeItem(items, id, decrement));
+                        cir.setReturnValue(removeItem(items, id, decrement));
                     }
                 }
                 // 36-39 are vanilla armor slots.
                 else if (id < 40) {
                     if (id - 35 > armor.size()) cir.setReturnValue(ItemStack.EMPTY);
                     else if (!armor.get(id - 36).isEmpty()) {
-                        cir.setReturnValue(ContainerHelper.removeItem(armor, id - 36, decrement));
+                        cir.setReturnValue(removeItem(armor, id - 36, decrement));
                     }
                 }
                 // 40 is vanilla offhand slot.
                 else if (id == 40) {
                     if (id - 39 > offhand.size()) cir.setReturnValue(ItemStack.EMPTY);
                     else if (!offhand.get(0).isEmpty()) {
-                        cir.setReturnValue(ContainerHelper.removeItem(offhand, 0, decrement));
+                        cir.setReturnValue(removeItem(offhand, 0, decrement));
                     }
                 }
                 // 41 and above are additional slots.
@@ -651,21 +658,21 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                 else {
                     if (id - 40 > items.size()) cir.setReturnValue(ItemStack.EMPTY);
                     else if (!items.get(id - 5).isEmpty()) {
-                        cir.setReturnValue(ContainerHelper.removeItem(items, id - 5, decrement));
+                        cir.setReturnValue(removeItem(items, id - 5, decrement));
                     }
                 }
             }
         }
     }
 
-    @Inject(method = "save(Lnet/minecraft/nbt/ListTag;)Lnet/minecraft/nbt/ListTag;", at = @At(value = "HEAD"), cancellable = true)
-    public void onSaveInventory(ListTag tags, CallbackInfoReturnable<ListTag> cir) {
+    @Inject(method = "save", at = @At(value = "HEAD"), cancellable = true)
+    public void onSaveInventory(ListNBT tags, CallbackInfoReturnable<ListNBT> cir) {
         if(!avoidMiniPouch()){
             synchronized (compartments) {
                 // In the original method, the armor and offhand lists conflict with the item list.
                 for (int i = 0; i < 36; ++i) {
                     if (!items.get(i).isEmpty()) {
-                        CompoundTag compoundtag = new CompoundTag();
+                        CompoundNBT compoundtag = new CompoundNBT();
                         compoundtag.putByte("Slot", (byte) i);
                         items.get(i).save(compoundtag);
                         tags.add(compoundtag);
@@ -673,7 +680,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                 }
                 for (int j = 0; j < this.armor.size(); ++j) {
                     if (!armor.get(j).isEmpty()) {
-                        CompoundTag compoundtag1 = new CompoundTag();
+                        CompoundNBT compoundtag1 = new CompoundNBT();
                         compoundtag1.putByte("Slot", (byte) (j + 100));
                         armor.get(j).save(compoundtag1);
                         tags.add(compoundtag1);
@@ -681,7 +688,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                 }
                 for (int k = 0; k < this.offhand.size(); ++k) {
                     if (!offhand.get(k).isEmpty()) {
-                        CompoundTag compoundtag2 = new CompoundTag();
+                        CompoundNBT compoundtag2 = new CompoundNBT();
                         compoundtag2.putByte("Slot", (byte) (k + 150));
                         offhand.get(k).save(compoundtag2);
                         tags.add(compoundtag2);
@@ -692,8 +699,8 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         }
     }
 
-    @Inject(method = "load(Lnet/minecraft/nbt/ListTag;)V", at = @At(value = "HEAD"), cancellable = true)
-    public void onLoadInventory(ListTag tags, CallbackInfo ci) {
+    @Inject(method = "load", at = @At(value = "HEAD"), cancellable = true)
+    public void onLoadInventory(ListNBT tags, CallbackInfo ci) {
 
         if(!avoidMiniPouch()){
             synchronized (compartments) {
@@ -701,7 +708,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                 armor.clear();
                 offhand.clear();
                 for (int i = 0; i < tags.size(); ++i) {
-                    CompoundTag compoundtag = tags.getCompound(i);
+                    CompoundNBT compoundtag = tags.getCompound(i);
                     int j = compoundtag.getByte("Slot") & 255;
                     ItemStack itemstack = ItemStack.of(compoundtag);
                     if (!itemstack.isEmpty()) {
@@ -722,14 +729,14 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
 
     @Override
-    public ListTag saveAdditional(ListTag tag) {
+    public ListNBT saveAdditional(ListNBT tag) {
 
         if(avoidMiniPouch()) return tag;
 
         // Save added slots (when there are 37 slots or more)
         for (int i = 36; i < items.size(); ++i) {
             if (!items.get(i).isEmpty()) {
-                CompoundTag compoundtag = new CompoundTag();
+                CompoundNBT compoundtag = new CompoundNBT();
                 compoundtag.putInt("Slot", i);
                 items.get(i).save(compoundtag);
                 tag.add(compoundtag);
@@ -739,13 +746,13 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     }
 
     @Override
-    public void loadAdditional(ListTag tag) {
+    public void loadAdditional(ListNBT tag) {
 
         if(avoidMiniPouch()) return;
 
         // Load added slots (when there are 37 slots or more)
         for (int i = 0; i < tag.size(); ++i) {
-            CompoundTag compoundtag = tag.getCompound(i);
+            CompoundNBT compoundtag = tag.getCompound(i);
             int slotNumber = compoundtag.getInt("Slot");
             ItemStack itemstack = ItemStack.of(compoundtag);
             if (!itemstack.isEmpty()) {
@@ -757,7 +764,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     }
 
     @Override
-    public CompoundTag saveStatus(CompoundTag tag) {
+    public CompoundNBT saveStatus(CompoundNBT tag) {
 
         if(avoidMiniPouch()) return tag;
 
@@ -774,7 +781,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     }
 
     @Override
-    public void loadStatus(CompoundTag tag) {
+    public void loadStatus(CompoundNBT tag) {
 
         if(avoidMiniPouch()) return;
 

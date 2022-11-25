@@ -1,7 +1,6 @@
 package ga.melara.stevesminipouch.util;
 
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
-import net.minecraft.world.entity.player.Player;
 
 public interface ICustomInventory {
 

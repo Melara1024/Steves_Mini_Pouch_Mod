@@ -1,29 +1,25 @@
 package ga.melara.stevesminipouch.util;
 
 import com.google.common.collect.Lists;
-import ga.melara.stevesminipouch.ModRegistry;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Event;
-import org.apache.commons.lang3.Validate;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+
 
 public class LockableItemStackList extends NonNullList<ItemStack> {
 
     private List<ItemStack> mutableList;
 
-    private final Inventory inventory;
+
+    // このバージョンではプレイヤーをインベントリから取得できない
+    private final PlayerInventory inventory;
 
     private static final ItemStack defaultItem = ItemStack.EMPTY;
 
@@ -42,8 +38,8 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
         @Override
         public Boolean set(int index, Boolean element) {
             if(element && Objects.nonNull(inventory)) {
-                Level level = inventory.player.level;
-                Player entity = inventory.player;
+                World level = inventory.player.level;
+                PlayerEntity entity = inventory.player;
                 ItemStack item = LockableItemStackList.this.get(index);
                 ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), item);
                 itementity.setDefaultPickUpDelay();
@@ -76,22 +72,22 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
     }
 
 
-    public static LockableItemStackList create(Inventory inventory, boolean stopper) {
+    public static LockableItemStackList create(PlayerInventory inventory, boolean stopper) {
         return new LockableItemStackList(Lists.newArrayList(), inventory, stopper);
     }
 
-    public static LockableItemStackList withSize(int size, Inventory inventory, boolean stopper) {
+    public static LockableItemStackList withSize(int size, PlayerInventory inventory, boolean stopper) {
         ItemStack[] aobject = new ItemStack[size];
         Arrays.fill(aobject, defaultItem);
         return new LockableItemStackList(Arrays.asList(aobject), inventory, stopper);
     }
 
     @SafeVarargs
-    public static LockableItemStackList of(Inventory inventory, boolean stopper, ItemStack... itemArray) {
+    public static LockableItemStackList of(PlayerInventory inventory, boolean stopper, ItemStack... itemArray) {
         return new LockableItemStackList(Arrays.asList(itemArray), inventory, stopper);
     }
 
-    protected LockableItemStackList(List<ItemStack> itemList, Inventory inventory, boolean initLock) {
+    protected LockableItemStackList(List<ItemStack> itemList, PlayerInventory inventory, boolean initLock) {
         super(itemList, defaultItem);
         this.inventory = inventory;
 
@@ -112,8 +108,8 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
     public ItemStack set(int id, ItemStack itemStack) {
         // If the slot is locked, throw the item in its place.
         if(lockList.get(id)) {
-            Level level = inventory.player.level;
-            Player entity = inventory.player;
+            World level = inventory.player.level;
+            PlayerEntity entity = inventory.player;
             ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), itemStack);
             itementity.setDefaultPickUpDelay();
             itementity.setThrower(entity.getUUID());

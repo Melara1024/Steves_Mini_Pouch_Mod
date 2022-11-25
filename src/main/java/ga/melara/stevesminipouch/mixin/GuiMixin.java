@@ -1,13 +1,13 @@
 package ga.melara.stevesminipouch.mixin;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import ga.melara.stevesminipouch.StevesMiniPouch;
 import ga.melara.stevesminipouch.util.ICustomInventory;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.IngameGui;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -16,10 +16,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 
-@Mixin(Gui.class)
-public class GuiMixin extends GuiComponent {
+@Mixin(IngameGui.class)
+public class GuiMixin extends AbstractGui {
 
     @Shadow
     @Final
@@ -33,24 +32,23 @@ public class GuiMixin extends GuiComponent {
     @Shadow
     protected int screenHeight;
 
-    @Inject(method = "renderHotbar", at = @At(value = "RETURN"), cancellable = true)
-    public void onRenderHotbar(float pPartialTick, PoseStack poseStack, CallbackInfo ci) {
+    @Inject(method = "renderHotbar", at = @At(value = "HEAD"), cancellable = true)
+    public void onRenderHotbar(float partialTick, MatrixStack poseStack, CallbackInfo ci) {
         // Replace and rendering hotbar texture
 
-        int hotbarSize = ((ICustomInventory) Minecraft.getInstance().player.getInventory()).getHotbarSize();
-        Player player = Minecraft.getInstance().player;
+        int hotbarSize = ((ICustomInventory) Minecraft.getInstance().player.inventory).getHotbarSize();
+        PlayerEntity player = Minecraft.getInstance().player;
 
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, HOTBARS_LOCATION);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        Minecraft.getInstance().getTextureManager().bind(HOTBARS_LOCATION);
 
         int blitOffset = this.getBlitOffset();
         this.setBlitOffset(-90);
 
         int w2 = this.screenWidth / 2;
         this.blit(poseStack, w2 - 91, this.screenHeight - 22, 0, (9 - hotbarSize) * 22, 182, (9 - hotbarSize) * 22 + 22);
-        RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
-        this.blit(poseStack, w2 - 91 - 1 + player.getInventory().selected * 20, this.screenHeight - 22 - 1, 0, 22, 24, 22);
+        Minecraft.getInstance().getTextureManager().bind(WIDGETS_LOCATION);
+        this.blit(poseStack, w2 - 91 - 1 + player.inventory.selected * 20, this.screenHeight - 22 - 1, 0, 22, 24, 22);
 
         this.setBlitOffset(blitOffset);
     }

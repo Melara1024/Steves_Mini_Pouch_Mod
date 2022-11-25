@@ -176,7 +176,7 @@ public class SlotChangeCommand {
         if (applied == 0) {
             throw ERROR_FAILED.create();
         } else {
-            commandSourceStack.sendSuccess(new TranslationTextComponent(String.format("Set inventory size to %d slots.", increment)), true);
+            commandSourceStack.sendSuccess(new StringTextComponent(String.format("Set inventory size to %d slots.", increment)), true);
             return applied;
         }
     }

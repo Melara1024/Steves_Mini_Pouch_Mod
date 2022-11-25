@@ -1,9 +1,9 @@
 package ga.melara.stevesminipouch.stats;
 
 import ga.melara.stevesminipouch.event.InventorySyncEvent;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -15,7 +15,7 @@ public class InventorySyncPacket {
         this.data = data;
     }
 
-    public InventorySyncPacket(FriendlyByteBuf buf) {
+    public InventorySyncPacket(PacketBuffer buf) {
         boolean isActivateInventory = buf.readBoolean();
         boolean isActivateArmor = buf.readBoolean();
         boolean isActiveOffhand = buf.readBoolean();
@@ -26,7 +26,7 @@ public class InventorySyncPacket {
         this.data = new PlayerInventorySizeData(slot, effectSlot, isActivateInventory, isActivateArmor, isActiveOffhand, isActivateCraft);
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeBoolean(this.data.isActiveInventory());
         buf.writeBoolean(this.data.isActiveArmor());
         buf.writeBoolean(this.data.isActiveOffhand());

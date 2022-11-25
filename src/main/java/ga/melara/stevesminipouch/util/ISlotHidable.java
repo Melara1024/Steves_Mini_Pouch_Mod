@@ -1,7 +1,5 @@
 package ga.melara.stevesminipouch.util;
 
-import net.minecraft.world.Container;
-import net.minecraft.world.inventory.Slot;
 
 public interface ISlotHidable {
 

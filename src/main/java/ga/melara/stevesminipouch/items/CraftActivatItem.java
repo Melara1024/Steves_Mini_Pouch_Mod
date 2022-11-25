@@ -9,15 +9,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Rarity;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+
 
 public class CraftActivatItem extends FunctionFoodItem {
 
@@ -38,7 +32,7 @@ public class CraftActivatItem extends FunctionFoodItem {
         ICustomInventory inventory = (ICustomInventory) player.inventory;
         inventory.toggleCraft();
         if(!(player instanceof ServerPlayerEntity)) return;
-        ServerPlayerEntity serverPlayer = (ServerPlayerEntity)
+        ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
         Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData()), serverPlayer);
     }
 

@@ -1,22 +1,21 @@
 package ga.melara.stevesminipouch.mixin;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.event.PageReduceEvent;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.stats.PageChangedPacket;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,8 +27,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
-@Mixin(AbstractContainerScreen.class)
-public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> extends Screen implements IHasPageButton {
+@Mixin(ContainerScreen.class)
+public abstract class ContainerScreenMixin<T extends Container> extends Screen implements IHasPageButton {
 
     private static final ResourceLocation PATCH = new ResourceLocation(MODID, "textures/gui/patch.png");
 
@@ -56,9 +55,10 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
     Button downButton;
     Button pageIndicator;
 
-    protected ContainerScreenMixin(Component component) {
-        super(component);
+    protected ContainerScreenMixin(ITextComponent p_i51108_1_) {
+        super(p_i51108_1_);
     }
+
 
     @Inject(method = "<init>", at = @At(value = "RETURN"), cancellable = true)
     public void onInit(CallbackInfo ci) {
@@ -72,8 +72,8 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(0));
     }
 
-    @Inject(method = "renderSlot(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/inventory/Slot;)V", at = @At(value = "HEAD"), cancellable = true)
-    public void onSlotRender(PoseStack poseStack, Slot slot, CallbackInfo ci) {
+    @Inject(method = "renderSlot", at = @At(value = "HEAD"), cancellable = true)
+    public void onSlotRender(MatrixStack p_238746_1_, Slot p_238746_2_, CallbackInfo ci) {
         //Todo  Change background color on page change.
     }
 
@@ -93,7 +93,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
         // Page change button settings
         upButton = new Button(buttonX, buttonY, 18, 18,
-                new TextComponent("▲"), (button) -> {
+                new StringTextComponent("▲"), (button) -> {
             previousPage();
             Messager.sendToServer(new PageChangedPacket(page));
             this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
@@ -101,37 +101,36 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
         // Button only for page display
         pageIndicator = new Button(buttonX, buttonY + upButton.getHeight(), 18, 18,
-                new TextComponent(String.valueOf(page + 1)), (button) -> {
+                new StringTextComponent(String.valueOf(page + 1)), (button) -> {
         });
         pageIndicator.active = false;
 
         downButton = new Button(buttonX, buttonY + upButton.getHeight() + pageIndicator.getHeight(), 18, 18,
-                new TextComponent("▼"), (button) -> {
+                new StringTextComponent("▼"), (button) -> {
             nextPage();
             Messager.sendToServer(new PageChangedPacket(page));
             this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
         });
 
-
-        this.addRenderableWidget(upButton);
-        this.addRenderableWidget(pageIndicator);
-        this.addRenderableWidget(downButton);
+        this.addButton(upButton);
+        this.addButton(pageIndicator);
+        this.addButton(downButton);
 
         this.itemRenderer.blitOffset = 0.0F;
         this.setBlitOffset(0);
     }
 
     public void nextPage() {
-        if(page < (((ICustomInventory) Minecraft.getInstance().player.getInventory()).getMaxPage())) page++;
+        if(page < (((ICustomInventory) Minecraft.getInstance().player.inventory).getMaxPage())) page++;
     }
 
     public void previousPage() {
         if(page > 0) page--;
     }
 
-    @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;IIF)V", at = @At(value = "RETURN"), cancellable = true)
-    public void onRender(PoseStack poseStack, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        if((((ICustomInventory) Minecraft.getInstance().player.getInventory()).getMaxPage()) > 0) {
+    @Inject(method = "render", at = @At(value = "RETURN"), cancellable = true)
+    public void onRender(MatrixStack poseStack, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        if((((ICustomInventory) Minecraft.getInstance().player.inventory).getMaxPage()) > 0) {
             // Rendering of page change button
             if(!pageIndicator.visible) {
                 upButton.visible = true;
@@ -149,7 +148,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
             upButton.renderButton(poseStack, mouseX, mouseY, partialTick);
             downButton.renderButton(poseStack, mouseX, mouseY, partialTick);
-            pageIndicator.setMessage(new TextComponent(String.valueOf(page + 1)));
+            pageIndicator.setMessage(new StringTextComponent(String.valueOf(page + 1)));
             pageIndicator.renderButton(poseStack, mouseX, mouseY, partialTick);
 
         } else {
@@ -209,8 +208,8 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         });
     }
 
-    private void patchSlot(PoseStack poseStack, Slot slot) {
-        RenderSystem.setShaderTexture(0, PATCH);
+    private void patchSlot(MatrixStack poseStack, Slot slot) {
+        this.minecraft.getTextureManager().bind(PATCH);
         RenderSystem.enableTexture();
         RenderSystem.enableDepthTest();
         blit(poseStack, slot.x + leftPos - 1, slot.y + topPos - 1, 0, 0, 18, 18, 18, 18);

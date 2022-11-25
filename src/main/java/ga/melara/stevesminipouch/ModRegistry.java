@@ -13,7 +13,10 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Effect;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.registry.Registry;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
@@ -24,14 +27,28 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
+import static net.minecraftforge.registries.ForgeRegistries.Keys.EFFECTS;
 
 @Mod.EventBusSubscriber
 public class ModRegistry {
 
-    public static final ItemGroup ITEM_GROUP = new ItemGroup("stevesminipouch") {
+    public static final ItemGroup ITEM_GROUP = new ItemGroup("tab_minipouch") {
         @Override
         public ItemStack makeIcon() {
             return new ItemStack(ModRegistry.SLOT_ADD1_ITEM.get());
+        }
+
+        @Override
+        public void fillItemList(NonNullList<ItemStack> pItems) {
+            for(Item item : Registry.ITEM) {
+                pItems.sort((stack1, stack2) -> {
+                    if(stack1.getItem() instanceof FunctionFoodItem && stack2.getItem() instanceof FunctionFoodItem) {
+                        return Integer.compare(((FunctionFoodItem)stack1.getItem()).getRegistryNumber(), ((FunctionFoodItem)stack2.getItem()).getRegistryNumber());
+                    }
+                    return 0;
+                });
+                item.fillItemCategory(this, pItems);
+            }
         }
     };
 
@@ -40,13 +57,13 @@ public class ModRegistry {
 
     private static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, MODID);
 
-    //private static final DeferredRegister<Effect> EFFECT = DeferredRegister.create(ForgeRegistries.E, MODID);
+    private static final DeferredRegister<Effect> EFFECT = DeferredRegister.create(ForgeRegistries.POTIONS, MODID);
 
     public static void registerItems() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ITEMS.register(eventBus);
         ENCHANTMENTS.register(eventBus);
-        //EFFECT.register(eventBus);
+        EFFECT.register(eventBus);
     }
 
     public static final RegistryObject<Item> SLOT_ADD1_ITEM = Add1SlotItem.buildInTo(ITEMS);
@@ -65,7 +82,9 @@ public class ModRegistry {
 
     public static final RegistryObject<Enchantment> SLOT_ENCHANT = SlotEnchant.buildInTo(ENCHANTMENTS);
 
-    //public static final RegistryObject<Effect> SLOT_EFFECT = SlotEffect.buildInTo(EFFECT);
+    public static final RegistryObject<Effect> SLOT_EFFECT = SlotEffect.buildInTo(EFFECT);
+
+
 
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {

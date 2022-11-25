@@ -1,8 +1,7 @@
 package ga.melara.stevesminipouch.mixin.prevent_throw;
 
 import ga.melara.stevesminipouch.util.IHasPageButton;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
+import net.minecraft.client.gui.screen.inventory.AbstractFurnaceScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

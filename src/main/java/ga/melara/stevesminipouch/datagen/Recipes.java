@@ -2,7 +2,10 @@ package ga.melara.stevesminipouch.datagen;
 
 import ga.melara.stevesminipouch.ModRegistry;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.world.item.Items;
+import net.minecraft.data.IFinishedRecipe;
+import net.minecraft.data.RecipeProvider;
+import net.minecraft.data.ShapedRecipeBuilder;
+import net.minecraft.item.Items;
 
 import java.util.function.Consumer;
 
@@ -14,7 +17,7 @@ public class Recipes extends RecipeProvider {
     }
 
     @Override
-    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
 
         ShapedRecipeBuilder.shaped(ModRegistry.SLOT_ADD1_ITEM.get())
                 .define('S', Items.NETHER_STAR)
@@ -80,7 +83,7 @@ public class Recipes extends RecipeProvider {
         ShapedRecipeBuilder.shaped(ModRegistry.ARMOR_ACTIVATE_ITEM.get())
                 .define('S', Items.DIAMOND)
                 .define('X', Items.IRON_BLOCK)
-                .define('G', Items.AMETHYST_SHARD)
+                .define('G', Items.ENDER_PEARL)
                 .pattern("XSX")
                 .pattern("SGS")
                 .pattern("XSX")

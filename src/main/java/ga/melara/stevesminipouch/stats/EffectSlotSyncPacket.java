@@ -1,9 +1,9 @@
 package ga.melara.stevesminipouch.stats;
 
 import ga.melara.stevesminipouch.event.ClientEffectSlotSyncEvent;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -15,11 +15,11 @@ public class EffectSlotSyncPacket {
         this.effectSlot = setSize;
     }
 
-    public EffectSlotSyncPacket(FriendlyByteBuf buf) {
+    public EffectSlotSyncPacket(PacketBuffer buf) {
         effectSlot = buf.readInt();
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeInt(effectSlot);
     }
 
