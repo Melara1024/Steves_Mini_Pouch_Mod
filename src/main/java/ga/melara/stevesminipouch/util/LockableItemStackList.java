@@ -17,8 +17,6 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
 
     private List<ItemStack> mutableList;
 
-
-    // このバージョンではプレイヤーをインベントリから取得できない
     private final PlayerInventory inventory;
 
     private static final ItemStack defaultItem = ItemStack.EMPTY;
