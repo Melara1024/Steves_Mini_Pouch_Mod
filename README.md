@@ -1,5 +1,7 @@
 # Steves_Mini_Pouch_Mod
 
+## [Download](https://www.curseforge.com/minecraft/mc-mods/steves-mini-pouch)
+
 This mod provides the following features.
 
 - Foods that have the power to increase/decrease your inventory by eating them.
