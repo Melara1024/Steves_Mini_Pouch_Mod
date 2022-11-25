@@ -20,7 +20,7 @@ public class PlayerMixin {
     private
     PlayerInventory inventory;
 
-    @Inject(method = "readAdditionalSaveData", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "readAdditionalSaveData", at = @At("HEAD"), cancellable = true)
     public void onReadData(CompoundNBT tag, CallbackInfo ci) {
 
         // State of inventory functions allowed to the player
@@ -33,7 +33,7 @@ public class PlayerMixin {
 
     }
 
-    @Inject(method = "addAdditionalSaveData", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "addAdditionalSaveData", at = @At("HEAD"), cancellable = true)
     public void onAddData(CompoundNBT tag, CallbackInfo ci) {
 
         // State of inventory functions allowed to the player

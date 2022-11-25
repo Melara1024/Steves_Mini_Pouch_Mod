@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XSX",
+    "XSX",
+    "XSX"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "X": {
+      "item": "minecraft:mossy_cobblestone"
+    }
+  },
+  "result": {
+    "item": "stevesminipouch:activate_offhand"
+  }
+}

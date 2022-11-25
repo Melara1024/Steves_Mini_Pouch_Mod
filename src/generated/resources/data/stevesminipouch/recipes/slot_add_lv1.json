@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XSX",
+    "XCX",
+    "XXX"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:nether_star"
+    },
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "X": {
+      "item": "minecraft:bread"
+    }
+  },
+  "result": {
+    "item": "stevesminipouch:slot_add_lv1"
+  }
+}

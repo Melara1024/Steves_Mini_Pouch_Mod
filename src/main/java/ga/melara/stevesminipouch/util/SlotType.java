@@ -39,7 +39,7 @@ public enum SlotType {
             }
         }
         if(targetSlot.container instanceof CraftingInventory) {
-            if(((CraftingInventory) targetSlot.container).menu instanceof Inventory) {
+            if(((CraftingInventory) targetSlot.container).menu instanceof PlayerContainer) {
                 ((IHasSlotType) targetSlot).setType(SlotType.CRAFT);
             }
         }

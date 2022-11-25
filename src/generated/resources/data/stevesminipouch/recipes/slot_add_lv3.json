@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XXX",
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "item": "stevesminipouch:slot_add_lv2"
+    }
+  },
+  "result": {
+    "item": "stevesminipouch:slot_add_lv3"
+  }
+}

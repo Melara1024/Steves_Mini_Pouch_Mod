@@ -206,7 +206,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             if (items.size() > 0) ((LockableItemStackList) items).lock(items.size() - 1 - i);
         }
 
-        armor = LockableItemStackList.withSize(4, (PlayerInventory) (Object) this, isActiveArmor);
+        armor = LockableItemStackList.withSize(4, (PlayerInventory) (Object) this, !isActiveArmor);
         ((LockableItemStackList) armor).setObserver((detectItem) -> {
             // When there is a change in the list, this code is executed
             // Code to monitor the increase in slot enchantments.
@@ -217,7 +217,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
             updateStorageSize();
         });
-        offhand = LockableItemStackList.withSize(1, (PlayerInventory) (Object) this, isActiveOffhand);
+        offhand = LockableItemStackList.withSize(1, (PlayerInventory) (Object) this, !isActiveOffhand);
 
         compartments.add(0, items);
         compartments.add(1, armor);
@@ -814,6 +814,9 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                 !Config.FORCE_INVENTORY.get() && (Config.FORCE_CRAFT.get() ? Config.DEFAULT_CRAFT.get() :
                         tag.contains("craft") ? tag.getBoolean("craft") : Config.DEFAULT_CRAFT.get());
 
+        System.out.println("server data load");
+        System.out.println(isActiveArmor);
+        System.out.println(isActiveOffhand);
         initServer(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
         ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
     }

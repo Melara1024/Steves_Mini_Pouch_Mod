@@ -1,0 +1,6 @@
+{
+  "parent": "stevesminipouch:item/slot_sub_lv1",
+  "textures": {
+    "layer": "stevesminipouch:item/slot_sub_lv3"
+  }
+}

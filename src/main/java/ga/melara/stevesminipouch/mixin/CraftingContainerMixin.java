@@ -46,7 +46,7 @@ public class CraftingContainerMixin implements ICraftingContainerChangable {
                 lockable.allLock();
             }
             else
-                items = LockableItemStackList.withSize(4, ((PlayerContainer) menu).owner.getInventory(), true);
+                items = LockableItemStackList.withSize(4, ((PlayerContainer) menu).owner.inventory, true);
             this.isActiveCraft = false;
             return;
         }
@@ -55,7 +55,7 @@ public class CraftingContainerMixin implements ICraftingContainerChangable {
             lockable.allOpen();
         }
         else
-            items = LockableItemStackList.withSize(4, ((PlayerContainer) menu).owner.getInventory(), false);
+            items = LockableItemStackList.withSize(4, ((PlayerContainer) menu).owner.inventory, false);
         this.isActiveCraft = true;
     }
 
