@@ -205,7 +205,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             if (items.size() > 0) ((LockableItemStackList) items).lock(items.size() - 1 - i);
         }
 
-        armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, isActiveArmor);
+        armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, !isActiveArmor);
         ((LockableItemStackList) armor).setObserver((detectItem) -> {
             // When there is a change in the list, this code is executed
             // Code to monitor the increase in slot enchantments.
@@ -216,7 +216,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
             updateStorageSize();
         });
-        offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, isActiveOffhand);
+        offhand = LockableItemStackList.withSize(1, (Inventory) (Object) this, !isActiveOffhand);
 
         compartments.add(0, items);
         compartments.add(1, armor);

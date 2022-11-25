@@ -33,7 +33,7 @@ public class GuiMixin extends GuiComponent {
     @Shadow
     protected int screenHeight;
 
-    @Inject(method = "renderHotbar", at = @At(value = "RETURN"), cancellable = true)
+    @Inject(method = "renderHotbar", at = @At(value = "HEAD"), cancellable = true)
     public void onRenderHotbar(float pPartialTick, PoseStack poseStack, CallbackInfo ci) {
         // Replace and rendering hotbar texture
 
