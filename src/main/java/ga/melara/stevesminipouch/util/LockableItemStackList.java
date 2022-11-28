@@ -106,9 +106,9 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
 
     @Override
     public ItemStack set(int id, ItemStack itemStack) {
-        if(id > this.size()-1) throwItem(inventory.player, itemStack);
+
         // If the slot is locked, throw the item in its place.
-        if(lockList.get(id)) {
+        if(id > this.size()-1 || lockList.get(id)) {
             throwItem(inventory.player, itemStack);
             return defaultItem;
         }
@@ -129,6 +129,7 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
 
     private void throwItem(Player player, ItemStack itemStack)
     {
+        if (Objects.isNull(player)) return;
         Level level = inventory.player.level;
         Player entity = inventory.player;
         ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), itemStack);

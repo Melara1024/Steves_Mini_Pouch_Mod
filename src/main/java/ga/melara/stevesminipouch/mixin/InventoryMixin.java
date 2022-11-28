@@ -26,7 +26,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -188,12 +190,12 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         LOGGER.debug(this.getAllData().toString());
         isOldInventory = true;
     }
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRespawn (PlayerEvent.PlayerRespawnEvent e){
         LOGGER.warn("respawn" + (isOldInventory?"old":"new"));
         LOGGER.debug(this.getAllData().toString());
 
-        if(isOldInventory){
+        if(isOldInventory && Objects.nonNull(player)){
             ICustomInventory i = (ICustomInventory) e.getEntity().getInventory();
             synchronized (compartments){
                 i.initMiniPouch(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
@@ -201,6 +203,11 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                     Messager.sendToPlayer(new InventorySyncPacket(this.getAllData()), serverPlayer);
             }
             MinecraftForge.EVENT_BUS.unregister(this);
+        }
+
+
+        if (ModList.get().isLoaded("twilightforest")) {
+            //ここでMiniPouch分を復帰する
         }
     }
 
