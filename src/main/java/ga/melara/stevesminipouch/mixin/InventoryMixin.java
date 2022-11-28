@@ -107,6 +107,8 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     @Shadow public abstract Component getName();
 
+    @Shadow public int getContainerSize(){return 0;};
+
 
     @Shadow public abstract boolean contains(ItemStack pStack);
 
@@ -218,6 +220,19 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         if (ModList.get().isLoaded("twilightforest")) {
             //ここでMiniPouch分を復帰する
 
+        }
+    }
+
+    @Inject(method = "replaceWith", at = @At(value = "RETURN"))
+    public void onReplace(Inventory pPlayerInventory, CallbackInfo ci) {
+
+        //replaceはrespawnより先に発火されてしまっている
+
+        //Todo itemリストのバックアップを取っておく
+        //Todo リスポーンの際にkeepInventory設定と黄昏の設定を見てアイテムを復帰する
+
+        for(int i = 0; i < this.getContainerSize(); ++i) {
+            System.out.println(String.valueOf(i) + " " + pPlayerInventory.getItem(i));
         }
     }
 
