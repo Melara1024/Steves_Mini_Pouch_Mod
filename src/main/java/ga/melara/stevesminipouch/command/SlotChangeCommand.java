@@ -26,11 +26,8 @@ public class SlotChangeCommand {
 
         commandDispatcher.register(Commands.literal("pouch")
         .then(Commands.argument("targets", EntityArgument.entities())
-        .executes((command) -> {
-            return showStats(command.getSource(), ImmutableList.of(command.getSource().getEntityOrException()));
 
-
-        }).then(Commands.literal("inventory").requires((sender) -> {
+        .then(Commands.literal("inventory").requires((sender) -> {
             return sender.hasPermission(2);
         }).executes((command) -> {
             return setInventory(command.getSource(), EntityArgument.getEntities(command, "targets"), true);

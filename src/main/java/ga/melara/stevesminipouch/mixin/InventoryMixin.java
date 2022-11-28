@@ -108,6 +108,8 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @Shadow public abstract boolean contains(ItemStack pStack);
 
 
+    @Shadow public abstract void removeItem(ItemStack pStack);
+
     private boolean avoidMiniPouch = true;
     private boolean decided = false;
     @Override
@@ -117,7 +119,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         // Fixme Must be Rewrite
 
         // Mixin vanilla player inventory only, ignoring subclasses added by other mods
-        if (!decided){
+        if (!decided) {
 
             //Avoid custom inventory for other mods that inherit inventory
 
@@ -132,38 +134,33 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                     "net.minecraft.server.level.ServerPlayer")) {
             };
 
-            Optional<String> playerName = Optional.ofNullable(this.player.getClass().getName());
-            Optional<String> className = Optional.ofNullable(this.getClass().getName());
+            if (Objects.nonNull(this.getClass()) && Objects.nonNull(this.player))
+            {
+                Optional<String> playerName = Optional.ofNullable(this.player.getClass().getName());
+                Optional<String> className = Optional.ofNullable(this.getClass().getName());
 
-            if(playerName.isPresent() && className.isPresent()) avoidMiniPouch = !(playerList.contains(playerName.get()) && classList.contains(className.get()));
-            else avoidMiniPouch = false;
+                if(playerName.isPresent() && className.isPresent()) avoidMiniPouch = !(playerList.contains(playerName.get()) && classList.contains(className.get()));
+                else avoidMiniPouch = false;
 
-            if (avoidMiniPouch) LOGGER.warn(className + " is not compatible with Steve's Mini Pouch.");
-            else LOGGER.info("Steve's Mini Pouch correctly applied to " + className);
+                if (avoidMiniPouch) LOGGER.warn(className + " is not compatible with Steve's Mini Pouch.");
+                else LOGGER.info("Steve's Mini Pouch correctly applied to " + className);
 
-            decided = true;
+                decided = true;
+            }
         }
         return avoidMiniPouch;
     }
 
     @Override
     public void initMiniPouch(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft) {
+
         this.effectSize = effectSize;
         setStorageSize(inventorySize);
-
-        IMenuChangable menu = (IMenuChangable) player.containerMenu;
-
         setInventory(isActiveInventory);
-        menu.updateInventoryHiding(player);
-
         setArmor(isActiveArmor);
-        menu.updateArmorHiding(player);
-
         setOffhand(isActiveOffhand);
-        menu.updateOffhandHiding(player);
-
         setCraft(isActiveCraft);
-        menu.updateCraftHiding(player);
+
     }
 
     public void initServer(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft) {
@@ -187,15 +184,22 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @SubscribeEvent
     public void onDeath(LivingDeathEvent e)
     {
+        LOGGER.warn("death");
+        LOGGER.debug(this.getAllData().toString());
         isOldInventory = true;
     }
     @SubscribeEvent
     public void onRespawn (PlayerEvent.PlayerRespawnEvent e){
+        LOGGER.warn("respawn" + (isOldInventory?"old":"new"));
+        LOGGER.debug(this.getAllData().toString());
+
         if(isOldInventory){
             ICustomInventory i = (ICustomInventory) e.getEntity().getInventory();
-            i.initMiniPouch(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
-            if (e.getEntity() instanceof ServerPlayer serverPlayer)
-                Messager.sendToPlayer(new InventorySyncPacket(this.getAllData()), serverPlayer);
+            synchronized (compartments){
+                i.initMiniPouch(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
+                if (e.getEntity() instanceof ServerPlayer serverPlayer)
+                    Messager.sendToPlayer(new InventorySyncPacket(this.getAllData()), serverPlayer);
+            }
             MinecraftForge.EVENT_BUS.unregister(this);
         }
     }
@@ -243,7 +247,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         compartments.add(1, armor);
         compartments.add(2, offhand);
 
-        if (Objects.nonNull(player.inventoryMenu)) {
+        if (Objects.nonNull(player) && Objects.nonNull(player.containerMenu)) {
             initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
             ((IMenuSynchronizer) this.player.containerMenu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
         }
@@ -302,8 +306,12 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             setArmor(false);
             setCraft(false);
             setStorageSize(1);
+
+            LOGGER.info("setInventory to false");
+            LOGGER.info(Thread.currentThread().getName());
         }
         this.isActiveInventory = setFlag;
+        if(Objects.isNull(player)) return;
         ((IMenuChangable) this.player.containerMenu).updateInventoryHiding(this.player);
     }
 
@@ -324,6 +332,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             ((LockableItemStackList) armor).allLock();
 
         this.isActiveArmor = setFlag;
+        if(Objects.isNull(player)) return;
         ((IMenuChangable) player.containerMenu).updateArmorHiding(player);
     }
 
@@ -345,6 +354,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             ((LockableItemStackList) offhand).allLock();
 
         this.isActiveOffhand = setFlag;
+        if(Objects.isNull(player)) return;
         ((IMenuChangable) player.containerMenu).updateOffhandHiding(player);
     }
 
@@ -360,6 +370,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         if (avoidMiniPouch()) setFlag = true;
 
         this.isActiveCraft = setFlag;
+        if(Objects.isNull(player)) return;
         ((IMenuChangable) player.inventoryMenu).updateCraftHiding(player);
         ((IMenuChangable) player.containerMenu).updateCraftHiding(player);
         ((ICraftingContainerChangable) player.inventoryMenu.getCraftSlots()).setCraft(this.isActiveCraft, player);
@@ -457,6 +468,8 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                 compartments.add(0, items);
             }
         }
+
+        if(Objects.isNull(player)) return;
         ((IMenuChangable) player.containerMenu).judgePageReduction(change, getMaxPage(), player);
     }
 
