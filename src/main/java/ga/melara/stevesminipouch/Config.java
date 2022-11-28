@@ -27,6 +27,8 @@ public class Config {
     public static ForgeConfigSpec.BooleanValue DEFAULT_ARMOR;
     public static ForgeConfigSpec.BooleanValue FORCE_ARMOR;
 
+    public static ForgeConfigSpec.BooleanValue KEEP_AT_DEATH;
+
 
     //client settings
     public static ForgeConfigSpec.IntValue RENDER_OFFSET_X;
@@ -52,6 +54,8 @@ public class Config {
 
         DEFAULT_ARMOR = SERVER_BUILDER.comment("Default setting of armor activate").define("armor", true);
         FORCE_ARMOR = SERVER_BUILDER.comment("If true, The above settings are enforced on all players.").define("force_armor", false);
+
+        KEEP_AT_DEATH = SERVER_BUILDER.comment("Keep player's inventory state when you die.").define("keep_at_death", false);
 
         SERVER_BUILDER.pop();
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_BUILDER.build());

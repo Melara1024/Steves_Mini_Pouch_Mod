@@ -2,6 +2,8 @@ package ga.melara.stevesminipouch.stats;
 
 
 import ga.melara.stevesminipouch.Config;
+import ga.melara.stevesminipouch.util.ICustomInventory;
+import net.minecraft.world.entity.player.Inventory;
 
 //データを保持する本体
 public class PlayerInventorySizeData {
@@ -29,6 +31,16 @@ public class PlayerInventorySizeData {
         this.isActivateArmor = arm;
         this.isActiveOffhand = off;
         this.isActivateCraft = cft;
+    }
+
+    public PlayerInventorySizeData(ICustomInventory inventory)
+    {
+        this.inventorySize = inventory.getInventorySize();
+        this.effectSize = inventory.getEffectSize();
+        this.isActiveInventory = inventory.isActiveInventory();
+        this.isActivateArmor = inventory.isActiveArmor();
+        this.isActiveOffhand = inventory.isActiveOffhand();
+        this.isActivateCraft = inventory.isActiveCraft();
     }
 
     public void copyFrom(PlayerInventorySizeData source) {

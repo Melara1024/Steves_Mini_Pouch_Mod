@@ -5,6 +5,8 @@ import net.minecraft.world.entity.player.Player;
 
 public interface ICustomInventory {
 
+    void initMiniPouch(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft);
+
     void setInventory(boolean set);
     void toggleInventory();
 

@@ -5,12 +5,15 @@ import ga.melara.stevesminipouch.ModRegistry;
 import ga.melara.stevesminipouch.event.ClientEffectSlotSyncEvent;
 import ga.melara.stevesminipouch.event.InitMenuEvent;
 import ga.melara.stevesminipouch.event.InventorySyncEvent;
+import ga.melara.stevesminipouch.stats.InventorySyncPacket;
+import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -21,6 +24,8 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -141,6 +146,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         return avoidMiniPouch;
     }
 
+    @Override
     public void initMiniPouch(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft) {
         this.effectSize = effectSize;
         setStorageSize(inventorySize);
@@ -177,8 +183,26 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     }
 
 
+    private boolean isOldInventory = false;
+    @SubscribeEvent
+    public void onDeath(LivingDeathEvent e)
+    {
+        isOldInventory = true;
+    }
+    @SubscribeEvent
+    public void onRespawn (PlayerEvent.PlayerRespawnEvent e){
+        if(isOldInventory){
+            ICustomInventory i = (ICustomInventory) e.getEntity().getInventory();
+            i.initMiniPouch(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
+            if (e.getEntity() instanceof ServerPlayer serverPlayer)
+                Messager.sendToPlayer(new InventorySyncPacket(this.getAllData()), serverPlayer);
+            MinecraftForge.EVENT_BUS.unregister(this);
+        }
+    }
+
     @Inject(method = "<init>", at = @At(value = "RETURN"))
     public void oninit(Player p_35983_, CallbackInfo ci) {
+        System.out.println("inventory init");
         if (avoidMiniPouch())
         {
             inventorySize = 36;

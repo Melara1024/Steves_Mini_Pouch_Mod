@@ -42,13 +42,8 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
         @Override
         public Boolean set(int index, Boolean element) {
             if(element && Objects.nonNull(inventory)) {
-                Level level = inventory.player.level;
-                Player entity = inventory.player;
-                ItemStack item = LockableItemStackList.this.get(index);
-                ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), item);
-                itementity.setDefaultPickUpDelay();
-                itementity.setThrower(entity.getUUID());
-                level.addFreshEntity(itementity);
+                ItemStack itemStack = LockableItemStackList.this.get(index);
+                throwItem(inventory.player, itemStack);
                 LockableItemStackList.this.set(index, ItemStack.EMPTY);
             }
             return super.set(index, element);
@@ -104,20 +99,17 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
     @Override
     @Nonnull
     public ItemStack get(int id) {
+        if(id > this.size()-1) return defaultItem;
         if(lockList.get(id)) return defaultItem;
         return super.get(id);
     }
 
     @Override
     public ItemStack set(int id, ItemStack itemStack) {
+        if(id > this.size()-1) throwItem(inventory.player, itemStack);
         // If the slot is locked, throw the item in its place.
         if(lockList.get(id)) {
-            Level level = inventory.player.level;
-            Player entity = inventory.player;
-            ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), itemStack);
-            itementity.setDefaultPickUpDelay();
-            itementity.setThrower(entity.getUUID());
-            level.addFreshEntity(itementity);
+            throwItem(inventory.player, itemStack);
             return defaultItem;
         }
 
@@ -128,9 +120,20 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
 
     @Override
     public ItemStack remove(int id) {
+        if(id > this.size()-1) return defaultItem;
         if(lockList.get(id)) return defaultItem;
         ItemStack result = super.remove(id);
         if(isActivateObserver) this.observer.accept(ItemStack.EMPTY);
         return result;
+    }
+
+    private void throwItem(Player player, ItemStack itemStack)
+    {
+        Level level = inventory.player.level;
+        Player entity = inventory.player;
+        ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), itemStack);
+        itementity.setDefaultPickUpDelay();
+        itementity.setThrower(entity.getUUID());
+        level.addFreshEntity(itementity);
     }
 }
