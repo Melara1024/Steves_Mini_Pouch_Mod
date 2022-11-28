@@ -20,6 +20,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -183,12 +184,20 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
 
     private boolean isOldInventory = false;
+    // Pouch backup for ability to retain items after death
+    private LockableItemStackList backUpPouch;
+
     @SubscribeEvent
     public void onDeath(LivingDeathEvent e)
     {
         LOGGER.warn("death");
         LOGGER.debug(this.getAllData().toString());
         isOldInventory = true;
+
+        if (ModList.get().isLoaded("twilightforest")) {
+            //ここでMiniPouch分を復帰する
+
+        }
     }
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRespawn (PlayerEvent.PlayerRespawnEvent e){
@@ -208,6 +217,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
         if (ModList.get().isLoaded("twilightforest")) {
             //ここでMiniPouch分を復帰する
+
         }
     }
 
