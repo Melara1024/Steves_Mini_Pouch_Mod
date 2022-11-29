@@ -297,7 +297,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                 getPlayerData(player).remove(KEEP_POUCH_TAG);
             }
 
-
+            //タグが存在しない時にもイベントを外せるように
             MinecraftForge.EVENT_BUS.unregister(this);
         }
     }
