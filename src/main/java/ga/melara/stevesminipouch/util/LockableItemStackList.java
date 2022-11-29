@@ -93,15 +93,6 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
     }
 
 
-    public NonNullList<ItemStack> copyData()
-    {
-        NonNullList<ItemStack> copy = NonNullList.withSize(this.size(), ItemStack.EMPTY);
-        for(int i=0; i<this.size(); i++){
-            copy.set(i, this.get(i));
-        }
-        return copy;
-    }
-
 
     @Override
     @Nonnull
@@ -116,6 +107,7 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
 
         // If the slot is locked, throw the item in its place.
         if(id > this.size()-1 || lockList.get(id)) {
+            System.out.println("setThrow " + id + ": " + itemStack);
             throwItem(inventory.player, itemStack);
             return defaultItem;
         }

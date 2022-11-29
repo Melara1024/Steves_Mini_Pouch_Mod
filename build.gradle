@@ -108,15 +108,11 @@ repositories {
     maven {
         url = "https://modmaven.dev/"
     }
-
-
 }
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.19.2-43.1.28'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-
-    implementation fg.deobf("teamtwilight:twilightforest:4.2.1468:universal")
 }
 
 // Example for how to get properties into the manifest for reading at runtime.

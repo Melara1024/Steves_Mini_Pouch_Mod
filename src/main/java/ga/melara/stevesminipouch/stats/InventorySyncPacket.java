@@ -39,6 +39,7 @@ public class InventorySyncPacket {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
+            System.out.println("packet handled");
             MinecraftForge.EVENT_BUS.post(new InventorySyncEvent(this.data));
             ctx.setPacketHandled(true);
         });
