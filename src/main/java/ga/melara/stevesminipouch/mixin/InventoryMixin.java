@@ -265,7 +265,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
         //todo インベントリ状態の引き継ぎもタグでやる
 
-        if(Objects.isNull(player) || !e.getEntity().getUUID().equals(this.player.getUUID())) return;
+        if(Objects.isNull(player) || player.getLevel().isClientSide() || !e.getEntity().getUUID().equals(this.player.getUUID())) return;
 
         if(isOldInventory && Objects.nonNull(player)) {
             if(!(e.getEntity() instanceof ServerPlayer serverPlayer)) return;
@@ -286,7 +286,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onRespawn(PlayerEvent.PlayerRespawnEvent e) {
-        if(Objects.isNull(player) || !e.getEntity().getUUID().equals(this.player.getUUID())) return;
+        if(Objects.isNull(player) || player.getLevel().isClientSide() || !e.getEntity().getUUID().equals(this.player.getUUID())) return;
 
         System.out.println("respawn event");
         System.out.println(e.getEntity().getClass());
