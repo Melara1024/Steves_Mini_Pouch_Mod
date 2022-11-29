@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fml.ModList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,23 +22,23 @@ import twilightforest.util.TFItemStackUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mixin(CharmEvents.class)
+//@Mixin(CharmEvents.class)
 public class CharmEventMixin {
 
     private static final String KEEP_POUCH_TAG = "KeepMiniPouch";
 
-    @Shadow
+
     private static boolean hasCharmCurio(Item item, Player player) {
         return false;
     }
 
-    @Shadow
+
     public static CompoundTag getPlayerData(Player player) {
         return null;
     }
 
 
-    @Inject(method = "charmOfKeeping", at=@At("RETURN"))
+
     static void onCharmOfKeeping(Player player, CallbackInfo ci)
     {
         boolean tier3 = TFItemStackUtils.consumeInventoryItem(player, TFItems.CHARM_OF_KEEPING_3.get()) || hasCharmCurio(TFItems.CHARM_OF_KEEPING_3.get(), player);
@@ -57,10 +58,8 @@ public class CharmEventMixin {
 
             for (int i = 36; i < player.getInventory().items.size(); i++) {
                 ItemStack stack = player.getInventory().items.get(i);
-                if (stack.is(ItemTagGenerator.KEPT_ON_DEATH)) {
                     keepInventory.items.set(i, stack.copy());
                     player.getInventory().items.set(i, ItemStack.EMPTY);
-                }
             }
 
             if (!keepInventory.isEmpty()) {
@@ -70,7 +69,7 @@ public class CharmEventMixin {
         }
     }
 
-    @Inject(method="returnStoredItems", at=@At("RETURN"))
+
     static void onReturnStoredItems(Player player, CallbackInfo ci)
     {
         // タグが存在していれば戻す

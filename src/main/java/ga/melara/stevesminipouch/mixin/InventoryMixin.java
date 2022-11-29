@@ -12,13 +12,16 @@ import ga.melara.stevesminipouch.util.*;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
@@ -38,7 +41,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import twilightforest.data.tags.ItemTagGenerator;
+
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -116,6 +119,8 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     @Shadow public abstract void removeItem(ItemStack pStack);
 
+    @Shadow public abstract boolean contains(TagKey<Item> pTag);
+
     private boolean avoidMiniPouch = true;
     private boolean decided = false;
     @Override
@@ -191,8 +196,9 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     private NonNullList backUpPouch;
 
     private static final String KEEP_POUCH_TAG = "KeepMiniPouch";
+    private static final String CHARM_INV_TAG = "TFCharmInventory";
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOW)
     public void onDeath(LivingDeathEvent e)
     {
         LOGGER.warn("death");
@@ -200,25 +206,41 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         // インベントリ状態引き継ぎ用
         isOldInventory = true;
 
-        if(getPlayerData(player).contains(KEEP_POUCH_TAG))return;
+        // 死亡時にインベントリの内容をタグに保存する
+        // すでに保存されていた場合は飛ばす
 
-        if (e.getEntity().getLevel().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) return;
+        if(Objects.isNull(player)) return;
 
-        if(Objects.nonNull(player) && player.getUUID().equals(e.getEntity().getUUID())){
+        boolean gamerule = e.getEntity().getLevel().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
+
+        boolean twilight_forest_charm = false;
+        if (ModList.get().isLoaded("twilightforest")){
+            //CharmEvent priority is HIGHEST, so this event called after that.
+            twilight_forest_charm = getPlayerData(player).contains(KEEP_POUCH_TAG);
+        }
+
+        if(!gamerule && !twilight_forest_charm) return;
+
+        System.out.println(player.getUUID());
+        System.out.println(e.getEntity().getUUID());
+
+        if(player.getUUID().equals(e.getEntity().getUUID())){
             Inventory keepInventory = new Inventory(null);
             ListTag tagList = new ListTag();
 
             for (int i = 36; i < player.getInventory().items.size(); i++) {
                 ItemStack stack = player.getInventory().items.get(i);
-                if (stack.is(ItemTagGenerator.KEPT_ON_DEATH)) {
-                    keepInventory.items.set(i, stack.copy());
-                    player.getInventory().items.set(i, ItemStack.EMPTY);
-                }
+                keepInventory.items.set(i, stack.copy());
             }
 
             if (!keepInventory.isEmpty()) {
-                keepInventory.save(tagList);
+                ((IAdditionalDataHandler)keepInventory).saveAdditional(tagList);
                 getPlayerData(player).put(KEEP_POUCH_TAG, tagList);
+            }
+
+            System.out.println("keep pouch on death");
+            for (Tag tag : tagList) {
+                System.out.println(tag);
             }
         }
     }
@@ -238,11 +260,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                 inv.initMiniPouch(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
                 if (e.getEntity() instanceof ServerPlayer serverPlayer)
                     Messager.sendToPlayer(new InventorySyncPacket(this.getAllData()), serverPlayer);
-            }
-
-            //同一のプレイヤーか確認する
-            if (e.getEntity().getLevel().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)){
-                return;
             }
 
             // タグが存在していれば戻す
