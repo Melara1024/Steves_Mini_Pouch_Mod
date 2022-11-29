@@ -38,6 +38,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import twilightforest.data.tags.ItemTagGenerator;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -187,41 +188,110 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     private boolean isOldInventory = false;
     // Pouch backup for ability to retain items after death
-    private LockableItemStackList backUpPouch;
+    private NonNullList backUpPouch;
+
+    private static final String KEEP_POUCH_TAG = "KeepMiniPouch";
 
     @SubscribeEvent
     public void onDeath(LivingDeathEvent e)
     {
         LOGGER.warn("death");
         LOGGER.debug(this.getAllData().toString());
+        // インベントリ状態引き継ぎ用
         isOldInventory = true;
 
-        if (ModList.get().isLoaded("twilightforest")) {
-            //ここでMiniPouch分を復帰する
+        if(getPlayerData(player).contains(KEEP_POUCH_TAG))return;
 
+        if (e.getEntity().getLevel().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) return;
+
+        if(Objects.nonNull(player) && player.getUUID().equals(e.getEntity().getUUID())){
+            Inventory keepInventory = new Inventory(null);
+            ListTag tagList = new ListTag();
+
+            for (int i = 36; i < player.getInventory().items.size(); i++) {
+                ItemStack stack = player.getInventory().items.get(i);
+                if (stack.is(ItemTagGenerator.KEPT_ON_DEATH)) {
+                    keepInventory.items.set(i, stack.copy());
+                    player.getInventory().items.set(i, ItemStack.EMPTY);
+                }
+            }
+
+            if (!keepInventory.isEmpty()) {
+                keepInventory.save(tagList);
+                getPlayerData(player).put(KEEP_POUCH_TAG, tagList);
+            }
         }
     }
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRespawn (PlayerEvent.PlayerRespawnEvent e){
+
+        if(!(e.getEntity() instanceof ServerPlayer))return;
+
         LOGGER.warn("respawn" + (isOldInventory?"old":"new"));
         LOGGER.debug(this.getAllData().toString());
 
-        if(isOldInventory && Objects.nonNull(player)){
-            ICustomInventory i = (ICustomInventory) e.getEntity().getInventory();
+        if(isOldInventory && Objects.nonNull(player) && player.getUUID().equals(e.getEntity().getUUID())){
+
+            //todo インベントリ状態の引き継ぎもタグでやる
+            ICustomInventory inv = (ICustomInventory) e.getEntity().getInventory();
             synchronized (compartments){
-                i.initMiniPouch(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
+                inv.initMiniPouch(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
                 if (e.getEntity() instanceof ServerPlayer serverPlayer)
                     Messager.sendToPlayer(new InventorySyncPacket(this.getAllData()), serverPlayer);
             }
+
+            //同一のプレイヤーか確認する
+            if (e.getEntity().getLevel().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)){
+                return;
+            }
+
+            // タグが存在していれば戻す
+            CompoundTag playerData = getPlayerData(player);
+
+            if(!playerData.contains(KEEP_POUCH_TAG)) return;
+
+            if (!player.getLevel().isClientSide() && playerData.contains(KEEP_POUCH_TAG)) {
+                ListTag tag = playerData.getList(KEEP_POUCH_TAG, 10);
+
+                LockableItemStackList items = (LockableItemStackList) player.getInventory().items;
+                List<ItemStack> blockedItems = new ArrayList<>();
+
+                for (int i = 0; i < tag.size(); ++i) {
+                    CompoundTag compoundtag = tag.getCompound(i);
+                    int j = compoundtag.getByte("Slot") & 255;
+                    ItemStack itemstack = ItemStack.of(compoundtag);
+                    if (!itemstack.isEmpty()) {
+                        if (j < items.size()) {
+                            if (items.get(j).isEmpty()) {
+                                items.set(j, itemstack);
+                            } else {
+                                blockedItems.add(itemstack);
+                            }
+                        }
+                    }
+                }
+
+                // TFItemStackUtils.loadNoClear(tagList, player.getInventory());
+
+                if(!blockedItems.isEmpty()) blockedItems.forEach(player.getInventory()::add);
+
+                getPlayerData(player).getList(KEEP_POUCH_TAG, 10).clear();
+                getPlayerData(player).remove(KEEP_POUCH_TAG);
+            }
+
+
             MinecraftForge.EVENT_BUS.unregister(this);
         }
-
-
-        if (ModList.get().isLoaded("twilightforest")) {
-            //ここでMiniPouch分を復帰する
-
-        }
     }
+
+    private static CompoundTag getPlayerData(Player player) {
+        if (!player.getPersistentData().contains(Player.PERSISTED_NBT_TAG)) {
+            player.getPersistentData().put(Player.PERSISTED_NBT_TAG, new CompoundTag());
+        }
+        return player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
+    }
+
+
 
     @Inject(method = "replaceWith", at = @At(value = "RETURN"))
     public void onReplace(Inventory pPlayerInventory, CallbackInfo ci) {
@@ -258,13 +328,17 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
         // When the player first enters the world, it will be initialized according to the Config values.
         items = LockableItemStackList.withSize((maxPage + 1) * 27 + 9, (Inventory) (Object) this, false);
+        backUpPouch = ((LockableItemStackList)items).copyData();
         int decrements = ((maxPage + 1) * 27 + 9) - inventorySize;
         for (int i = 0; i < decrements; i++) {
             if (items.size() > 0) ((LockableItemStackList) items).lock(items.size() - 1 - i);
         }
+        ((LockableItemStackList) items).setObserver((id, detectItem) -> {
+            backUpPouch.set(id, detectItem);
+        });
 
         armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, isActiveArmor);
-        ((LockableItemStackList) armor).setObserver((detectItem) -> {
+        ((LockableItemStackList) armor).setObserver((id, detectItem) -> {
             // When there is a change in the list, this code is executed
             // Code to monitor the increase in slot enchantments.
             enchantSize = 0;
@@ -452,8 +526,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             enchantSize = 0;
         }
 
-        LockableItemStackList newItems;
-
         int allSize = (inventorySize + effectSize + enchantSize);
         if (allSize < 9) {
             hotbarSize = allSize;
@@ -475,11 +547,15 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         // When the number of pages changes
         else {
             maxPage = newMaxPage;
-            newItems = LockableItemStackList.withSize((maxPage + 1) * 27 + 9, (Inventory) (Object) this, false);
+            LockableItemStackList newItems = LockableItemStackList.withSize((maxPage + 1) * 27 + 9, (Inventory) (Object) this, false);
+            backUpPouch = ((LockableItemStackList)newItems).copyData();
             int decrements = ((maxPage + 1) * 27 + 9) - allSize;
             for (int i = 0; i < decrements; i++) {
                 if (newItems.size() > 0) newItems.lock(newItems.size() - 1 - i);
             }
+            ((LockableItemStackList) items).setObserver((id, detectItem) -> {
+                backUpPouch.set(id, detectItem);
+            });
 
             // Transfer items to the new list and scatter out what remains on the old list.
             for (int i = 0; i < (Math.min(items.size(), newItems.size())); i++) {

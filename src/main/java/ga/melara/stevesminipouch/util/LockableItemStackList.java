@@ -16,23 +16,20 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 public class LockableItemStackList extends NonNullList<ItemStack> {
-
-    private List<ItemStack> mutableList;
 
     private final Inventory inventory;
 
     private static final ItemStack defaultItem = ItemStack.EMPTY;
 
-    private Consumer<ItemStack> observer = itemStack -> {
+    private BiConsumer<Integer, ItemStack> observer = (itemStack, slot) -> {
     };
 
     private boolean isActivateObserver = false;
 
-    public void setObserver(Consumer<ItemStack> observer) {
+    public void setObserver(BiConsumer<Integer, ItemStack> observer) {
         this.observer = observer;
         isActivateObserver = true;
     }
@@ -96,6 +93,16 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
     }
 
 
+    public NonNullList<ItemStack> copyData()
+    {
+        NonNullList<ItemStack> copy = NonNullList.withSize(this.size(), ItemStack.EMPTY);
+        for(int i=0; i<this.size(); i++){
+            copy.set(i, this.get(i));
+        }
+        return copy;
+    }
+
+
     @Override
     @Nonnull
     public ItemStack get(int id) {
@@ -114,7 +121,7 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
         }
 
         ItemStack result = super.set(id, itemStack);
-        if(isActivateObserver) this.observer.accept(itemStack);
+        if(isActivateObserver) this.observer.accept(id, itemStack);
         return result;
     }
 
@@ -123,7 +130,7 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
         if(id > this.size()-1) return defaultItem;
         if(lockList.get(id)) return defaultItem;
         ItemStack result = super.remove(id);
-        if(isActivateObserver) this.observer.accept(ItemStack.EMPTY);
+        if(isActivateObserver) this.observer.accept(id, ItemStack.EMPTY);
         return result;
     }
 
