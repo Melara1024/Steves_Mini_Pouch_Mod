@@ -18,6 +18,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +26,14 @@ import java.util.Objects;
 
 import static ga.melara.stevesminipouch.StevesMiniPouch.LOGGER;
 
+@Mod.EventBusSubscriber
 public class KeepPouchEvent {
 
     private static final String KEEP_POUCH_TAG = "KeepMiniPouch";
     private static final String CHARM_INV_TAG = "TFCharmInventory";
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public void onDeath(LivingDeathEvent e) {
+    public static void onDeath(LivingDeathEvent e) {
 
         if(!(e.getEntity() instanceof ServerPlayer player)) return;
 
@@ -85,7 +87,7 @@ public class KeepPouchEvent {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public void keepStats(PlayerEvent.PlayerRespawnEvent e) {
+    public static void keepStats(PlayerEvent.PlayerRespawnEvent e) {
 
         //Todo どこかのイベントがインスタンスを無尽蔵に増やしている(or生成しまくっている？)
         //Todo どこかのパケットがインベントリサイズをいじるせいでアイテムを投げてしまう
@@ -107,7 +109,7 @@ public class KeepPouchEvent {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public void onRespawn(PlayerEvent.PlayerRespawnEvent e) {
+    public static void onRespawn(PlayerEvent.PlayerRespawnEvent e) {
 
         if(!(e.getEntity() instanceof ServerPlayer player)) return;
 
