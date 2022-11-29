@@ -226,6 +226,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
         if(player.getUUID().equals(e.getEntity().getUUID())){
             Inventory keepInventory = new Inventory(null);
+            // このインベントリは36スロットのまま！！
             ListTag tagList = new ListTag();
 
             for (int i = 36; i < player.getInventory().items.size(); i++) {
