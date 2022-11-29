@@ -4,6 +4,7 @@ import ga.melara.stevesminipouch.stats.InventorySyncPacket;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.util.ICustomInventory;
 import ga.melara.stevesminipouch.util.LockableItemStackList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,17 +33,18 @@ public class KeepPouchEvent {
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onDeath(LivingDeathEvent e) {
 
-        //Todo プレイヤーに情報を書き込む
+        if(!(e.getEntity() instanceof ServerPlayer player)) return;
 
-        if(Objects.isNull(player) || !e.getEntity().getUUID().equals(this.player.getUUID())) return;
+        ICustomInventory inv = (ICustomInventory) player.getInventory();
+
+        if(Objects.isNull(player) || !e.getEntity().getUUID().equals(player.getUUID())) return;
 
         LOGGER.warn("death");
-        LOGGER.debug(this.getAllData().toString());
-        // インベントリ状態引き継ぎ用
-        isOldInventory = true;
+        LOGGER.debug(inv.getAllData().toString());
 
-        // 死亡時にインベントリの内容をタグに保存する
-        // すでに保存されていた場合は飛ばす
+
+        //Todo ここでインベントリ状態をタグに保存
+
 
         if(Objects.isNull(player)) return;
 
@@ -58,10 +60,12 @@ public class KeepPouchEvent {
 
         if(player.getUUID().equals(e.getEntity().getUUID())) {
             Inventory keepInventory = new Inventory(player);
-            ((ICustomInventory) keepInventory).changeStorageSize(this.getInventorySize());
+            ((ICustomInventory) keepInventory).changeStorageSize(inv.getInventorySize());
 
             // このインベントリは36スロットのまま！！
             ListTag tagList = new ListTag();
+            NonNullList<ItemStack> backUpPouch = inv.getBackUpPouch();
+
 
             for(int i = 36; i < backUpPouch.size(); ++i) {
                 if(!backUpPouch.get(i).isEmpty()) {
@@ -70,7 +74,7 @@ public class KeepPouchEvent {
                     backUpPouch.get(i).save(compoundtag);
                     tagList.add(compoundtag);
                     backUpPouch.set(i, ItemStack.EMPTY);
-                    items.set(i, ItemStack.EMPTY);
+                    player.getInventory().items.set(i, ItemStack.EMPTY);
                 }
             }
 
@@ -88,39 +92,40 @@ public class KeepPouchEvent {
 
         //todo インベントリ状態の引き継ぎもタグでやる
 
-        if(Objects.isNull(player) || player.getLevel().isClientSide() || !e.getEntity().getUUID().equals(this.player.getUUID())) return;
+        if(!(e.getEntity() instanceof ServerPlayer player)) return;
 
-        if(isOldInventory && Objects.nonNull(player)) {
-            if(!(e.getEntity() instanceof ServerPlayer serverPlayer)) return;
+        if(player.getLevel().isClientSide()) return;
 
-            ICustomInventory inv = (ICustomInventory) serverPlayer.getInventory();
-            synchronized(compartments) {
+        if(!(e.getEntity() instanceof ServerPlayer serverPlayer)) return;
 
-                inv.initMiniPouch(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
-                if(!serverPlayer.getLevel().isClientSide)
-                    Messager.sendToPlayer(new InventorySyncPacket(this.getAllData()), serverPlayer);
-            }
-            MinecraftForge.EVENT_BUS.unregister(this);
-        }
+        ICustomInventory inv = (ICustomInventory) serverPlayer.getInventory();
+
+        // プレイヤーのタグから情報を受け取って新しいインベントリに反映する
+
+        //Fixme inv.initMiniPouch(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
+        //Fixme Messager.sendToPlayer(new InventorySyncPacket(this.getAllData()), serverPlayer);
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onRespawn(PlayerEvent.PlayerRespawnEvent e) {
-        if(Objects.isNull(player) || player.getLevel().isClientSide() || !e.getEntity().getUUID().equals(this.player.getUUID())) return;
 
-        if(!(e.getEntity() instanceof ServerPlayer serverPlayer)) return;
+        if(!(e.getEntity() instanceof ServerPlayer player)) return;
+
+        if(player.getLevel().isClientSide()) return;
+
+
 
         // Because both the size and the item list are being tweaked, the data will break if this is executed in parallel.
-        synchronized(serverPlayer) {
+        synchronized(player) {
 
-            CompoundTag playerData = getPlayerData(serverPlayer);
-            if(!serverPlayer.getLevel().isClientSide() && playerData.contains(KEEP_POUCH_TAG)) {
+            CompoundTag playerData = getPlayerData(player);
+            if(!player.getLevel().isClientSide() && playerData.contains(KEEP_POUCH_TAG)) {
                 ListTag tag = playerData.getList(KEEP_POUCH_TAG, 10);
 
-                LockableItemStackList items = (LockableItemStackList) serverPlayer.getInventory().items;
+                LockableItemStackList items = (LockableItemStackList) player.getInventory().items;
                 List<ItemStack> blockedItems = new ArrayList<ItemStack>();
 
-                synchronized(serverPlayer.getInventory().items) {
+                synchronized(player.getInventory().items) {
 
                     for(int i = 0; i < tag.size(); ++i) {
                         CompoundTag compoundtag = tag.getCompound(i);
@@ -137,7 +142,7 @@ public class KeepPouchEvent {
                             }
                         }
                     }
-                    if(!blockedItems.isEmpty()) blockedItems.forEach(serverPlayer.getInventory()::add);
+                    if(!blockedItems.isEmpty()) blockedItems.forEach(player.getInventory()::add);
                 }
 
 

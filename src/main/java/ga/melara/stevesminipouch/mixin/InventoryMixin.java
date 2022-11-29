@@ -204,7 +204,12 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     private boolean isOldInventory = false;
     // Pouch backup for ability to retain items after death
-    private NonNullList<ItemStack> backUpPouch;
+    public NonNullList<ItemStack> backUpPouch;
+    @Override
+    public NonNullList<ItemStack> getBackUpPouch()
+    {
+        return backUpPouch;
+    }
 
     private static final String KEEP_POUCH_TAG = "KeepMiniPouch";
     private static final String CHARM_INV_TAG = "TFCharmInventory";
