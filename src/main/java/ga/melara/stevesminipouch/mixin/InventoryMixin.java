@@ -5,16 +5,12 @@ import ga.melara.stevesminipouch.ModRegistry;
 import ga.melara.stevesminipouch.event.ClientEffectSlotSyncEvent;
 import ga.melara.stevesminipouch.event.InitMenuEvent;
 import ga.melara.stevesminipouch.event.InventorySyncEvent;
-import ga.melara.stevesminipouch.stats.InventorySyncPacket;
-import ga.melara.stevesminipouch.stats.Messager;
-import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
+import ga.melara.stevesminipouch.stats.InventoryStatsData;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -23,17 +19,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.IEventListener;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -184,6 +174,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     }
 
+    @Override
     public void initServer(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft) {
         System.out.println("init server");
         initMiniPouch(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
@@ -192,7 +183,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @Override
     @SubscribeEvent
     public void initClient(InventorySyncEvent e) {
-        PlayerInventorySizeData data = e.getData();
+        InventoryStatsData data = e.getData();
         initMiniPouch(data.getInventorySize(),
                 data.getEffectSize(),
                 data.isActiveInventory(),
@@ -259,7 +250,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
         if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu)) {
             initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
-            ((IMenuSynchronizer) this.player.containerMenu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
+            ((IMenuSynchronizer) this.player.containerMenu).initMenu(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
         }
     }
 
@@ -267,7 +258,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     public void onInitMenu(InitMenuEvent e) {
         System.out.println("on init menu");
         AbstractContainerMenu menu = e.getMenu();
-        ((IMenuSynchronizer) menu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
+        ((IMenuSynchronizer) menu).initMenu(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
     }
 
 
@@ -561,8 +552,8 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     }
 
     @Override
-    public PlayerInventorySizeData getAllData() {
-        return new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
+    public InventoryStatsData getAllData() {
+        return new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
     }
 
     @Override
@@ -815,7 +806,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         tag.putBoolean("craft", this.isActiveCraft);
 
         initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
-        ((IMenuSynchronizer) this.player.containerMenu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
+        ((IMenuSynchronizer) this.player.containerMenu).initMenu(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
         return tag;
     }
 
@@ -854,6 +845,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                         tag.contains("craft") ? tag.getBoolean("craft") : Config.DEFAULT_CRAFT.get());
 
         initServer(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
-        ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
+        ((IMenuSynchronizer) player.containerMenu).initMenu(new InventoryStatsData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
     }
 }

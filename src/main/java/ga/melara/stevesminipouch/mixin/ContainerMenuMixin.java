@@ -2,7 +2,7 @@ package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.event.InitMenuEvent;
 import ga.melara.stevesminipouch.event.PageReduceEvent;
-import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
+import ga.melara.stevesminipouch.stats.InventoryStatsData;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
 import ga.melara.stevesminipouch.event.ServerPageChangeEvent;
 import ga.melara.stevesminipouch.util.*;
@@ -44,7 +44,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     @Nullable
     private ContainerSynchronizer synchronizer;
 
-    PlayerInventorySizeData data = new PlayerInventorySizeData();
+    InventoryStatsData data = new InventoryStatsData();
 
     @Override
     public void setStatsSynchronizer(StatsSynchronizer synchronizer) {
@@ -53,7 +53,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
         synchronizer.sendInitialData(data);
     }
 
-    public void initMenu(PlayerInventorySizeData data) {
+    public void initMenu(InventoryStatsData data) {
         this.data = data;
     }
 

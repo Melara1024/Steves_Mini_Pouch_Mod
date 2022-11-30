@@ -1,14 +1,16 @@
 package ga.melara.stevesminipouch.util;
 
-import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
+import ga.melara.stevesminipouch.stats.InventoryStatsData;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public interface ICustomInventory {
 
+
+
     void initMiniPouch(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft);
 
+    void initServer(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft);
     void setInventory(boolean set);
     void toggleInventory();
 
@@ -51,7 +53,7 @@ public interface ICustomInventory {
 
     int getHotbarSize();
 
-    PlayerInventorySizeData getAllData();
+    InventoryStatsData getAllData();
 
     NonNullList<ItemStack> getBackUpPouch();
 }
