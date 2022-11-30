@@ -176,7 +176,7 @@ public class KeepPouchEvents {
             System.out.println("craft ->" + isActiveCraft);
 
             ((ICustomInventory) player.getInventory()).initServer(inventorySize, 0, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
-            ((IMenuSynchronizer) player.containerMenu).initMenu(new InventoryStatsData(inventorySize, 0, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
+            ((IMenuSynchronizer) player.containerMenu).setdataToClient(new InventoryStatsData(inventorySize, 0, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
         }
     }
 

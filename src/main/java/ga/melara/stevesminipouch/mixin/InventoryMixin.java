@@ -180,9 +180,12 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
 
     @SubscribeEvent
-    private static void initClient(InventorySyncEvent e) {
+    private void initClient(InventorySyncEvent e) {
+        //uuid??
+        //ダミーインベントリが飛ばしたイベントを拾っているのでは？？
+        //ほかのインスタンスイベントについてもイベントの混線が無いか確認
         InventoryStatsData data = e.getData();
-        ((ICustomInventory)e.getPlayer().getInventory()).initMiniPouch(data.getInventorySize(),
+        initMiniPouch(data.getInventorySize(),
                 data.getEffectSize(),
                 data.isActiveInventory(),
                 data.isActiveArmor(),
@@ -218,7 +221,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         }
 
         if(Objects.nonNull(player)) MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(this.getClass());
 
         // When the player first enters the world, it will be initialized according to the Config values.
         items = LockableItemStackList.withSize((maxPage + 1) * 27 + 9, (Inventory) (Object) this, false);
@@ -255,11 +257,8 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     @SubscribeEvent
     public void onInitMenu(InitMenuEvent e) {
-        System.out.println("on init menu");
-        System.out.println(this.inventorySize);
-        System.out.println(Thread.currentThread().getName());
         AbstractContainerMenu menu = e.getMenu();
-        ((IMenuSynchronizer) menu).initMenu(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
+        //((IMenuSynchronizer) menu).setdataToClient(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
     }
 
 
@@ -806,8 +805,9 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         tag.putBoolean("offhand", this.isActiveOffhand);
         tag.putBoolean("craft", this.isActiveCraft);
 
+        //本当に必要か確認
         initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
-        ((IMenuSynchronizer) this.player.containerMenu).initMenu(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
+        ((IMenuSynchronizer) this.player.containerMenu).setdataToClient(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
         return tag;
     }
 
@@ -846,6 +846,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                         tag.contains("craft") ? tag.getBoolean("craft") : Config.DEFAULT_CRAFT.get());
 
         initServer(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
-        ((IMenuSynchronizer) player.containerMenu).initMenu(new InventoryStatsData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
+        ((IMenuSynchronizer) player.containerMenu).setdataToClient(new InventoryStatsData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
     }
 }

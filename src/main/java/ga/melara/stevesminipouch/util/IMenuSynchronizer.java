@@ -6,5 +6,5 @@ import ga.melara.stevesminipouch.stats.StatsSynchronizer;
 public interface IMenuSynchronizer {
     void setStatsSynchronizer(StatsSynchronizer synchronizer);
 
-    void initMenu(InventoryStatsData data);
+    void setdataToClient(InventoryStatsData data);
 }

@@ -53,7 +53,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
         synchronizer.sendInitialData(data);
     }
 
-    public void initMenu(InventoryStatsData data) {
+    public void setdataToClient(InventoryStatsData data) {
         this.data = data;
     }
 
