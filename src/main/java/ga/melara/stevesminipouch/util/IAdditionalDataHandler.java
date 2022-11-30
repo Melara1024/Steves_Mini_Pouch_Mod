@@ -14,5 +14,4 @@ public interface IAdditionalDataHandler {
 
     void loadAdditional(ListTag tag);
 
-    void initClient(InventorySyncEvent e);
 }

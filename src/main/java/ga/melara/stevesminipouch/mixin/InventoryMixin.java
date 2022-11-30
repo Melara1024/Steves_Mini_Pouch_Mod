@@ -108,8 +108,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         return 0;
     }
 
-    ;
-
 
     @Shadow
     public abstract boolean contains(ItemStack pStack);
@@ -180,11 +178,11 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         initMiniPouch(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
     }
 
-    @Override
+
     @SubscribeEvent
-    public void initClient(InventorySyncEvent e) {
+    private static void initClient(InventorySyncEvent e) {
         InventoryStatsData data = e.getData();
-        initMiniPouch(data.getInventorySize(),
+        ((ICustomInventory)e.getPlayer().getInventory()).initMiniPouch(data.getInventorySize(),
                 data.getEffectSize(),
                 data.isActiveInventory(),
                 data.isActiveArmor(),
@@ -220,6 +218,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         }
 
         if(Objects.nonNull(player)) MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(this.getClass());
 
         // When the player first enters the world, it will be initialized according to the Config values.
         items = LockableItemStackList.withSize((maxPage + 1) * 27 + 9, (Inventory) (Object) this, false);
@@ -248,15 +247,17 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         compartments.add(1, armor);
         compartments.add(2, offhand);
 
-        if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu)) {
-            initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
-            ((IMenuSynchronizer) this.player.containerMenu).initMenu(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
-        }
+//        if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu)) {
+//            initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
+//            ((IMenuSynchronizer) this.player.containerMenu).initMenu(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
+//        }
     }
 
     @SubscribeEvent
     public void onInitMenu(InitMenuEvent e) {
         System.out.println("on init menu");
+        System.out.println(this.inventorySize);
+        System.out.println(Thread.currentThread().getName());
         AbstractContainerMenu menu = e.getMenu();
         ((IMenuSynchronizer) menu).initMenu(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
     }

@@ -31,6 +31,7 @@ public class KeepPouchEvents {
     private static final String CHARM_INV_TAG = "TFCharmInventory";
 
 
+
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void preserveStats(LivingDeathEvent e) {
 
@@ -39,7 +40,7 @@ public class KeepPouchEvents {
         if (!(e.getEntity() instanceof ServerPlayer player)) return;
 
         //インベントリ状態を維持するかの判定
-        boolean gamerule = e.getEntity().getLevel().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
+        boolean gamerule = player.getLevel().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
         boolean twilight_forest_charm = false;
         if (ModList.get().isLoaded("twilightforest")) {
             //CharmEvent priority is HIGHEST, so this event called after that.
@@ -62,6 +63,14 @@ public class KeepPouchEvents {
         tag.putBoolean("armor", inv.isActiveArmor());
         tag.putBoolean("offhand", inv.isActiveOffhand());
         tag.putBoolean("craft", inv.isActiveCraft());
+
+        System.out.println("keep stats");
+        System.out.println("inventory ->" + inv.getBaseSize());
+        System.out.println("effect ->" + inv.getEffectSize());
+        System.out.println("inventory ->" + inv.isActiveInventory());
+        System.out.println("armor ->" + inv.isActiveArmor());
+        System.out.println("offhand ->" + inv.isActiveOffhand());
+        System.out.println("craft ->" + inv.isActiveCraft());
 
         getPlayerData(player).put(KEEP_STATS_TAG, tag);
     }
@@ -157,9 +166,17 @@ public class KeepPouchEvents {
                             tag.contains("craft") ? tag.getBoolean("craft") : Config.DEFAULT_CRAFT.get());
 
 
+            //エフェクトは0にしたほうがいいかも
             System.out.println("return stats");
-            ((ICustomInventory) player.getInventory()).initServer(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
-            ((IMenuSynchronizer) player.containerMenu).initMenu(new InventoryStatsData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
+            System.out.println("inventory ->" + inventorySize);
+            System.out.println("effect ->" + effectSize);
+            System.out.println("inventory ->" + isActiveInventory);
+            System.out.println("armor ->" + isActiveArmor);
+            System.out.println("offhand ->" + isActiveOffhand);
+            System.out.println("craft ->" + isActiveCraft);
+
+            ((ICustomInventory) player.getInventory()).initServer(inventorySize, 0, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
+            ((IMenuSynchronizer) player.containerMenu).initMenu(new InventoryStatsData(inventorySize, 0, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
         }
     }
 

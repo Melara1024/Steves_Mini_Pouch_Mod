@@ -2,6 +2,7 @@ package ga.melara.stevesminipouch.stats;
 
 import ga.melara.stevesminipouch.event.InventorySyncEvent;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -40,7 +41,7 @@ public class InventorySyncPacket {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
             System.out.println("packet handled");
-            MinecraftForge.EVENT_BUS.post(new InventorySyncEvent(this.data));
+            MinecraftForge.EVENT_BUS.post(new InventorySyncEvent(ctx.getSender(), this.data));
             ctx.setPacketHandled(true);
         });
         return true;
