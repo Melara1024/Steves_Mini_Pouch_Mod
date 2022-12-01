@@ -237,27 +237,38 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         compartments.add(0, items);
         compartments.add(1, armor);
         compartments.add(2, offhand);
+
+        //for curious
+        if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu)) {
+            initServer(getAllData());
+            ((IMenuSynchronizer) this.player.containerMenu).setdataToClient(getAllData());
+        }
     }
 
     @SubscribeEvent
     public void onInitMenu(InitMenuEvent e) {
         AbstractContainerMenu menu = e.getMenu();
-
-        if(!(menu == this.player.containerMenu) || !(menu == this.player.inventoryMenu)) return;
-
+        if (Objects.isNull(this.player)) return;
+        if (Objects.isNull(player.inventoryMenu) && Objects.isNull(player.containerMenu)) return;
+        if (!(menu.containerId == this.player.containerMenu.containerId) &&
+                !(menu.containerId == this.player.inventoryMenu.containerId)) return;
         ((IMenuSynchronizer) menu).setdataToClient(this.getAllData());
+
+        // Todo なんか凄まじい量のInitMenuEventが発火されてる
+        LOGGER.info(String.valueOf(Thread.currentThread().getName()));
+        LOGGER.info(String.valueOf(this.inventorySize));
     }
 
     @Inject(method = "getSlotWithRemainingSpace(Lnet/minecraft/world/item/ItemStack;)I", at = @At(value = "HEAD"), cancellable = true)
-    public void onGetRemainingSpace(ItemStack p_36051_, CallbackInfoReturnable<Integer> cir) {
+    public void onGetRemainingSpace(ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
         if(!avoidMiniPouch()) {
-            if(this.hasRemainingSpaceForItem(this.getItem(this.selected), p_36051_)) {
+            if(this.hasRemainingSpaceForItem(this.getItem(this.selected), itemStack)) {
                 cir.setReturnValue(this.selected);
-            } else if(this.hasRemainingSpaceForItem(this.getItem(40), p_36051_)) {
+            } else if(this.hasRemainingSpaceForItem(this.getItem(40), itemStack)) {
                 cir.setReturnValue(40);
             } else {
                 for(int i = 0; i < this.items.size(); ++i) {
-                    if(this.hasRemainingSpaceForItem(this.items.get(i), p_36051_)) {
+                    if(this.hasRemainingSpaceForItem(this.items.get(i), itemStack)) {
                         if(i < 36) cir.setReturnValue(i);
                             // Added slots are detected as free space
                         else cir.setReturnValue(i + 5);

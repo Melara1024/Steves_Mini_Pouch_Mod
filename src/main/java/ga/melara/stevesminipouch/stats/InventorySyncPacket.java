@@ -27,10 +27,9 @@ public class InventorySyncPacket {
         boolean isActivateCraft = buf.readBoolean();
         int slot = buf.readInt();
         int effectSlot = buf.readInt();
+        this.senderUUID = buf.readUUID();
 
         this.data = new InventoryStatsData(slot, effectSlot, isActivateInventory, isActivateArmor, isActiveOffhand, isActivateCraft);
-
-        this.senderUUID = buf.readUUID();
     }
 
     public void toBytes(FriendlyByteBuf buf) {
@@ -40,15 +39,13 @@ public class InventorySyncPacket {
         buf.writeBoolean(this.data.isActiveCraft());
         buf.writeInt(this.data.getInventorySize());
         buf.writeInt(this.data.getEffectSize());
-
         buf.writeUUID(this.senderUUID);
     }
 
-    //こいつ自身はサーバーのクラス
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            MinecraftForge.EVENT_BUS.post(new InventorySyncEvent(senderUUID, this.data));
+            MinecraftForge.EVENT_BUS.post(new InventorySyncEvent(this.senderUUID, this.data));
             ctx.setPacketHandled(true);
         });
         return true;

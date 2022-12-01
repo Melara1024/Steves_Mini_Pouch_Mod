@@ -107,7 +107,6 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
 
         // If the slot is locked, throw the item in its place.
         if(id > this.size()-1 || lockList.get(id)) {
-            System.out.println("setThrow " + id + ": " + itemStack);
             throwItem(inventory.player, itemStack);
             return defaultItem;
         }
