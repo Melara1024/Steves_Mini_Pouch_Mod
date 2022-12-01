@@ -292,9 +292,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             setArmor(false);
             setCraft(false);
             setStorageSize(1);
-
-            LOGGER.info("setInventory to false");
-            LOGGER.info(Thread.currentThread().getName());
         }
         this.isActiveInventory = setFlag;
         if(Objects.isNull(player)) return;
