@@ -46,6 +46,8 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
     InventoryStatsData data = new InventoryStatsData();
 
+
+
     @Override
     public void setStatsSynchronizer(StatsSynchronizer synchronizer) {
         // Send information to the client via serverPlayer.
@@ -65,6 +67,8 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
     @SubscribeEvent
     public void onPageChange(ServerPageChangeEvent e) {
+
+        //Todo 混線を防ぐ
 
         for(Slot s : this.slots) {
             ((IHasSlotPage) s).setPage(e.getPage());

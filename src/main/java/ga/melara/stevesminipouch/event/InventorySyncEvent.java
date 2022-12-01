@@ -5,13 +5,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.event.IModBusEvent;
 
+import java.util.UUID;
+
 public class InventorySyncEvent extends Event implements IModBusEvent {
     InventoryStatsData data;
-    Player player;
+    UUID senderUUID;
+
 
     // Event when inventory state is synchronized to the client.
-    public InventorySyncEvent(Player player, InventoryStatsData data) {
-        this.player = player;
+    public InventorySyncEvent(UUID uuid, InventoryStatsData data) {
+        this.senderUUID = uuid;
         this.data = data;
     }
 
@@ -19,5 +22,5 @@ public class InventorySyncEvent extends Event implements IModBusEvent {
         return this.data;
     }
 
-    public Player getPlayer(){return this.player;}
+    public UUID getUUID(){return this.senderUUID;}
 }

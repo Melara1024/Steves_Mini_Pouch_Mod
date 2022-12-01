@@ -6,14 +6,18 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public class InventorySyncPacket {
 
     InventoryStatsData data;
 
-    public InventorySyncPacket(InventoryStatsData data) {
+    UUID senderUUID;
+
+    public InventorySyncPacket(InventoryStatsData data, UUID uuid) {
         this.data = data;
+        this.senderUUID = uuid;
     }
 
     public InventorySyncPacket(FriendlyByteBuf buf) {
@@ -25,6 +29,8 @@ public class InventorySyncPacket {
         int effectSlot = buf.readInt();
 
         this.data = new InventoryStatsData(slot, effectSlot, isActivateInventory, isActivateArmor, isActiveOffhand, isActivateCraft);
+
+        this.senderUUID = buf.readUUID();
     }
 
     public void toBytes(FriendlyByteBuf buf) {
@@ -34,6 +40,8 @@ public class InventorySyncPacket {
         buf.writeBoolean(this.data.isActiveCraft());
         buf.writeInt(this.data.getInventorySize());
         buf.writeInt(this.data.getEffectSize());
+
+        buf.writeUUID(this.senderUUID);
     }
 
     //こいつ自身はサーバーのクラス
@@ -41,7 +49,7 @@ public class InventorySyncPacket {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
             System.out.println("packet handled");
-            MinecraftForge.EVENT_BUS.post(new InventorySyncEvent(ctx.getSender(), this.data));
+            MinecraftForge.EVENT_BUS.post(new InventorySyncEvent(senderUUID, this.data));
             ctx.setPacketHandled(true);
         });
         return true;

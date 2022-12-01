@@ -201,6 +201,8 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
     @SubscribeEvent
     public void onPageReduce(PageReduceEvent e) {
+
+        //Todo 混線は防ぐ必要なし
         page = 0;
         Messager.sendToServer(new PageChangedPacket(0));
         this.menu.slots.forEach(slot -> {

@@ -31,7 +31,8 @@ public class ArmorActivateItem extends FunctionFoodItem {
         ICustomInventory inventory = (ICustomInventory) player.getInventory();
         inventory.toggleArmor();
         if(!(player instanceof ServerPlayer serverPlayer)) return;
-        Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData()), serverPlayer);
+        System.out.println("item armor");
+        Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData(), serverPlayer.getUUID()), serverPlayer);
     }
 
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {

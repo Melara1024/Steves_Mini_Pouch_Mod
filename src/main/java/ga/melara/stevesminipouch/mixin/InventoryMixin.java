@@ -22,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Final;
@@ -180,10 +181,20 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
 
     @SubscribeEvent
-    private void initClient(InventorySyncEvent e) {
+    public void initClient(InventorySyncEvent e) {
         //uuid??
         //ダミーインベントリが飛ばしたイベントを拾っているのでは？？
         //ほかのインスタンスイベントについてもイベントの混線が無いか確認
+
+        //まさかprivateにしていたせいで他のクラスから呼べなくなっていた？
+
+        //そもそもクライアント側イベントなので混戦しないかも
+        //Todo ページ変更イベントはサーバー側なのでほぼ確実に混線する
+        //Todo 送りつけてきたクライアントを特定してそのUUIDを比較に上げるべき
+
+        if(Objects.nonNull(e.getUUID())) System.out.println(e.getUUID());
+        if(Objects.nonNull(player)) System.out.println(player.getUUID());
+
         InventoryStatsData data = e.getData();
         initMiniPouch(data.getInventorySize(),
                 data.getEffectSize(),
@@ -257,10 +268,13 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     @SubscribeEvent
     public void onInitMenu(InitMenuEvent e) {
-        AbstractContainerMenu menu = e.getMenu();
-        //((IMenuSynchronizer) menu).setdataToClient(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
-    }
 
+        //Todo これも混戦しないか？
+        //Inventory, Menu, Screenの3つでインスタンスイベントを使っている
+        //やっぱりStatic化は有効かもしれない
+        AbstractContainerMenu menu = e.getMenu();
+        ((IMenuSynchronizer) menu).setdataToClient(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
+    }
 
     @Inject(method = "getSlotWithRemainingSpace(Lnet/minecraft/world/item/ItemStack;)I", at = @At(value = "HEAD"), cancellable = true)
     public void onGetRemainingSpace(ItemStack p_36051_, CallbackInfoReturnable<Integer> cir) {
@@ -405,6 +419,14 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     public void setStorageSize(int change) {
         System.out.println("set storage size " + change);
         changeStorageSize(change - inventorySize);
+    }
+
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
+    public void onchat(ClientChatEvent e)
+    {
+        System.out.println("now storage size");
+        System.out.println(this.inventorySize);
     }
 
 

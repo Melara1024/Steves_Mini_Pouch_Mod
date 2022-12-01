@@ -31,7 +31,8 @@ public class OffhandActivateItem extends FunctionFoodItem {
         ICustomInventory inventory = (ICustomInventory) player.getInventory();
         inventory.toggleOffhand();
         if(!(player instanceof ServerPlayer serverPlayer)) return;
-        Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData()), serverPlayer);
+        System.out.println("offhand item");
+        Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData(), serverPlayer.getUUID()), serverPlayer);
     }
 
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
