@@ -20,20 +20,18 @@ public class SlotEffect extends MobEffect {
 
     @Override
     public void removeAttributeModifiers(LivingEntity livingentity, AttributeMap attributeMap, int effectPower) {
-        if(livingentity instanceof Player player) {
+        if(livingentity instanceof ServerPlayer player) {
             ((ICustomInventory) player.getInventory()).changeEffectSize(0);
-            if(player instanceof ServerPlayer serverPlayer)
-                Messager.sendToPlayer(new EffectSlotSyncPacket(0), serverPlayer);
+            Messager.sendToPlayer(new EffectSlotSyncPacket(0), player);
         }
         super.removeAttributeModifiers(livingentity, attributeMap, effectPower);
     }
 
     @Override
     public void addAttributeModifiers(LivingEntity livingentity, AttributeMap attributeMap, int effectPower) {
-        if(livingentity instanceof Player player) {
+        if(livingentity instanceof ServerPlayer player) {
             ((ICustomInventory) player.getInventory()).changeEffectSize(effectPower);
-            if(player instanceof ServerPlayer serverPlayer)
-                Messager.sendToPlayer(new EffectSlotSyncPacket(effectPower), serverPlayer);
+            Messager.sendToPlayer(new EffectSlotSyncPacket(effectPower), player);
         }
         super.addAttributeModifiers(livingentity, attributeMap, effectPower);
     }

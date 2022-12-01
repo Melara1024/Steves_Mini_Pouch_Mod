@@ -108,32 +108,21 @@ public class KeepPouchEvents {
 
             CompoundTag tag = data.getCompound(KEEP_STATS_TAG);
 
-            int inventorySize;
-            if (Config.FORCE_SIZE.get()) {
-                inventorySize = Config.MAX_SIZE.get();
-            } else if (tag.contains("inventorysize")) {
-                int size = tag.getInt("inventorysize");
-                if (size > Config.MAX_SIZE.get()) {
-                    inventorySize = Config.MAX_SIZE.get();
-                } else {
-                    inventorySize = size;
-                }
-            } else {
-                inventorySize = Math.min(Config.DEFAULT_SIZE.get(), Config.MAX_SIZE.get());
-            }
+            int inventorySize = Math.min(Config.DEFAULT_SIZE.get(), Config.MAX_SIZE.get());
+            if(tag.contains("inventorysize")) inventorySize = Math.min(Config.MAX_SIZE.get(), tag.getInt("inventorysize"));
+            if(Config.FORCE_SIZE.get()) inventorySize = Config.MAX_SIZE.get();
 
-            boolean isActiveInventory =
-                    Config.FORCE_INVENTORY.get() ? Config.DEFAULT_INVENTORY.get() :
-                            tag.contains("inventory") ? tag.getBoolean("inventory") : Config.DEFAULT_INVENTORY.get();
-            boolean isActiveArmor =
-                    !Config.FORCE_INVENTORY.get() && (Config.FORCE_ARMOR.get() ? Config.DEFAULT_ARMOR.get() :
-                            tag.contains("armor") ? tag.getBoolean("armor") : Config.DEFAULT_ARMOR.get());
-            boolean isActiveOffhand =
-                    Config.FORCE_OFFHAND.get() ? Config.DEFAULT_OFFHAND.get() :
-                            tag.contains("offhand") ? tag.getBoolean("offhand") : Config.DEFAULT_OFFHAND.get();
-            boolean isActiveCraft =
-                    !Config.FORCE_INVENTORY.get() && (Config.FORCE_CRAFT.get() ? Config.DEFAULT_CRAFT.get() :
-                            tag.contains("craft") ? tag.getBoolean("craft") : Config.DEFAULT_CRAFT.get());
+            boolean isActiveInventory = Config.DEFAULT_INVENTORY.get();
+            if(!Config.FORCE_INVENTORY.get() && tag.contains("inventory")) isActiveInventory =  tag.getBoolean("inventory");
+
+            boolean isActiveArmor = Config.DEFAULT_ARMOR.get();
+            if(!Config.FORCE_INVENTORY.get() && tag.contains("armor")) isActiveArmor = tag.getBoolean("armor");
+
+            boolean isActiveOffhand = Config.DEFAULT_OFFHAND.get();
+            if(!Config.FORCE_OFFHAND.get() && tag.contains("offhand")) isActiveOffhand = tag.getBoolean("offhand");
+
+            boolean isActiveCraft = Config.DEFAULT_CRAFT.get();
+            if(!Config.FORCE_CRAFT.get() && tag.contains("craft")) isActiveCraft = tag.getBoolean("craft");
 
             InventoryStatsData stats = new InventoryStatsData(inventorySize, 0, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
             ((ICustomInventory) player.getInventory()).initServer(stats);

@@ -23,6 +23,6 @@ public class SlotItem extends FunctionFoodItem {
         ICustomInventory inventory = (ICustomInventory) player.getInventory();
         inventory.changeStorageSize(incremental);
         if(!(player instanceof ServerPlayer serverPlayer)) return;
-        Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData(), serverPlayer.getUUID()), serverPlayer);
+        Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData()), serverPlayer);
     }
 }

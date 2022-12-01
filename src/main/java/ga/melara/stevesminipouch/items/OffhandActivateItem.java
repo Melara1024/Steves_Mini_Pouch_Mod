@@ -31,15 +31,15 @@ public class OffhandActivateItem extends FunctionFoodItem {
         ICustomInventory inventory = (ICustomInventory) player.getInventory();
         inventory.toggleOffhand();
         if(!(player instanceof ServerPlayer serverPlayer)) return;
-        Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData(), serverPlayer.getUUID()), serverPlayer);
-    }
-
-    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
-        return ITEMS.register("activate_offhand", OffhandActivateItem::new);
+        Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData()), serverPlayer);
     }
 
     @Override
     public int getRegistryNumber() {
         return 2;
+    }
+
+    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
+        return ITEMS.register("activate_offhand", OffhandActivateItem::new);
     }
 }

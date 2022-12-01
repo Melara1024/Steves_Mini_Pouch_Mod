@@ -79,13 +79,12 @@ public class SlotChangeCommand {
         int applied = 0;
         for(Entity entity : entities) {
             if(entity instanceof ServerPlayer player) {
-                ((ICustomInventory) player.getInventory()).setInventory(activate);
-                Inventory inventory = player.getInventory();
-                Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData(), player.getUUID()), player);
+                ICustomInventory inventory = (ICustomInventory) player.getInventory();
+                inventory.setInventory(activate);
+                Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData()), player);
                 applied++;
             }
         }
-
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
@@ -98,13 +97,12 @@ public class SlotChangeCommand {
         int applied = 0;
         for(Entity entity : entities) {
             if(entity instanceof ServerPlayer player) {
-                ((ICustomInventory) player.getInventory()).setArmor(activate);
-                Inventory inventory = player.getInventory();
-                Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData(), player.getUUID()), player);
+                ICustomInventory inventory = (ICustomInventory) player.getInventory();
+                inventory.setArmor(activate);
+                Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData()), player);
                 applied++;
             }
         }
-
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
@@ -117,13 +115,12 @@ public class SlotChangeCommand {
         int applied = 0;
         for(Entity entity : entities) {
             if(entity instanceof ServerPlayer player) {
-                ((ICustomInventory) player.getInventory()).setOffhand(activate);
-                Inventory inventory = player.getInventory();
-                Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData(), player.getUUID()), player);
+                ICustomInventory inventory = (ICustomInventory) player.getInventory();
+                inventory.setOffhand(activate);
+                Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData()), player);
                 applied++;
             }
         }
-
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
@@ -136,13 +133,12 @@ public class SlotChangeCommand {
         int applied = 0;
         for(Entity entity : entities) {
             if(entity instanceof ServerPlayer player) {
-                ((ICustomInventory) player.getInventory()).setCraft(activate);
-                Inventory inventory = player.getInventory();
-                Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData(), player.getUUID()), player);
+                ICustomInventory inventory = (ICustomInventory) player.getInventory();
+                inventory.setCraft(activate);
+                Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData()), player);
                 applied++;
             }
         }
-
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
@@ -155,13 +151,12 @@ public class SlotChangeCommand {
         int applied = 0;
         for(Entity entity : entities) {
             if(entity instanceof ServerPlayer player) {
-                ((ICustomInventory) player.getInventory()).setStorageSize(increment);
-                Inventory inventory = player.getInventory();
-                Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData(), player.getUUID()), player);
+                ICustomInventory inventory = (ICustomInventory) player.getInventory();
+                inventory.setStorageSize(increment);
+                Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData()), player);
                 applied++;
             }
         }
-
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
@@ -177,7 +172,6 @@ public class SlotChangeCommand {
                 applied++;
             }
         }
-
         if(applied == 0) {
             throw ERROR_FAILED.create();
         } else {
@@ -185,7 +179,7 @@ public class SlotChangeCommand {
             {
                 // return arg player's stats
                 if(entity instanceof ServerPlayer player) {
-                    ICustomInventory inventory = ((ICustomInventory)player.getInventory());
+                    ICustomInventory inventory = (ICustomInventory)player.getInventory();
                     commandSourceStack.sendSuccess(Component.literal(String.format(
                             "-- %s's inventory stats --\n" +
                             "Inventory: %b\n" +
@@ -202,8 +196,7 @@ public class SlotChangeCommand {
                             inventory.isActiveCraft(),
                             inventory.getBaseSize(),
                             inventory.getEffectSize(),
-                            inventory.getEnchantSize()))
-                            , true);
+                            inventory.getEnchantSize())), true);
                 }
             }
             return applied;

@@ -31,15 +31,15 @@ public class CraftActivatItem extends FunctionFoodItem {
         ICustomInventory inventory = (ICustomInventory) player.getInventory();
         inventory.toggleCraft();
         if(!(player instanceof ServerPlayer serverPlayer)) return;
-        Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData(), serverPlayer.getUUID()), serverPlayer);
-    }
-
-    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
-        return ITEMS.register("activate_craft", CraftActivatItem::new);
+        Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData()), serverPlayer);
     }
 
     @Override
     public int getRegistryNumber() {
         return 3;
+    }
+
+    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
+        return ITEMS.register("activate_craft", CraftActivatItem::new);
     }
 }

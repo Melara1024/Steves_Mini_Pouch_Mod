@@ -32,8 +32,6 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     @Shadow
     public NonNullList<Slot> slots;
 
-    StatsSynchronizer statsSynchronizer;
-
     @Shadow
     @Final
     private List<DataSlot> dataSlots;
@@ -47,8 +45,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     private ContainerSynchronizer synchronizer;
 
     InventoryStatsData data = new InventoryStatsData();
-
-
+    StatsSynchronizer statsSynchronizer;
 
     @Override
     public void setStatsSynchronizer(StatsSynchronizer synchronizer) {
@@ -64,7 +61,6 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     @Inject(method = "<init>", at = @At("RETURN"), cancellable = true)
     public void onConstruct(MenuType menuType, int pContainerId, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.register(this);
-        LOGGER.info("container menu initialized");
         MinecraftForge.EVENT_BUS.post(new InitMenuEvent((AbstractContainerMenu) (Object) this));
     }
 
@@ -113,20 +109,20 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     }
 
     @Override
-    public void updateCraftHiding(Player player) {
+    public void updateOffhandHiding(Player player) {
         for(Slot slot : this.slots) {
-            if(((IHasSlotType) slot).getType() == SlotType.CRAFT || ((IHasSlotType) slot).getType() == SlotType.RESULT) {
-                if(!((ICustomInventory) player.getInventory()).isActiveCraft()) ((ISlotHidable) slot).hide();
+            if(((IHasSlotType) slot).getType() == SlotType.OFFHAND) {
+                if(!((ICustomInventory) player.getInventory()).isActiveOffhand()) ((ISlotHidable) slot).hide();
                 else ((ISlotHidable) slot).show();
             }
         }
     }
 
     @Override
-    public void updateOffhandHiding(Player player) {
+    public void updateCraftHiding(Player player) {
         for(Slot slot : this.slots) {
-            if(((IHasSlotType) slot).getType() == SlotType.OFFHAND) {
-                if(!((ICustomInventory) player.getInventory()).isActiveOffhand()) ((ISlotHidable) slot).hide();
+            if(((IHasSlotType) slot).getType() == SlotType.CRAFT || ((IHasSlotType) slot).getType() == SlotType.RESULT) {
+                if(!((ICustomInventory) player.getInventory()).isActiveCraft()) ((ISlotHidable) slot).hide();
                 else ((ISlotHidable) slot).show();
             }
         }

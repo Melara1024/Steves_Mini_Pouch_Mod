@@ -78,12 +78,6 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
     @Inject(method = "init()V", at = @At(value = "RETURN"), cancellable = true)
     public void oninitRender(CallbackInfo ci) {
-
-        // Always reset the page to 0.
-        page = 0;
-        Messager.sendToServer(new PageChangedPacket(0));
-        this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(0));
-
         this.setBlitOffset(100);
         this.itemRenderer.blitOffset = 100.0F;
 

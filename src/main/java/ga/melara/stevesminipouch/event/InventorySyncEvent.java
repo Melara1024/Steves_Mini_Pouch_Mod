@@ -9,18 +9,13 @@ import java.util.UUID;
 
 public class InventorySyncEvent extends Event implements IModBusEvent {
     InventoryStatsData data;
-    UUID senderUUID;
-
 
     // Event when inventory state is synchronized to the client.
-    public InventorySyncEvent(UUID uuid, InventoryStatsData data) {
-        this.senderUUID = uuid;
+    public InventorySyncEvent( InventoryStatsData data) {
         this.data = data;
     }
 
     public InventoryStatsData getData() {
         return this.data;
     }
-
-    public UUID getUUID(){return this.senderUUID;}
 }
