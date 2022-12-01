@@ -162,46 +162,25 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     }
 
     @Override
-    public void initMiniPouch(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft) {
-
-        this.effectSize = effectSize;
-        setStorageSize(inventorySize);
-        setInventory(isActiveInventory);
-        setArmor(isActiveArmor);
-        setOffhand(isActiveOffhand);
-        setCraft(isActiveCraft);
+    public void initMiniPouch(InventoryStatsData stats) {
+        this.effectSize = stats.getEffectSize();
+        setStorageSize(stats.getInventorySize());
+        setInventory(stats.isActiveInventory());
+        setArmor(stats.isActiveArmor());
+        setOffhand(stats.isActiveOffhand());
+        setCraft(stats.isActiveCraft());
 
     }
 
     @Override
-    public void initServer(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft) {
-        System.out.println("init server");
-        initMiniPouch(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
+    public void initServer(InventoryStatsData stats) {
+        initMiniPouch(stats);
     }
 
 
     @SubscribeEvent
     public void initClient(InventorySyncEvent e) {
-        //uuid??
-        //ダミーインベントリが飛ばしたイベントを拾っているのでは？？
-        //ほかのインスタンスイベントについてもイベントの混線が無いか確認
-
-        //まさかprivateにしていたせいで他のクラスから呼べなくなっていた？
-
-        //そもそもクライアント側イベントなので混戦しないかも
-        //Todo ページ変更イベントはサーバー側なのでほぼ確実に混線する
-        //Todo 送りつけてきたクライアントを特定してそのUUIDを比較に上げるべき
-
-        if(Objects.nonNull(e.getUUID())) System.out.println(e.getUUID());
-        if(Objects.nonNull(player)) System.out.println(player.getUUID());
-
-        InventoryStatsData data = e.getData();
-        initMiniPouch(data.getInventorySize(),
-                data.getEffectSize(),
-                data.isActiveInventory(),
-                data.isActiveArmor(),
-                data.isActiveOffhand(),
-                data.isActiveCraft());
+        initMiniPouch(e.getData());
     }
 
 
@@ -216,7 +195,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))
     public void oninit(Player p_35983_, CallbackInfo ci) {
-        System.out.println("inventory init");
         if(avoidMiniPouch()) {
             inventorySize = 36;
             enchantSize = 0;
@@ -259,21 +237,15 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         compartments.add(0, items);
         compartments.add(1, armor);
         compartments.add(2, offhand);
-
-//        if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu)) {
-//            initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
-//            ((IMenuSynchronizer) this.player.containerMenu).initMenu(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
-//        }
     }
 
     @SubscribeEvent
     public void onInitMenu(InitMenuEvent e) {
-
-        //Todo これも混戦しないか？
-        //Inventory, Menu, Screenの3つでインスタンスイベントを使っている
-        //やっぱりStatic化は有効かもしれない
         AbstractContainerMenu menu = e.getMenu();
-        ((IMenuSynchronizer) menu).setdataToClient(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
+
+        if(!(menu == this.player.containerMenu) || !(menu == this.player.inventoryMenu)) return;
+
+        ((IMenuSynchronizer) menu).setdataToClient(this.getAllData());
     }
 
     @Inject(method = "getSlotWithRemainingSpace(Lnet/minecraft/world/item/ItemStack;)I", at = @At(value = "HEAD"), cancellable = true)
@@ -417,22 +389,12 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     @Override
     public void setStorageSize(int change) {
-        System.out.println("set storage size " + change);
         changeStorageSize(change - inventorySize);
-    }
-
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public void onchat(ClientChatEvent e)
-    {
-        System.out.println("now storage size");
-        System.out.println(this.inventorySize);
     }
 
 
     @Override
     public void changeStorageSize(int change) {
-        System.out.println("change storage size " + change);
         if(Config.FORCE_SIZE.get() || inventorySize + change > Config.MAX_SIZE.get()) {
             inventorySize = Config.MAX_SIZE.get();
         } else {
@@ -483,7 +445,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             for(ItemStack item : items) {
                 if(item == ItemStack.EMPTY) continue;
                 Level level = player.level;
-                System.out.println("changeThrow: " + item);
                 ItemEntity itementity = new ItemEntity(level, player.getX(), player.getEyeY() - 0.3, player.getZ(), item);
                 itementity.setDefaultPickUpDelay();
                 itementity.setThrower(player.getUUID());
@@ -503,7 +464,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @Override
     public void updateStorageSize() {
         // 0 argument can be used to update the number of slots for enchantments and effects.
-        System.out.println("update storage size");
         changeStorageSize(0);
     }
 
@@ -827,9 +787,10 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         tag.putBoolean("offhand", this.isActiveOffhand);
         tag.putBoolean("craft", this.isActiveCraft);
 
+
         //本当に必要か確認
-        initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
-        ((IMenuSynchronizer) this.player.containerMenu).setdataToClient(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
+        initServer(this.getAllData());
+        ((IMenuSynchronizer) this.player.containerMenu).setdataToClient(this.getAllData());
         return tag;
     }
 
@@ -867,7 +828,8 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                 !Config.FORCE_INVENTORY.get() && (Config.FORCE_CRAFT.get() ? Config.DEFAULT_CRAFT.get() :
                         tag.contains("craft") ? tag.getBoolean("craft") : Config.DEFAULT_CRAFT.get());
 
-        initServer(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
-        ((IMenuSynchronizer) player.containerMenu).setdataToClient(new InventoryStatsData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
+        InventoryStatsData stats = new InventoryStatsData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
+        initServer(stats);
+        ((IMenuSynchronizer) player.containerMenu).setdataToClient(stats);
     }
 }

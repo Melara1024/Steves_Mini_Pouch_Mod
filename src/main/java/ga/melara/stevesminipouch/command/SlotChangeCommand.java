@@ -81,7 +81,6 @@ public class SlotChangeCommand {
             if(entity instanceof ServerPlayer player) {
                 ((ICustomInventory) player.getInventory()).setInventory(activate);
                 Inventory inventory = player.getInventory();
-                System.out.println("command setinventory");
                 Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData(), player.getUUID()), player);
                 applied++;
             }
@@ -101,7 +100,6 @@ public class SlotChangeCommand {
             if(entity instanceof ServerPlayer player) {
                 ((ICustomInventory) player.getInventory()).setArmor(activate);
                 Inventory inventory = player.getInventory();
-                System.out.println("command setarmor");
                 Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData(), player.getUUID()), player);
                 applied++;
             }
@@ -121,7 +119,6 @@ public class SlotChangeCommand {
             if(entity instanceof ServerPlayer player) {
                 ((ICustomInventory) player.getInventory()).setOffhand(activate);
                 Inventory inventory = player.getInventory();
-                System.out.println("command setoffhand");
                 Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData(), player.getUUID()), player);
                 applied++;
             }
@@ -141,7 +138,6 @@ public class SlotChangeCommand {
             if(entity instanceof ServerPlayer player) {
                 ((ICustomInventory) player.getInventory()).setCraft(activate);
                 Inventory inventory = player.getInventory();
-                System.out.println("command setcraft");
                 Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData(), player.getUUID()), player);
                 applied++;
             }
@@ -161,7 +157,6 @@ public class SlotChangeCommand {
             if(entity instanceof ServerPlayer player) {
                 ((ICustomInventory) player.getInventory()).setStorageSize(increment);
                 Inventory inventory = player.getInventory();
-                System.out.println("command setslot");
                 Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory) inventory).getAllData(), player.getUUID()), player);
                 applied++;
             }
@@ -188,10 +183,9 @@ public class SlotChangeCommand {
         } else {
             for(Entity entity : entities)
             {
-                // return first arg player's stats
+                // return arg player's stats
                 if(entity instanceof ServerPlayer player) {
                     ICustomInventory inventory = ((ICustomInventory)player.getInventory());
-
                     commandSourceStack.sendSuccess(Component.literal(String.format(
                             "-- %s's inventory stats --\n" +
                             "Inventory: %b\n" +
@@ -210,7 +204,6 @@ public class SlotChangeCommand {
                             inventory.getEffectSize(),
                             inventory.getEnchantSize()))
                             , true);
-                    return applied;
                 }
             }
             return applied;

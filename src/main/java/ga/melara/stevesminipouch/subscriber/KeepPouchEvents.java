@@ -1,4 +1,4 @@
-package ga.melara.stevesminipouch.events;
+package ga.melara.stevesminipouch.subscriber;
 
 import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.stats.InventoryStatsData;
@@ -31,15 +31,10 @@ public class KeepPouchEvents {
     private static final String CHARM_INV_TAG = "TFCharmInventory";
 
 
-
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void preserveStats(LivingDeathEvent e) {
-
-        //プレイヤーじゃないエンティティの死は無視
-        //メイドとかも考えたほうが良いかも
         if (!(e.getEntity() instanceof ServerPlayer player)) return;
 
-        //インベントリ状態を維持するかの判定
         boolean gamerule = player.getLevel().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
         boolean twilight_forest_charm = false;
         if (ModList.get().isLoaded("twilightforest")) {
@@ -53,31 +48,20 @@ public class KeepPouchEvents {
         }
         if (!gamerule && !twilight_forest_charm) return;
 
-
         ICustomInventory inv = (ICustomInventory) player.getInventory();
         CompoundTag tag = new CompoundTag();
 
         tag.putInt("inventorysize", inv.getBaseSize());
-        tag.putInt("effectsize", inv.getEffectSize());
         tag.putBoolean("inventory", inv.isActiveInventory());
         tag.putBoolean("armor", inv.isActiveArmor());
         tag.putBoolean("offhand", inv.isActiveOffhand());
         tag.putBoolean("craft", inv.isActiveCraft());
-
-        System.out.println("keep stats");
-        System.out.println("inventory ->" + inv.getBaseSize());
-        System.out.println("effect ->" + inv.getEffectSize());
-        System.out.println("inventory ->" + inv.isActiveInventory());
-        System.out.println("armor ->" + inv.isActiveArmor());
-        System.out.println("offhand ->" + inv.isActiveOffhand());
-        System.out.println("craft ->" + inv.isActiveCraft());
 
         getPlayerData(player).put(KEEP_STATS_TAG, tag);
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void preservePouch(LivingDeathEvent e) {
-
         if (!(e.getEntity() instanceof ServerPlayer player)) return;
 
         boolean gamerule = e.getEntity().getLevel().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
@@ -92,7 +76,6 @@ public class KeepPouchEvents {
             }
         }
         if (!gamerule && !twilight_forest_charm) return;
-
 
         ICustomInventory inv = (ICustomInventory) player.getInventory();
         ListTag tagList = new ListTag();
@@ -112,21 +95,10 @@ public class KeepPouchEvents {
         if (tagList.size() > 0) {
             getPlayerData(player).put(KEEP_POUCH_TAG, tagList);
         }
-
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void returnStats(PlayerEvent.PlayerRespawnEvent e) {
-
-        //Todo どこかのイベントがインスタンスを無尽蔵に増やしている(or生成しまくっている？)
-        //Todo どこかのパケットがインベントリサイズをいじるせいでアイテムを投げてしまう
-
-        //todo インベントリ状態の引き継ぎもタグでやる
-
-        //inventory内でのステータスの受け渡しをそろそろPlayerInventorySizeDataに変更する？
-
-        //Todo インスタンス付きのイベントをすべてstatic化する
-
+    public static void returnStats(PlayerEvent.Clone e) {
         if (!(e.getEntity() instanceof ServerPlayer player)) return;
         if (player.getLevel().isClientSide()) return;
 
@@ -135,8 +107,6 @@ public class KeepPouchEvents {
         if (data.contains(KEEP_STATS_TAG)) {
 
             CompoundTag tag = data.getCompound(KEEP_STATS_TAG);
-
-            int effectSize = tag.contains("effectsize") ? tag.getInt("effectsize") : 0;
 
             int inventorySize;
             if (Config.FORCE_SIZE.get()) {
@@ -165,24 +135,14 @@ public class KeepPouchEvents {
                     !Config.FORCE_INVENTORY.get() && (Config.FORCE_CRAFT.get() ? Config.DEFAULT_CRAFT.get() :
                             tag.contains("craft") ? tag.getBoolean("craft") : Config.DEFAULT_CRAFT.get());
 
-
-            //エフェクトは0にしたほうがいいかも
-            System.out.println("return stats");
-            System.out.println("inventory ->" + inventorySize);
-            System.out.println("effect ->" + effectSize);
-            System.out.println("inventory ->" + isActiveInventory);
-            System.out.println("armor ->" + isActiveArmor);
-            System.out.println("offhand ->" + isActiveOffhand);
-            System.out.println("craft ->" + isActiveCraft);
-
-            ((ICustomInventory) player.getInventory()).initServer(inventorySize, 0, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
-            ((IMenuSynchronizer) player.containerMenu).setdataToClient(new InventoryStatsData(inventorySize, 0, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
+            InventoryStatsData stats = new InventoryStatsData(inventorySize, 0, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
+            ((ICustomInventory) player.getInventory()).initServer(stats);
+            ((IMenuSynchronizer) player.containerMenu).setdataToClient(stats);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void returnPouch(PlayerEvent.PlayerRespawnEvent e) {
-
         if (!(e.getEntity() instanceof ServerPlayer player)) return;
         if (player.getLevel().isClientSide()) return;
 
@@ -192,7 +152,6 @@ public class KeepPouchEvents {
 
             LockableItemStackList items = (LockableItemStackList) player.getInventory().items;
             List<ItemStack> blockedItems = new ArrayList<ItemStack>();
-
 
             for (int i = 0; i < tag.size(); ++i) {
                 CompoundTag compoundtag = tag.getCompound(i);
@@ -210,7 +169,6 @@ public class KeepPouchEvents {
                 }
             }
             if (!blockedItems.isEmpty()) blockedItems.forEach(player.getInventory()::add);
-
 
             getPlayerData(player).getList(KEEP_POUCH_TAG, 10).clear();
             getPlayerData(player).remove(KEEP_POUCH_TAG);

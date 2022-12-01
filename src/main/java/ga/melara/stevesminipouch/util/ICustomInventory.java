@@ -8,9 +8,9 @@ public interface ICustomInventory {
 
 
 
-    void initMiniPouch(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft);
+    void initMiniPouch(InventoryStatsData stats);
 
-    void initServer(int inventorySize, int effectSize, boolean isActiveInventory, boolean isActiveArmor, boolean isActiveOffhand, boolean isActiveCraft);
+    void initServer(InventoryStatsData stats);
     void setInventory(boolean set);
     void toggleInventory();
 

@@ -3,6 +3,7 @@ package ga.melara.stevesminipouch.mixin;
 import ga.melara.stevesminipouch.StevesMiniPouch;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
@@ -13,6 +14,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.UUID;
 
 @Mixin(Slot.class)
 public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
@@ -121,6 +124,15 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
                 } else ((ISlotHidable) target).hide();
             }
         }
+    }
+
+    @Override
+    public UUID getOwner()
+    {
+        if(this.container instanceof Inventory inventory){
+            return inventory.player.getUUID();
+        }
+        return null;
     }
 
     @Inject(method = "isActive()Z", at = @At("HEAD"), cancellable = true)

@@ -31,7 +31,6 @@ public class InventoryActivateItem extends FunctionFoodItem {
         ICustomInventory inventory = (ICustomInventory) player.getInventory();
         inventory.toggleInventory();
         if(!(player instanceof ServerPlayer serverPlayer)) return;
-        System.out.println("item inventory");
         Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData(), serverPlayer.getUUID()), serverPlayer);
     }
 
