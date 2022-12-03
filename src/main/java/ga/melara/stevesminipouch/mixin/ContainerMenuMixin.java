@@ -11,6 +11,8 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Final;
@@ -129,7 +131,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     }
 
     @Override
-    public void judgePageReduction(int change, int maxpage, Player player) {
+    public void judgePageReduction(int maxpage, Player player) {
         // Judge if the page the player is currently viewing is unnecessary.
         if(player.getLevel().isClientSide()) {
             for(Slot s : slots) {

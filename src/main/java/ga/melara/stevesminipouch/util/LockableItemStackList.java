@@ -40,7 +40,7 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
         public Boolean set(int index, Boolean element) {
             if(element && Objects.nonNull(inventory)) {
                 ItemStack itemStack = LockableItemStackList.this.get(index);
-                throwItem(inventory.player, itemStack);
+                throwItem(itemStack);
                 LockableItemStackList.this.set(index, ItemStack.EMPTY);
             }
             return super.set(index, element);
@@ -104,10 +104,9 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
 
     @Override
     public ItemStack set(int id, ItemStack itemStack) {
-
         // If the slot is locked, throw the item in its place.
         if(id > this.size()-1 || lockList.get(id)) {
-            throwItem(inventory.player, itemStack);
+            throwItem(itemStack);
             return defaultItem;
         }
 
@@ -125,14 +124,12 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
         return result;
     }
 
-    private void throwItem(Player player, ItemStack itemStack)
+    private void throwItem(ItemStack itemStack)
     {
-        if (Objects.isNull(player)) return;
         Level level = inventory.player.level;
-        Player entity = inventory.player;
-        ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), itemStack);
+        ItemEntity itementity = new ItemEntity(level, inventory.player.getX(), inventory.player.getEyeY() - 0.3, inventory.player.getZ(), itemStack);
         itementity.setDefaultPickUpDelay();
-        itementity.setThrower(entity.getUUID());
+        itementity.setThrower(inventory.player.getUUID());
         level.addFreshEntity(itementity);
     }
 }

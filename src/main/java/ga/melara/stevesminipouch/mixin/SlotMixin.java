@@ -40,6 +40,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
     public void setChanged() {
     }
 
+
     private boolean isShowing = true;
 
 

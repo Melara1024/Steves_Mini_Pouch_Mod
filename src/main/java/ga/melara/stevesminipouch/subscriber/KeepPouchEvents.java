@@ -125,6 +125,7 @@ public class KeepPouchEvents {
             if(!Config.FORCE_CRAFT.get() && tag.contains("craft")) isActiveCraft = tag.getBoolean("craft");
 
             InventoryStatsData stats = new InventoryStatsData(inventorySize, 0, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
+            System.out.println("keep event");
             ((ICustomInventory) player.getInventory()).initServer(stats);
             ((IMenuSynchronizer) player.containerMenu).setdataToClient(stats);
         }
