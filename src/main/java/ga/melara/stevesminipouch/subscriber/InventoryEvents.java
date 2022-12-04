@@ -24,7 +24,6 @@ public class InventoryEvents {
 
     public static void initClient(InventoryStatsData data) {
         ((ICustomInventory) Minecraft.getInstance().player.getInventory()). initMiniPouch(data);
-        System.out.println("static method called");
     }
 
 
@@ -32,21 +31,4 @@ public class InventoryEvents {
         // Client-side effect slots are handled here
         ((ICustomInventory) Minecraft.getInstance().player.getInventory()).changeEffectSize(newEffectSize);
     }
-
-
-//    @SubscribeEvent
-//    @OnlyIn(Dist.CLIENT)
-//    public static void onInitMenu(InitMenuEvent e) {
-//        Player player = Minecraft.getInstance().player;
-//        AbstractContainerMenu menu = e.getMenu();
-//        if(Objects.isNull(player)) return;
-//        if(Objects.isNull(player.inventoryMenu) && Objects.isNull(player.containerMenu)) return;
-//        if(!(menu.containerId == player.containerMenu.containerId) &&
-//                !(menu.containerId == player.inventoryMenu.containerId)) return;
-//        if(Objects.nonNull(player) && player instanceof ServerPlayer serverPlayer) {
-//            ((ICustomInventory)player.getInventory()).initServer(((ICustomInventory)player.getInventory()).getAllData());
-//            //((IMenuSynchronizer) this.player.containerMenu).setdataToClient(getAllData());
-//            Messager.sendToPlayer(new InventorySyncPacket(((ICustomInventory)player.getInventory()).getAllData()), serverPlayer);
-//        }
-//    }
 }

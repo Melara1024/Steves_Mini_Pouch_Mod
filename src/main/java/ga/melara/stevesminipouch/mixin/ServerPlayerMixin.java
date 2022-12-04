@@ -34,6 +34,10 @@ public class ServerPlayerMixin {
         }
     }
 
+
+    //黄昏チャームの場合これが発火されない?
+    //Todo 症例:チャームを使ってリストアするとサーバー側はデフォルトに戻ってしまう
+    //Todo やっぱりここが発火されてない可能性？
     @Inject(method = "restoreFrom", at = @At(value = "HEAD"))
     public void onRestore(ServerPlayer oldPlayer, boolean pKeepEverything, CallbackInfo ci) {
 
@@ -69,8 +73,9 @@ public class ServerPlayerMixin {
             System.out.println("keep event");
             ((ICustomInventory) newPlayer.getInventory()).initServer(stats);
             ((IMenuSynchronizer) newPlayer.containerMenu).setdataToClient(stats);
-        }
 
+            getPlayerData(newPlayer).remove(KEEP_STATS_TAG);
+        }
     }
 
     private static CompoundTag getPlayerData(Player player) {
