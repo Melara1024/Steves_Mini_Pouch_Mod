@@ -16,13 +16,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ServerPlayerMixin {
     private StatsSynchronizer statsSynchronizer;
 
-    @Inject(method = "initMenu", at = @At(value = "RETURN"), cancellable = true)
+    @Inject(method = "initMenu", at = @At(value = "HEAD"), cancellable = true)
     public void onInitMenu(AbstractContainerMenu menu, CallbackInfo ci) {
-//        if(menu instanceof InventoryMenu) {
-//            ServerPlayer player = (ServerPlayer) (Object) this;
-//            // When initMenu is executed, the data is not ready, so only the synchronizer is set.
-//            statsSynchronizer = data -> Messager.sendToPlayer(new InventorySyncPacket(data), player);
-//            ((IMenuSynchronizer) menu).setStatsSynchronizer(this.statsSynchronizer);
-//        }
+        if(menu instanceof InventoryMenu) {
+            ServerPlayer player = (ServerPlayer) (Object) this;
+            // When initMenu is executed, the data is not ready, so only the synchronizer is set.
+            statsSynchronizer = data -> {
+                Messager.sendToPlayer(new InventorySyncPacket(data), player);
+                System.out.println("send data via synchronizer");
+                System.out.println(data.getInventorySize());
+            };
+            ((IMenuSynchronizer) menu).setStatsSynchronizer(this.statsSynchronizer);
+        }
     }
 }

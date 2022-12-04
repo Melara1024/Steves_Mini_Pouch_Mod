@@ -1,11 +1,15 @@
 package ga.melara.stevesminipouch.stats;
 
 import ga.melara.stevesminipouch.event.InventorySyncEvent;
+import ga.melara.stevesminipouch.subscriber.InventoryEvents;
+import ga.melara.stevesminipouch.util.ICustomInventory;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -40,7 +44,7 @@ public class InventorySyncPacket {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            MinecraftForge.EVENT_BUS.post(new InventorySyncEvent(this.data));
+            InventoryEvents.initClient(data);
             ctx.setPacketHandled(true);
         });
         return true;

@@ -20,12 +20,17 @@ public class PlayerMixin {
     private
     Inventory inventory;
 
-    @Inject(method = "readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("HEAD"), cancellable = true)
     public void onReadData(CompoundTag tag, CallbackInfo ci) {
 
         // State of inventory functions allowed to the player
         CompoundTag compoundtag = tag.getCompound("InventoryStats");
         ((IAdditionalDataHandler) this.inventory).loadStatus(compoundtag);
+
+    }
+
+    @Inject(method = "readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"), cancellable = true)
+    public void onReadData2(CompoundTag tag, CallbackInfo ci) {
 
         // Storage location for added slots
         ListTag listtag = tag.getList("MiniPouch", 10);
@@ -33,11 +38,18 @@ public class PlayerMixin {
 
     }
 
-    @Inject(method = "addAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"), cancellable = true)
+
+
+    @Inject(method = "addAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("HEAD"), cancellable = true)
     public void onAddData(CompoundTag tag, CallbackInfo ci) {
 
         // State of inventory functions allowed to the player
         tag.put("InventoryStats", ((IAdditionalDataHandler) this.inventory).saveStatus(new CompoundTag()));
+
+    }
+
+    @Inject(method = "addAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"), cancellable = true)
+    public void onAddData2(CompoundTag tag, CallbackInfo ci) {
 
         // Storage location for added slots
         tag.put("MiniPouch", ((IAdditionalDataHandler) this.inventory).saveAdditional(new ListTag()));

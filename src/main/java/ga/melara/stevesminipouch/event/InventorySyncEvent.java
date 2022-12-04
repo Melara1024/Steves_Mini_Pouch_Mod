@@ -16,6 +16,8 @@ public class InventorySyncEvent extends Event implements IModBusEvent {
     }
 
     public InventoryStatsData getData() {
+        System.out.println("event getdata");
+        System.out.println(this.data.getInventorySize());
         return this.data;
     }
 }

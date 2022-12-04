@@ -35,17 +35,7 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
     }
 
 
-    public List<Boolean> lockList = new ArrayList<Boolean>() {
-        @Override
-        public Boolean set(int index, Boolean element) {
-            if(element && Objects.nonNull(inventory)) {
-                ItemStack itemStack = LockableItemStackList.this.get(index);
-                throwItem(itemStack);
-                LockableItemStackList.this.set(index, ItemStack.EMPTY);
-            }
-            return super.set(index, element);
-        }
-    };
+    public List<Boolean> lockList;
 
     public void allLock() {
         for(int i = 0; i < this.lockList.size(); i++) {
@@ -87,9 +77,19 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
         super(itemList, defaultItem);
         this.inventory = inventory;
 
-        for(ItemStack item : itemList) {
-            lockList.add(initLock);
-        }
+        lockList = new ArrayList<>() {
+            @Override
+            public Boolean set(int index, Boolean element) {
+                if(element && Objects.nonNull(inventory)) {
+                    ItemStack itemStack = LockableItemStackList.this.get(index);
+                    throwItem(itemStack);
+                    LockableItemStackList.this.set(index, ItemStack.EMPTY);
+                }
+                return super.set(index, element);
+            }
+        };
+
+        for(int i = 0; i< itemList.size(); i++) lockList.add(initLock);
     }
 
 

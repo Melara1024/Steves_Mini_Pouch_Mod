@@ -57,6 +57,9 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     }
 
     public void setdataToClient(InventoryStatsData data) {
+        System.out.println("set data to client");
+        System.out.println(this.getClass());
+        System.out.println(data.getInventorySize());
         this.data = data;
     }
 

@@ -62,6 +62,11 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
     @Inject(method = "<init>", at = @At(value = "RETURN"), cancellable = true)
     public void onInit(CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.register(this);
+
+        //たぶんメニューを開いた瞬間にアイテム情報をクライアントに送れていない？
+        page = 0;
+        Messager.sendToServer(new PageChangedPacket(0));
+        this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(0));
     }
 
     @Inject(method = "onClose", at = @At(value = "HEAD"), cancellable = true)
