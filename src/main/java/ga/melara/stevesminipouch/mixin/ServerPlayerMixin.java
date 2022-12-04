@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static ga.melara.stevesminipouch.StevesMiniPouch.LOGGER;
 import static ga.melara.stevesminipouch.subscriber.KeepPouchEvents.KEEP_STATS_TAG;
 
 @Mixin(ServerPlayer.class)
@@ -70,7 +71,9 @@ public class ServerPlayerMixin {
             if(!Config.FORCE_CRAFT.get() && tag.contains("craft")) isActiveCraft = tag.getBoolean("craft");
 
             InventoryStatsData stats = new InventoryStatsData(inventorySize, 0, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
-            System.out.println("keep event");
+
+            LOGGER.warn("restore stats method");
+
             ((ICustomInventory) newPlayer.getInventory()).initServer(stats);
             ((IMenuSynchronizer) newPlayer.containerMenu).setdataToClient(stats);
 
