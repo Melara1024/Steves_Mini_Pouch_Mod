@@ -34,11 +34,4 @@ public class CreativeModeInventoryScreenMixin extends EffectRenderingInventorySc
     protected void onClickedOutside(double mouseX, double mouseY, int leftPos, int rightPos, int ___, CallbackInfoReturnable<Boolean> cir) {
         ((IHasPageButton) this).buttonClicked(mouseX, mouseY, leftPos, rightPos, cir);
     }
-
-    @Inject(method = "<init>", at = @At("RETURN"))
-    protected void onInit(Player pPlayer, CallbackInfo ci)
-    {
-        Messager.sendToServer(new PageChangedPacket(0));
-        this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(0));
-    }
 }

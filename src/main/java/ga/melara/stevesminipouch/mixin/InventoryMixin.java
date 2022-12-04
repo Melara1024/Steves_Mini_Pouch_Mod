@@ -226,17 +226,17 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         compartments.add(1, armor);
         compartments.add(2, offhand);
 
-        if(Objects.nonNull(player)) {
+        if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu))
             ((IMenuSynchronizer) player.containerMenu).setdataToClient(getAllData());
-        }
     }
 
     @SubscribeEvent
     public void onInitMenu(InitMenuEvent e) {
         AbstractContainerMenu menu = e.getMenu();
         if(Objects.isNull(this.player)) return;
-        if(!(menu.containerId == this.player.containerMenu.containerId) &&
-                !(menu.containerId == this.player.inventoryMenu.containerId)) return;
+        if(Objects.isNull(player.containerMenu)) return;
+        if(!(menu.containerId == this.player.containerMenu.containerId)) return;
+
         ((IMenuSynchronizer) player.containerMenu).setdataToClient(getAllData());
     }
 
@@ -460,18 +460,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         }
     }
 
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public void syncEffectSizeToClient(ClientEffectSlotSyncEvent e) {
-        // Client-side effect slots are handled here
-        synchronized(compartments) {
-            int oldEffectSize = effectSize;
-            this.effectSize = e.getEffectSize();
-            if(effectSize != oldEffectSize) updateStorageSize();
-        }
-    }
-
-
     @Inject(method = "swapPaint(D)V", at = @At(value = "HEAD"), cancellable = true)
     public void onSwapaint(double direction, CallbackInfo ci) {
 
@@ -527,7 +515,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     public boolean isValidSlot(int id) {
         if(avoidMiniPouch()) return true;
         synchronized(compartments) {
-                // 0-35 are vanilla item slots.
+            // 0-35 are vanilla item slots.
             if(id < 36) return !((LockableItemStackList) items).lockList.get(id);
                 // 36-39 are vanilla armor slots.
             else if(id < 40) return !((LockableItemStackList) armor).lockList.get(id - 36);
@@ -573,7 +561,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         if(!avoidMiniPouch()) {
             synchronized(compartments) {
 
-                    // 0-35 are vanilla item slots.
+                // 0-35 are vanilla item slots.
                 if(id < 36) cir.setReturnValue(items.get(id));
                     // 36-39 are vanilla armor slots.
                 else if(id < 40) cir.setReturnValue(armor.get(id - 36));
@@ -592,7 +580,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         if(!avoidMiniPouch()) {
             synchronized(compartments) {
 
-                    // 0-35 are vanilla item slots.
+                // 0-35 are vanilla item slots.
                 if(id < 36) cir.setReturnValue(ContainerHelper.removeItem(items, id, decrement));
                     // 36-39 are vanilla armor slots.
                 else if(id < 40) cir.setReturnValue(ContainerHelper.removeItem(armor, id - 36, decrement));
@@ -731,6 +719,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
         InventoryStatsData stats = new InventoryStatsData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
         initServer(stats);
-        if(Objects.nonNull(player)) ((IMenuSynchronizer) player.containerMenu).setdataToClient(getAllData());
+        if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu))
+            ((IMenuSynchronizer) player.containerMenu).setdataToClient(getAllData());
     }
 }

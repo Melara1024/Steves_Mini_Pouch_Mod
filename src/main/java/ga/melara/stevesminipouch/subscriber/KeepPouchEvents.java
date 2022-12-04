@@ -25,10 +25,10 @@ import java.util.List;
 @Mod.EventBusSubscriber
 public class KeepPouchEvents {
 
-    private static final String KEEP_STATS_TAG = "KeepMiniPouchStats";
-    private static final String KEEP_POUCH_TAG = "KeepMiniPouchItems";
+    public static final String KEEP_STATS_TAG = "KeepMiniPouchStats";
+    public static final String KEEP_POUCH_TAG = "KeepMiniPouchItems";
 
-    private static final String CHARM_INV_TAG = "TFCharmInventory";
+    public static final String CHARM_INV_TAG = "TFCharmInventory";
 
 
     @SubscribeEvent(priority = EventPriority.LOW)
@@ -97,39 +97,7 @@ public class KeepPouchEvents {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void returnStats(PlayerEvent.Clone e) {
-        if (!(e.getEntity() instanceof ServerPlayer player)) return;
-        if (player.getLevel().isClientSide()) return;
-
-
-        CompoundTag data = getPlayerData(player);
-        if (data.contains(KEEP_STATS_TAG)) {
-
-            CompoundTag tag = data.getCompound(KEEP_STATS_TAG);
-
-            int inventorySize = Math.min(Config.DEFAULT_SIZE.get(), Config.MAX_SIZE.get());
-            if(tag.contains("inventorysize")) inventorySize = Math.min(Config.MAX_SIZE.get(), tag.getInt("inventorysize"));
-            if(Config.FORCE_SIZE.get()) inventorySize = Config.MAX_SIZE.get();
-
-            boolean isActiveInventory = Config.DEFAULT_INVENTORY.get();
-            if(!Config.FORCE_INVENTORY.get() && tag.contains("inventory")) isActiveInventory =  tag.getBoolean("inventory");
-
-            boolean isActiveArmor = Config.DEFAULT_ARMOR.get();
-            if(!Config.FORCE_INVENTORY.get() && tag.contains("armor")) isActiveArmor = tag.getBoolean("armor");
-
-            boolean isActiveOffhand = Config.DEFAULT_OFFHAND.get();
-            if(!Config.FORCE_OFFHAND.get() && tag.contains("offhand")) isActiveOffhand = tag.getBoolean("offhand");
-
-            boolean isActiveCraft = Config.DEFAULT_CRAFT.get();
-            if(!Config.FORCE_CRAFT.get() && tag.contains("craft")) isActiveCraft = tag.getBoolean("craft");
-
-            InventoryStatsData stats = new InventoryStatsData(inventorySize, 0, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
-            System.out.println("keep event");
-            ((ICustomInventory) player.getInventory()).initServer(stats);
-            ((IMenuSynchronizer) player.containerMenu).setdataToClient(stats);
-        }
-    }
+    // The method to return status has been moved to the server player class
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void returnPouch(PlayerEvent.PlayerRespawnEvent e) {
@@ -172,5 +140,4 @@ public class KeepPouchEvents {
         }
         return player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
     }
-
 }

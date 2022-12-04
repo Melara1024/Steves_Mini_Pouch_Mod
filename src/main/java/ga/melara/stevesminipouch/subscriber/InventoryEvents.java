@@ -1,5 +1,6 @@
 package ga.melara.stevesminipouch.subscriber;
 
+import ga.melara.stevesminipouch.event.ClientEffectSlotSyncEvent;
 import ga.melara.stevesminipouch.event.InitMenuEvent;
 import ga.melara.stevesminipouch.event.InventorySyncEvent;
 import ga.melara.stevesminipouch.stats.InventoryStatsData;
@@ -25,6 +26,13 @@ public class InventoryEvents {
         ((ICustomInventory) Minecraft.getInstance().player.getInventory()). initMiniPouch(data);
         System.out.println("static method called");
     }
+
+
+    public static void syncEffectSizeToClient(int newEffectSize) {
+        // Client-side effect slots are handled here
+        ((ICustomInventory) Minecraft.getInstance().player.getInventory()).changeEffectSize(newEffectSize);
+    }
+
 
 //    @SubscribeEvent
 //    @OnlyIn(Dist.CLIENT)

@@ -8,13 +8,12 @@ public class InitMenuEvent extends Event {
 
     // Event when AbstractContainerMenu initialized.
     private AbstractContainerMenu menu;
-    public InitMenuEvent(AbstractContainerMenu menu)
-    {
+
+    public InitMenuEvent(AbstractContainerMenu menu) {
         this.menu = menu;
     }
 
-    public AbstractContainerMenu getMenu()
-    {
+    public AbstractContainerMenu getMenu() {
         return this.menu;
     }
 }
