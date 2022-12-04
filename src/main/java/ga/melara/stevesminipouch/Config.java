@@ -27,8 +27,6 @@ public class Config {
     public static ForgeConfigSpec.BooleanValue DEFAULT_ARMOR;
     public static ForgeConfigSpec.BooleanValue FORCE_ARMOR;
 
-    public static ForgeConfigSpec.BooleanValue KEEP_AT_DEATH;
-
 
     //client settings
     public static ForgeConfigSpec.IntValue RENDER_OFFSET_X;
@@ -39,8 +37,8 @@ public class Config {
 
         SERVER_BUILDER.comment("If you edit this Config, please do so with care. Some combinations may cause unintended behavior.").push("server");
 
-        DEFAULT_SIZE = SERVER_BUILDER.comment("Default Inventory Size").defineInRange("default_size", 17, 0, Integer.MAX_VALUE);
-        MAX_SIZE = SERVER_BUILDER.comment("Max Inventory Size").defineInRange("max_size", 81, 0, Integer.MAX_VALUE);
+        DEFAULT_SIZE = SERVER_BUILDER.comment("Default Inventory Size").defineInRange("default_size", 36, 0, Integer.MAX_VALUE);
+        MAX_SIZE = SERVER_BUILDER.comment("Max Inventory Size").defineInRange("max_size", 90, 0, Integer.MAX_VALUE);
         FORCE_SIZE = SERVER_BUILDER.comment("Force Inventory Size to Max Size").define("force_size", false);
 
         DEFAULT_INVENTORY = SERVER_BUILDER.comment("Default setting of inventory activate").define("inventory", true);
@@ -54,8 +52,6 @@ public class Config {
 
         DEFAULT_ARMOR = SERVER_BUILDER.comment("Default setting of armor activate").define("armor", true);
         FORCE_ARMOR = SERVER_BUILDER.comment("If true, The above settings are enforced on all players.").define("force_armor", false);
-
-        KEEP_AT_DEATH = SERVER_BUILDER.comment("Keep player's inventory state when you die.").define("keep_at_death", false);
 
         SERVER_BUILDER.pop();
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_BUILDER.build());
