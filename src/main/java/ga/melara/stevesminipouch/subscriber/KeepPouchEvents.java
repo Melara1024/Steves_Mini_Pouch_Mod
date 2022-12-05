@@ -30,7 +30,8 @@ public class KeepPouchEvents {
     public static final String KEEP_STATS_TAG = "KeepMiniPouchStats";
     public static final String KEEP_POUCH_TAG = "KeepMiniPouchItems";
 
-    public static final String CHARM_INV_TAG = "TFCharmInventory";
+    public static final String CHARM_DETECTED_TAG = "DetectedTFCharm";
+
 
 
     @SubscribeEvent(priority = EventPriority.LOW)
@@ -40,14 +41,14 @@ public class KeepPouchEvents {
         boolean gamerule = player.getLevel().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
         boolean twilight_forest_charm = false;
         if (ModList.get().isLoaded("twilightforest")) {
+            LOGGER.warn("TF loaded");
             //CharmEvent priority is HIGHEST, so this event called after that.
             CompoundTag data = getPlayerData(player);
-            if (data.contains(CHARM_INV_TAG)) {
-                ListTag tag = data.getList(CHARM_INV_TAG, 10);
-                // if listtag has more 9(hotbar) + 4(armor) + 1(offhand) tags, tier3 charm was used.
-                if (tag.size() > 14) twilight_forest_charm = true;
-            }
+            if (data.contains(CHARM_DETECTED_TAG)) twilight_forest_charm = true;
         }
+
+        LOGGER.warn(gamerule? "keepinv true" : "keepinv false");
+        LOGGER.warn(twilight_forest_charm? "charm true" : "charm false");
 
         CompoundTag tag = new CompoundTag();
         if (gamerule || twilight_forest_charm) {
@@ -57,6 +58,9 @@ public class KeepPouchEvents {
             tag.putBoolean("armor", inv.isActiveArmor());
             tag.putBoolean("offhand", inv.isActiveOffhand());
             tag.putBoolean("craft", inv.isActiveCraft());
+        }
+        else{
+            LOGGER.warn("not apply");
         }
         getPlayerData(player).put(KEEP_STATS_TAG, tag);
     }
@@ -70,10 +74,9 @@ public class KeepPouchEvents {
         if (ModList.get().isLoaded("twilightforest")) {
             //CharmEvent priority is HIGHEST, so this event called after that.
             CompoundTag data = getPlayerData(player);
-            if (data.contains(CHARM_INV_TAG)) {
-                ListTag tag = data.getList(CHARM_INV_TAG, 10);
-                // if listtag has more 9(hotbar) + 4(armor) + 1(offhand) tags, tier3 charm was used.
-                if (tag.size() > 14) twilight_forest_charm = true;
+            if (data.contains(CHARM_DETECTED_TAG)){
+                twilight_forest_charm = true;
+                getPlayerData(player).remove(CHARM_DETECTED_TAG);
             }
         }
         if (!gamerule && !twilight_forest_charm) return;

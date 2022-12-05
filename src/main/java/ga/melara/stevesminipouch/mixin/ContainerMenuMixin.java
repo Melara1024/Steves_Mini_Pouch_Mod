@@ -136,8 +136,10 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
         // Judge if the page the player is currently viewing is unnecessary.
         if(player.getLevel().isClientSide()) {
             for(Slot s : slots) {
-                if(((IHasSlotPage) s).getPage() > maxpage) {
+                if(((IHasSlotType) s).getType() == SlotType.INVENTORY && ((IHasSlotPage) s).getPage() > maxpage) {
                     MinecraftForge.EVENT_BUS.post(new PageReduceEvent(maxpage));
+                    LOGGER.warn("page reduction");
+                    LOGGER.warn("maxpage " + maxpage);
                     return;
                 }
             }

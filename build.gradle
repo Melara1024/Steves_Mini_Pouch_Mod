@@ -16,7 +16,7 @@ plugins {
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'ga.melara'
-version = '1.19.2-forge-1.0.2.0'
+version = '1.19.2-forge-1.0.2.1'
 
 java {
     archivesBaseName = 'stevesminipouch'
@@ -36,6 +36,8 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
             property 'forge.enabledGameTestNamespaces', 'stevesminipouch'
 
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
             mods {
                 stevesminipouch {
                     source sourceSets.main
@@ -51,6 +53,9 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             property 'forge.enabledGameTestNamespaces', 'stevesminipouch'
+
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
             mods {
                 stevesminipouch {
@@ -108,11 +113,17 @@ repositories {
     maven {
         url = "https://modmaven.dev/"
     }
+    maven {
+        url = "https://maven.theillusivec4.top/"
+    }
 }
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.19.2-43.1.28'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.19.2-5.1.1.0:api")
+
 }
 
 // Example for how to get properties into the manifest for reading at runtime.

@@ -396,6 +396,10 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         } else {
             inventorySize = Math.max(inventorySize + change, 1);
         }
+        enchantSize = 0;
+        armor.forEach(
+                (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
+        );
         if(avoidMiniPouch()) {
             inventorySize = 36;
             effectSize = 0;
@@ -403,6 +407,8 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         }
 
         int allSize = getInventorySize();
+        LOGGER.warn("all size");
+        LOGGER.warn(String.valueOf(allSize));
         if(allSize < 9) {
             hotbarSize = allSize;
             if(selected > allSize) selected = allSize - 1;
@@ -443,9 +449,12 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             }
         }
 
+        LOGGER.warn("new max page");
+        LOGGER.warn(String.valueOf(newMaxPage));
+
         if(Objects.isNull(player)) return;
-        ((IMenuChangable) player.containerMenu).judgePageReduction(getMaxPage(), player);
-        ((IMenuChangable) player.inventoryMenu).judgePageReduction(getMaxPage(), player);
+        ((IMenuChangable) player.containerMenu).judgePageReduction(newMaxPage, player);
+        ((IMenuChangable) player.inventoryMenu).judgePageReduction(newMaxPage, player);
     }
 
     @Override
@@ -726,7 +735,5 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             ((IMenuSynchronizer) player.containerMenu).setdataToClient(getAllData());
             ((IMenuSynchronizer) player.inventoryMenu).setdataToClient(getAllData());
         }
-
-
     }
 }
