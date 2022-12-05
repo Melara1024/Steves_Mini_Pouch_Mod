@@ -26,7 +26,6 @@ public class InventoryEvents {
         ((ICustomInventory) Minecraft.getInstance().player.getInventory()). initMiniPouch(data);
     }
 
-
     public static void syncEffectSizeToClient(int newEffectSize) {
         // Client-side effect slots are handled here
         ((ICustomInventory) Minecraft.getInstance().player.getInventory()).changeEffectSize(newEffectSize);

@@ -22,6 +22,8 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ga.melara.stevesminipouch.StevesMiniPouch.LOGGER;
+
 @Mod.EventBusSubscriber
 public class KeepPouchEvents {
 
@@ -46,17 +48,16 @@ public class KeepPouchEvents {
                 if (tag.size() > 14) twilight_forest_charm = true;
             }
         }
-        if (!gamerule && !twilight_forest_charm) return;
 
-        ICustomInventory inv = (ICustomInventory) player.getInventory();
         CompoundTag tag = new CompoundTag();
-
-        tag.putInt("inventorysize", inv.getBaseSize());
-        tag.putBoolean("inventory", inv.isActiveInventory());
-        tag.putBoolean("armor", inv.isActiveArmor());
-        tag.putBoolean("offhand", inv.isActiveOffhand());
-        tag.putBoolean("craft", inv.isActiveCraft());
-
+        if (gamerule || twilight_forest_charm) {
+            ICustomInventory inv = (ICustomInventory) player.getInventory();
+            tag.putInt("inventorysize", inv.getBaseSize());
+            tag.putBoolean("inventory", inv.isActiveInventory());
+            tag.putBoolean("armor", inv.isActiveArmor());
+            tag.putBoolean("offhand", inv.isActiveOffhand());
+            tag.putBoolean("craft", inv.isActiveCraft());
+        }
         getPlayerData(player).put(KEEP_STATS_TAG, tag);
     }
 
@@ -97,7 +98,7 @@ public class KeepPouchEvents {
         }
     }
 
-    // The method to return status has been moved to the server player class
+    // The method to restore status has been moved to the server player class
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void returnPouch(PlayerEvent.PlayerRespawnEvent e) {
@@ -109,7 +110,7 @@ public class KeepPouchEvents {
             ListTag tag = data.getList(KEEP_POUCH_TAG, 10);
 
             LockableItemStackList items = (LockableItemStackList) player.getInventory().items;
-            List<ItemStack> blockedItems = new ArrayList<ItemStack>();
+            List<ItemStack> blockedItems = new ArrayList<>();
 
             for (int i = 0; i < tag.size(); ++i) {
                 CompoundTag compoundtag = tag.getCompound(i);
@@ -119,7 +120,6 @@ public class KeepPouchEvents {
                     if (j < items.size()) {
                         if (items.get(j).isEmpty()) {
                             items.set(j, itemstack);
-                            System.out.println("set items " + j + " " + itemstack);
                         } else {
                             blockedItems.add(itemstack);
                         }
@@ -131,7 +131,6 @@ public class KeepPouchEvents {
             getPlayerData(player).getList(KEEP_POUCH_TAG, 10).clear();
             getPlayerData(player).remove(KEEP_POUCH_TAG);
         }
-
     }
 
     private static CompoundTag getPlayerData(Player player) {

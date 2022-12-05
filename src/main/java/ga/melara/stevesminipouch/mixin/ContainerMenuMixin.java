@@ -50,16 +50,13 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     StatsSynchronizer statsSynchronizer;
 
     @Override
-    public void setStatsSynchronizer(StatsSynchronizer synchronizer) {
+    public void sendSynchronizePacket(StatsSynchronizer synchronizer) {
         // Send information to the client via serverPlayer.
         this.statsSynchronizer = synchronizer;
         synchronizer.sendInitialData(data);
     }
 
     public void setdataToClient(InventoryStatsData data) {
-        System.out.println("set data to client");
-        System.out.println(this.getClass());
-        System.out.println(data.getInventorySize());
         this.data = data;
     }
 

@@ -126,6 +126,7 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
 
     private void throwItem(ItemStack itemStack)
     {
+        if(Objects.isNull(inventory) || Objects.isNull(inventory.player) || Objects.isNull(inventory.player.level)) return;
         Level level = inventory.player.level;
         ItemEntity itementity = new ItemEntity(level, inventory.player.getX(), inventory.player.getEyeY() - 0.3, inventory.player.getZ(), itemStack);
         itementity.setDefaultPickUpDelay();

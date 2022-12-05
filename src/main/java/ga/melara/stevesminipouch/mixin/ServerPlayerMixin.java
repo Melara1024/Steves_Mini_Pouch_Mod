@@ -5,15 +5,17 @@ import ga.melara.stevesminipouch.stats.InventoryStatsData;
 import ga.melara.stevesminipouch.stats.InventorySyncPacket;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
-import ga.melara.stevesminipouch.subscriber.KeepPouchEvents;
 import ga.melara.stevesminipouch.util.ICustomInventory;
 import ga.melara.stevesminipouch.util.IMenuSynchronizer;
+import ga.melara.stevesminipouch.util.LockableItemStackList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -31,14 +33,11 @@ public class ServerPlayerMixin {
             ServerPlayer player = (ServerPlayer) (Object) this;
             // When initMenu is executed, the data is not ready, so only the synchronizer is set.
             StatsSynchronizer statsSynchronizer = data -> Messager.sendToPlayer(new InventorySyncPacket(data), player);
-            ((IMenuSynchronizer) menu).setStatsSynchronizer(statsSynchronizer);
+            ((IMenuSynchronizer) menu).sendSynchronizePacket(statsSynchronizer);
         }
     }
 
 
-    //黄昏チャームの場合これが発火されない?
-    //Todo 症例:チャームを使ってリストアするとサーバー側はデフォルトに戻ってしまう
-    //Todo やっぱりここが発火されてない可能性？
     @Inject(method = "restoreFrom", at = @At(value = "HEAD"))
     public void onRestore(ServerPlayer oldPlayer, boolean pKeepEverything, CallbackInfo ci) {
 
@@ -76,10 +75,31 @@ public class ServerPlayerMixin {
 
             ((ICustomInventory) newPlayer.getInventory()).initServer(stats);
             ((IMenuSynchronizer) newPlayer.containerMenu).setdataToClient(stats);
+            ((IMenuSynchronizer) newPlayer.inventoryMenu).setdataToClient(stats);
+
+            Messager.sendToPlayer(new InventorySyncPacket(stats), (ServerPlayer)(Object)this);
 
             getPlayerData(newPlayer).remove(KEEP_STATS_TAG);
         }
     }
+
+    @Inject(method = "die", at = @At("HEAD"))
+    public void onDeath(DamageSource pCause, CallbackInfo ci) {
+
+        Player player = (Player) (Object) this;
+
+        LockableItemStackList items = (LockableItemStackList) player.getInventory().items;
+
+        ICustomInventory inventory = (ICustomInventory) player.getInventory();
+
+        NonNullList<ItemStack> backup = inventory.getBackUpPouch();
+
+        for(int i=0; i<items.size(); i++)
+        {
+            backup.set(i, items.get(i));
+        }
+    }
+
 
     private static CompoundTag getPlayerData(Player player) {
         if(!player.getPersistentData().contains(Player.PERSISTED_NBT_TAG)) {

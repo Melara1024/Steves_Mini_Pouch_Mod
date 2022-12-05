@@ -10,6 +10,7 @@ import ga.melara.stevesminipouch.stats.InventorySyncPacket;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -205,9 +206,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         for(int i = items.size(); i > (items.size() - decrements); i--) {
             if(items.size() > 0) ((LockableItemStackList) items).lock(i - 1);
         }
-        ((LockableItemStackList) items).setObserver((id, detectItem) -> {
-            backUpPouch.set(id, detectItem);
-        });
 
         armor = LockableItemStackList.withSize(4, (Inventory) (Object) this, !isActiveArmor);
         ((LockableItemStackList) armor).setObserver((id, detectItem) -> {
@@ -226,18 +224,30 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         compartments.add(1, armor);
         compartments.add(2, offhand);
 
-        if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu))
+        if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu)){
             ((IMenuSynchronizer) player.containerMenu).setdataToClient(getAllData());
+            ((IMenuSynchronizer) player.inventoryMenu).setdataToClient(getAllData());
+        }
+
+        LOGGER.warn("inventory init");
     }
 
     @SubscribeEvent
     public void onInitMenu(InitMenuEvent e) {
         AbstractContainerMenu menu = e.getMenu();
         if(Objects.isNull(this.player)) return;
+        if(player.getLevel().isClientSide()) return;
         if(Objects.isNull(player.containerMenu)) return;
-        if(!(menu.containerId == this.player.containerMenu.containerId)) return;
+        if(!(menu.containerId == this.player.containerMenu.containerId) && !(menu.containerId == this.player.inventoryMenu.containerId)) return;
 
         ((IMenuSynchronizer) player.containerMenu).setdataToClient(getAllData());
+        ((IMenuSynchronizer) player.inventoryMenu).setdataToClient(getAllData());
+        if(player instanceof ServerPlayer serverPlayer)
+            Messager.sendToPlayer(new InventorySyncPacket(getAllData()), serverPlayer);
+
+        LOGGER.warn(String.valueOf(Thread.currentThread().getName()));
+        LOGGER.warn(String.valueOf(this.inventorySize));
+        LOGGER.warn(String.valueOf(e.getMenu().getClass()));
     }
 
     @Inject(method = "getSlotWithRemainingSpace(Lnet/minecraft/world/item/ItemStack;)I", at = @At(value = "HEAD"), cancellable = true)
@@ -418,9 +428,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             maxPage = newMaxPage;
             LockableItemStackList newItems = LockableItemStackList.withSize((maxPage + 1) * 27 + 9, (Inventory) (Object) this, false);
             NonNullList<ItemStack> newBackUpPouch = NonNullList.withSize(newItems.size(), ItemStack.EMPTY);
-            newItems.setObserver((id, detectItem) -> {
-                newBackUpPouch.set(id, detectItem);
-            });
             int decrements = ((maxPage + 1) * 27 + 9) - allSize;
             for(int i = newItems.size(); i > newItems.size() - decrements; i--) {
                 if(newItems.size() > 0) newItems.lock(i - 1);
@@ -560,7 +567,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     public void onGetItem(int id, CallbackInfoReturnable<ItemStack> cir) {
         if(!avoidMiniPouch()) {
             synchronized(compartments) {
-
                 // 0-35 are vanilla item slots.
                 if(id < 36) cir.setReturnValue(items.get(id));
                     // 36-39 are vanilla armor slots.
@@ -719,7 +725,11 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
         InventoryStatsData stats = new InventoryStatsData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
         initServer(stats);
-        if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu))
+        if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu)){
             ((IMenuSynchronizer) player.containerMenu).setdataToClient(getAllData());
+            ((IMenuSynchronizer) player.inventoryMenu).setdataToClient(getAllData());
+        }
+
+
     }
 }

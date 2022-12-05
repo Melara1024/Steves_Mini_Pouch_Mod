@@ -3,6 +3,7 @@ package ga.melara.stevesminipouch.mixin;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import ga.melara.stevesminipouch.Config;
+import ga.melara.stevesminipouch.event.InitMenuEvent;
 import ga.melara.stevesminipouch.event.PageReduceEvent;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.stats.PageChangedPacket;
@@ -83,6 +84,9 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
     @Inject(method = "init()V", at = @At(value = "RETURN"), cancellable = true)
     public void oninitRender(CallbackInfo ci) {
+
+        MinecraftForge.EVENT_BUS.post(new InitMenuEvent(menu));
+
         this.setBlitOffset(100);
         this.itemRenderer.blitOffset = 100.0F;
 
@@ -110,6 +114,9 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
             this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
         });
 
+        upButton.visible = false;
+        downButton.visible = false;
+        pageIndicator.visible = false;
 
         this.addRenderableWidget(upButton);
         this.addRenderableWidget(pageIndicator);
