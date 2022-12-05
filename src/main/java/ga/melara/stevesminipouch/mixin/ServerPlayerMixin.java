@@ -29,7 +29,7 @@ public class ServerPlayerMixin {
 
     @Inject(method = "initMenu", at = @At(value = "HEAD"), cancellable = true)
     public void onInitMenu(AbstractContainerMenu menu, CallbackInfo ci) {
-        if(menu instanceof InventoryMenu) {
+        if (menu instanceof InventoryMenu) {
             ServerPlayer player = (ServerPlayer) (Object) this;
             // When initMenu is executed, the data is not ready, so only the synchronizer is set.
             StatsSynchronizer statsSynchronizer = data -> Messager.sendToPlayer(new InventorySyncPacket(data), player);
@@ -43,42 +43,44 @@ public class ServerPlayerMixin {
 
         ServerPlayer newPlayer = (ServerPlayer) (Object) this;
 
-        if(newPlayer.getLevel().isClientSide()) return;
-
         CompoundTag data = getPlayerData(oldPlayer);
 
-        if(data.contains(KEEP_STATS_TAG)) {
+        if (data.contains(KEEP_STATS_TAG)) {
 
             CompoundTag tag = data.getCompound(KEEP_STATS_TAG);
 
             int inventorySize = Math.min(Config.DEFAULT_SIZE.get(), Config.MAX_SIZE.get());
-            if(tag.contains("inventorysize"))
+            if (tag.contains("inventorysize"))
                 inventorySize = Math.min(Config.MAX_SIZE.get(), tag.getInt("inventorysize"));
-            if(Config.FORCE_SIZE.get()) inventorySize = Config.MAX_SIZE.get();
+            if (Config.FORCE_SIZE.get()) inventorySize = Config.MAX_SIZE.get();
 
             boolean isActiveInventory = Config.DEFAULT_INVENTORY.get();
-            if(!Config.FORCE_INVENTORY.get() && tag.contains("inventory"))
+            if (!Config.FORCE_INVENTORY.get() && tag.contains("inventory"))
                 isActiveInventory = tag.getBoolean("inventory");
 
             boolean isActiveArmor = Config.DEFAULT_ARMOR.get();
-            if(!Config.FORCE_INVENTORY.get() && tag.contains("armor")) isActiveArmor = tag.getBoolean("armor");
+            if (!Config.FORCE_INVENTORY.get() && tag.contains("armor")) isActiveArmor = tag.getBoolean("armor");
 
             boolean isActiveOffhand = Config.DEFAULT_OFFHAND.get();
-            if(!Config.FORCE_OFFHAND.get() && tag.contains("offhand")) isActiveOffhand = tag.getBoolean("offhand");
+            if (!Config.FORCE_OFFHAND.get() && tag.contains("offhand")) isActiveOffhand = tag.getBoolean("offhand");
 
             boolean isActiveCraft = Config.DEFAULT_CRAFT.get();
-            if(!Config.FORCE_CRAFT.get() && tag.contains("craft")) isActiveCraft = tag.getBoolean("craft");
+            if (!Config.FORCE_CRAFT.get() && tag.contains("craft")) isActiveCraft = tag.getBoolean("craft");
 
             InventoryStatsData stats = new InventoryStatsData(inventorySize, 0, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
 
             LOGGER.warn("restore stats method");
+            LOGGER.warn(String.valueOf(inventorySize));
+
+            //黄昏チャームを使ったときだけステータス反映がクライアント側だけできない
+            //curiosリセット問題はひとまず解決
 
             ((ICustomInventory) newPlayer.getInventory()).initServer(stats);
+
+            if (newPlayer.getLevel().isClientSide()) return;
             ((IMenuSynchronizer) newPlayer.containerMenu).setdataToClient(stats);
             ((IMenuSynchronizer) newPlayer.inventoryMenu).setdataToClient(stats);
-
-            Messager.sendToPlayer(new InventorySyncPacket(stats), (ServerPlayer)(Object)this);
-
+            Messager.sendToPlayer(new InventorySyncPacket(stats), (ServerPlayer) (Object) this);
             getPlayerData(newPlayer).remove(KEEP_STATS_TAG);
         }
     }
@@ -93,16 +95,14 @@ public class ServerPlayerMixin {
         ICustomInventory inventory = (ICustomInventory) player.getInventory();
 
         NonNullList<ItemStack> backup = inventory.getBackUpPouch();
-
-        for(int i=0; i<items.size(); i++)
-        {
+        for (int i = 0; i < items.size(); i++) {
             backup.set(i, items.get(i));
         }
     }
 
 
     private static CompoundTag getPlayerData(Player player) {
-        if(!player.getPersistentData().contains(Player.PERSISTED_NBT_TAG)) {
+        if (!player.getPersistentData().contains(Player.PERSISTED_NBT_TAG)) {
             player.getPersistentData().put(Player.PERSISTED_NBT_TAG, new CompoundTag());
         }
         return player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);

@@ -103,7 +103,6 @@ public class KeepPouchEvents {
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void returnPouch(PlayerEvent.PlayerRespawnEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer player)) return;
-        if (player.getLevel().isClientSide()) return;
 
         CompoundTag data = getPlayerData(player);
         if (data.contains(KEEP_POUCH_TAG)) {
