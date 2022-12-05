@@ -244,10 +244,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         ((IMenuSynchronizer) player.inventoryMenu).setdataToClient(getAllData());
         if(player instanceof ServerPlayer serverPlayer)
             Messager.sendToPlayer(new InventorySyncPacket(getAllData()), serverPlayer);
-
-        LOGGER.warn(String.valueOf(Thread.currentThread().getName()));
-        LOGGER.warn(String.valueOf(this.inventorySize));
-        LOGGER.warn(String.valueOf(e.getMenu().getClass()));
+        LOGGER.warn("on init menu");
     }
 
     @Inject(method = "getSlotWithRemainingSpace(Lnet/minecraft/world/item/ItemStack;)I", at = @At(value = "HEAD"), cancellable = true)

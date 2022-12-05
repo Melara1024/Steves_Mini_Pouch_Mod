@@ -73,6 +73,11 @@ public class ServerPlayerMixin {
             LOGGER.warn(String.valueOf(inventorySize));
 
             //黄昏チャームを使ったときだけステータス反映がクライアント側だけできない
+            //サーバー側はdataコマンドを使った感じ異常なし
+            //クライアントの初期化が阻害されている？
+            //クライアントの初期化が上書きされている？
+            //スクリーンがリアルタイムで誤情報を送ってしまっている？
+            //他のGUIを開いてももとに戻らないか？ もとに戻らない場合パケットがおかしい
             //curiosリセット問題はひとまず解決
 
             ((ICustomInventory) newPlayer.getInventory()).initServer(stats);

@@ -64,6 +64,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     public void onConstruct(MenuType menuType, int pContainerId, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.post(new InitMenuEvent((AbstractContainerMenu) (Object) this));
+        LOGGER.warn("menu constructor");
     }
 
     @SubscribeEvent
