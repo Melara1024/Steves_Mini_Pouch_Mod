@@ -11,7 +11,10 @@ import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(CraftingInventory.class)
 public class CraftingContainerMixin implements ICraftingContainerChangable {
@@ -44,17 +47,15 @@ public class CraftingContainerMixin implements ICraftingContainerChangable {
             if(items instanceof LockableItemStackList) {
                 LockableItemStackList lockable = (LockableItemStackList) items;
                 lockable.allLock();
-            }
-            else
+            } else
                 items = LockableItemStackList.withSize(4, ((PlayerContainer) menu).owner.inventory, true);
             this.isActiveCraft = false;
             return;
         }
-        if(items instanceof LockableItemStackList){
+        if(items instanceof LockableItemStackList) {
             LockableItemStackList lockable = (LockableItemStackList) items;
             lockable.allOpen();
-        }
-        else
+        } else
             items = LockableItemStackList.withSize(4, ((PlayerContainer) menu).owner.inventory, false);
         this.isActiveCraft = true;
     }

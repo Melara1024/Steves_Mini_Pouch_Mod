@@ -134,36 +134,6 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
         if(!this.isShowing()) cir.setReturnValue(false);
     }
 
-    //@Inject(method = "initialize(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
-    public void onInitialize(ItemStack p_40240_, CallbackInfo ci) {
-        if(this.type == SlotType.INVENTORY && page > 0) {
-            if(this.slot + 27 * page < ((ICustomInventory) container).getInventorySize()) {
-                this.show();
-                this.container.setItem(this.slot + 27 * page + 5, p_40240_);
-                this.setChanged();
-                ci.cancel();
-            } else {
-                this.hide();
-                ci.cancel();
-            }
-        }
-        if(this.type == SlotType.HOTBAR) {
-            if(((ICustomInventory) container).isValidSlot(this.slot)) {
-                this.show();
-            } else this.hide();
-        }
-        if(this.type == SlotType.ARMOR) {
-            if(((ICustomInventory) container).isActiveArmor()) {
-                this.show();
-            } else this.hide();
-        }
-        if(this.type == SlotType.OFFHAND) {
-            if(((ICustomInventory) container).isActiveOffhand()) {
-                this.show();
-            } else this.hide();
-        }
-    }
-
     @Inject(method = "set", at = @At("HEAD"), cancellable = true)
     public void onSetItem(ItemStack itemStack, CallbackInfo ci) {
         if(this.type == SlotType.INVENTORY && page > 0) {

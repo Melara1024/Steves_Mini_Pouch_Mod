@@ -37,12 +37,13 @@ public class InventoryActivateItem extends FunctionFoodItem {
         Messager.sendToPlayer(new InventorySyncPacket(inventory.getAllData()), serverPlayer);
     }
 
-    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
-        return ITEMS.register("activate_inventory", InventoryActivateItem::new);
-    }
 
     @Override
     public int getRegistryNumber() {
         return 0;
+    }
+
+    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
+        return ITEMS.register("activate_inventory", InventoryActivateItem::new);
     }
 }

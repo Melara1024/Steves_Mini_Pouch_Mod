@@ -1,6 +1,7 @@
 package ga.melara.stevesminipouch.stats;
 
 import ga.melara.stevesminipouch.event.InventorySyncEvent;
+import ga.melara.stevesminipouch.util.InventorySync;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -9,9 +10,9 @@ import java.util.function.Supplier;
 
 public class InventorySyncPacket {
 
-    PlayerInventorySizeData data;
+    InventoryStatsData data;
 
-    public InventorySyncPacket(PlayerInventorySizeData data) {
+    public InventorySyncPacket(InventoryStatsData data) {
         this.data = data;
     }
 
@@ -23,7 +24,7 @@ public class InventorySyncPacket {
         int slot = buf.readInt();
         int effectSlot = buf.readInt();
 
-        this.data = new PlayerInventorySizeData(slot, effectSlot, isActivateInventory, isActivateArmor, isActiveOffhand, isActivateCraft);
+        this.data = new InventoryStatsData(slot, effectSlot, isActivateInventory, isActivateArmor, isActiveOffhand, isActivateCraft);
     }
 
     public void toBytes(PacketBuffer buf) {
@@ -39,7 +40,7 @@ public class InventorySyncPacket {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            MinecraftForge.EVENT_BUS.post(new InventorySyncEvent(this.data));
+            InventorySync.initClient(data);
             ctx.setPacketHandled(true);
         });
         return true;

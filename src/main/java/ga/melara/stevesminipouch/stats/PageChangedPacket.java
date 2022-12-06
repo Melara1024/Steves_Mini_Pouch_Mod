@@ -26,8 +26,7 @@ public class PageChangedPacket {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            MinecraftForge.EVENT_BUS.post(new ServerPageChangeEvent(page));
-
+            MinecraftForge.EVENT_BUS.post(new ServerPageChangeEvent(ctx.getSender().getUUID(), page));
             ctx.setPacketHandled(true);
         });
         return true;

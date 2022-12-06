@@ -3,7 +3,7 @@ package ga.melara.stevesminipouch.mixin;
 import com.google.common.collect.Lists;
 import ga.melara.stevesminipouch.event.InitMenuEvent;
 import ga.melara.stevesminipouch.event.PageReduceEvent;
-import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
+import ga.melara.stevesminipouch.stats.InventoryStatsData;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
 import ga.melara.stevesminipouch.event.ServerPageChangeEvent;
 import ga.melara.stevesminipouch.util.*;
@@ -12,7 +12,9 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.IntReferenceHolder;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Final;
@@ -32,30 +34,32 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     @Shadow
     public final List<Slot> slots = Lists.newArrayList();
 
-    StatsSynchronizer statsSynchronizer;
+    @Final
+    @Shadow
+    private NonNullList<ItemStack> lastSlots;
 
     @Shadow
     @Final
-    private final List<IntReferenceHolder> dataSlots = Lists.newArrayList();
-
+    private List<IntReferenceHolder> dataSlots;
 
     @Final
     @Shadow
-    private final List<IContainerListener> containerListeners = Lists.newArrayList();
-
+    private List<IContainerListener> containerListeners;
 
     @Shadow public abstract void broadcastChanges();
 
-    PlayerInventorySizeData data = new PlayerInventorySizeData();
+    InventoryStatsData data = new InventoryStatsData();
+    StatsSynchronizer statsSynchronizer;
 
     @Override
-    public void setStatsSynchronizer(StatsSynchronizer synchronizer) {
+    public void sendSynchronizePacket(StatsSynchronizer synchronizer) {
         // Send information to the client via serverPlayer.
         this.statsSynchronizer = synchronizer;
         synchronizer.sendInitialData(data);
     }
 
-    public void initMenu(PlayerInventorySizeData data) {
+    @Override
+    public void setDataToClient(InventoryStatsData data) {
         this.data = data;
     }
 
@@ -74,7 +78,31 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
         // Synchronize all information except "carried" at page change with the client.
         // If you synchronize "carried" in here, it could disappear when players put on and take off the armor with slot enchantment.
-        this.broadcastChanges();
+        for(int i = 0; i < this.slots.size(); ++i) {
+            if(((IHasSlotType)this.slots.get(i)).getType() != SlotType.INVENTORY) continue;
+            ItemStack itemstack = this.slots.get(i).getItem();
+            ItemStack itemstack1 = this.lastSlots.get(i);
+            if (!ItemStack.matches(itemstack1, itemstack)) {
+                boolean clientStackChanged = !itemstack1.equals(itemstack, true);
+                ItemStack itemstack2 = itemstack.copy();
+                this.lastSlots.set(i, itemstack2);
+
+                if (clientStackChanged)
+                    for(IContainerListener icontainerlistener : this.containerListeners) {
+                        icontainerlistener.slotChanged((Container)(Object)this, i, itemstack2);
+                    }
+            }
+        }
+
+        for(int j = 0; j < this.dataSlots.size(); ++j) {
+            if(((IHasSlotType)this.slots.get(j)).getType() != SlotType.INVENTORY) continue;
+            IntReferenceHolder intreferenceholder = this.dataSlots.get(j);
+            if (intreferenceholder.checkAndClearUpdateFlag()) {
+                for(IContainerListener icontainerlistener1 : this.containerListeners) {
+                    icontainerlistener1.setContainerData((Container)(Object)this, j, intreferenceholder.get());
+                }
+            }
+        }
     }
 
 
@@ -118,11 +146,11 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     }
 
     @Override
-    public void judgePageReduction(int change, int maxpage, PlayerEntity player) {
+    public void judgePageReduction(int maxpage, PlayerEntity player) {
         // Judge if the page the player is currently viewing is unnecessary.
         if(player.level.isClientSide()) {
             for(Slot s : slots) {
-                if(((IHasSlotPage) s).getPage() > maxpage) {
+                if(((IHasSlotType) s).getType() == SlotType.INVENTORY && ((IHasSlotPage) s).getPage() > maxpage) {
                     MinecraftForge.EVENT_BUS.post(new PageReduceEvent(maxpage));
                     return;
                 }

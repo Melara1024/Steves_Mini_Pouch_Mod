@@ -29,9 +29,9 @@ public abstract class MinecraftMixin {
     }
 
     @Inject(method = "setScreen", at = @At("HEAD"), cancellable = true)
-    public void onSetScreen(Screen p_91153_, CallbackInfo ci) {
+    public void onSetScreen(Screen screen, CallbackInfo ci) {
         // When the inventory key is pressed while the player does not have inventory capability.
-        if(p_91153_ instanceof InventoryScreen && !((ICustomInventory) player.inventory).isActiveInventory()) {
+        if(screen instanceof InventoryScreen && !((ICustomInventory) player.inventory).isActiveInventory()) {
             ItemStack main = player.inventory.items.get(0);
             ItemStack offhand = player.inventory.offhand.get(0);
             String mainItem = main.getItem() == Items.AIR ? "nothing" : main.getItem().getName(main).getString();

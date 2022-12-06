@@ -20,7 +20,7 @@ apply plugin: 'maven-publish'
 
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.16.5-forge-1.0.0.2'
+version = '1.16.5-forge-1.0.2.3'
 group = 'ga.melara'
 archivesBaseName = 'stevesminipouch'
 
@@ -85,14 +85,25 @@ mixin {
     config "stevesminipouch.mixins.json"
 }
 
+
 sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    maven {
+        url = "https://maven.theillusivec4.top/"
+    }
+}
+
 
 dependencies {
 
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.39'
 
-
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.16.5-4.0.8.2")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.16.5-4.0.8.2:api")
+
 }
 
 jar {

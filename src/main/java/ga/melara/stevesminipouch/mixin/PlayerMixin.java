@@ -21,26 +21,26 @@ public class PlayerMixin {
     PlayerInventory inventory;
 
     @Inject(method = "readAdditionalSaveData", at = @At("HEAD"), cancellable = true)
-    public void onReadData(CompoundNBT tag, CallbackInfo ci) {
-
-        // State of inventory functions allowed to the player
+    public void onReadStats(CompoundNBT tag, CallbackInfo ci) {
         CompoundNBT compoundtag = tag.getCompound("InventoryStats");
         ((IAdditionalDataHandler) this.inventory).loadStatus(compoundtag);
+    }
 
-        // Storage location for added slots
+    @Inject(method = "readAdditionalSaveData", at = @At("RETURN"), cancellable = true)
+    public void onReadPouch(CompoundNBT tag, CallbackInfo ci) {
+        // Load Method for added slots
         ListNBT listtag = tag.getList("MiniPouch", 10);
         ((IAdditionalDataHandler) this.inventory).loadAdditional(listtag);
-
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("HEAD"), cancellable = true)
-    public void onAddData(CompoundNBT tag, CallbackInfo ci) {
-
-        // State of inventory functions allowed to the player
+    public void onSaveStats(CompoundNBT tag, CallbackInfo ci) {
         tag.put("InventoryStats", ((IAdditionalDataHandler) this.inventory).saveStatus(new CompoundNBT()));
+    }
 
-        // Storage location for added slots
+    @Inject(method = "addAdditionalSaveData", at = @At("RETURN"), cancellable = true)
+    public void onSavePouch(CompoundNBT tag, CallbackInfo ci) {
+        // Save Method for added slots
         tag.put("MiniPouch", ((IAdditionalDataHandler) this.inventory).saveAdditional(new ListNBT()));
-
     }
 }

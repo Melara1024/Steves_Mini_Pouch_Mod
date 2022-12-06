@@ -30,10 +30,11 @@ public class FunctionFoodItem extends Item {
         super(ITEM_PROPERTIES);
     }
 
-    public void onEat(LivingEntity entity) {
-    }
 
     public int getRegistryNumber() {
         return 0;
+    }
+
+    public void onEat(LivingEntity entity) {
     }
 }

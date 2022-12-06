@@ -22,26 +22,21 @@ public class SlotEffect extends Effect {
 
     @Override
     public void removeAttributeModifiers(LivingEntity livingentity, AttributeModifierManager attributeMap, int effectPower) {
-        if(livingentity instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) livingentity;
-            ((ICustomInventory) player.inventory).changeEffectSize(0);
-            if(player instanceof ServerPlayerEntity) {
-                ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
-                Messager.sendToPlayer(new EffectSlotSyncPacket(0), serverPlayer);
-            }
+        if(livingentity instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) livingentity;
+            ((ICustomInventory) serverPlayer.inventory).changeEffectSize(0);
+            Messager.sendToPlayer(new EffectSlotSyncPacket(0), serverPlayer);
         }
         super.removeAttributeModifiers(livingentity, attributeMap, effectPower);
     }
 
     @Override
     public void addAttributeModifiers(LivingEntity livingentity, AttributeModifierManager attributeMap, int effectPower) {
-        if(livingentity instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) livingentity;
-            ((ICustomInventory) player.inventory).changeEffectSize(effectPower);
-            if(player instanceof ServerPlayerEntity) {
-                ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
-                Messager.sendToPlayer(new EffectSlotSyncPacket(effectPower), serverPlayer);
-            }
+        if(livingentity instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) livingentity;
+            ((ICustomInventory) serverPlayer.inventory).changeEffectSize(effectPower);
+            Messager.sendToPlayer(new EffectSlotSyncPacket(effectPower), serverPlayer);
+
         }
         super.addAttributeModifiers(livingentity, attributeMap, effectPower);
     }

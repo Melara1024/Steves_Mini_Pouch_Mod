@@ -1,9 +1,7 @@
 package ga.melara.stevesminipouch.util;
 
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.CraftResultInventory;
 import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.CraftingResultSlot;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.inventory.container.Slot;
@@ -23,7 +21,7 @@ public enum SlotType {
         if(targetSlot.container instanceof PlayerInventory) {
             PlayerInventory inventory = (PlayerInventory) targetSlot.container;
 
-            if (!((IInheritGuard)inventory).avoidMiniPouch()){
+            if(!((IInheritGuard) inventory).avoidMiniPouch()) {
                 if(targetSlot.getSlotIndex() >= 0 && targetSlot.getSlotIndex() < 9) {
                     ((IHasSlotType) targetSlot).setType(SlotType.HOTBAR);
                 }

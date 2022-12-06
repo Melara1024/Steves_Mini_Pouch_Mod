@@ -54,6 +54,9 @@ public class Messager {
     }
 
     public static <MSG> void sendToPlayer(MSG message, ServerPlayerEntity player) {
-        channel.send(PacketDistributor.PLAYER.with(() -> player), message);
+        try {
+            channel.send(PacketDistributor.PLAYER.with(() -> player), message);
+        }
+        catch (NullPointerException ignored){}
     }
 }

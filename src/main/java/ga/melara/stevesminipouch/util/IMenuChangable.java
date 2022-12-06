@@ -13,4 +13,6 @@ public interface IMenuChangable {
     void updateOffhandHiding(PlayerEntity player);
 
     void judgePageReduction(int change, int maxpage, PlayerEntity player);
+
+    void judgePageReduction(int maxpage, PlayerEntity player);
 }

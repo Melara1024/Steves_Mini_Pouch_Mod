@@ -1,10 +1,10 @@
 package ga.melara.stevesminipouch.util;
 
-import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
+import ga.melara.stevesminipouch.stats.InventoryStatsData;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
 
 public interface IMenuSynchronizer {
-    void setStatsSynchronizer(StatsSynchronizer synchronizer);
+    void sendSynchronizePacket(StatsSynchronizer synchronizer);
 
-    void initMenu(PlayerInventorySizeData data);
+    void setDataToClient(InventoryStatsData data);
 }
