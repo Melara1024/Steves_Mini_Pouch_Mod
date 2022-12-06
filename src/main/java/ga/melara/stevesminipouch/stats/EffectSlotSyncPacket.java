@@ -1,9 +1,7 @@
 package ga.melara.stevesminipouch.stats;
 
-import ga.melara.stevesminipouch.event.ClientEffectSlotSyncEvent;
-import ga.melara.stevesminipouch.subscriber.InventoryEvents;
+import ga.melara.stevesminipouch.util.InventorySync;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -27,7 +25,7 @@ public class EffectSlotSyncPacket {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            InventoryEvents.syncEffectSizeToClient(effectSlot);
+            InventorySync.syncEffectSizeToClient(effectSlot);
             ctx.setPacketHandled(true);
         });
         return true;
