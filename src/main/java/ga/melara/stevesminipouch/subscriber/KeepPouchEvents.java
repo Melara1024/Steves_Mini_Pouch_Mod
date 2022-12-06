@@ -30,9 +30,10 @@ public class KeepPouchEvents {
     public static final String KEEP_STATS_TAG = "KeepMiniPouchStats";
     public static final String KEEP_POUCH_TAG = "KeepMiniPouchItems";
 
+    public static final String KEEP_ARM_TAG = "KeepArmor";
+    public static final String KEEP_OFF_TAG = "KeepOffhand";
+
     public static final String CHARM_DETECTED_TAG = "DetectedTFCharm";
-
-
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void preserveStats(LivingDeathEvent e) {
@@ -41,14 +42,10 @@ public class KeepPouchEvents {
         boolean gamerule = player.getLevel().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
         boolean twilight_forest_charm = false;
         if (ModList.get().isLoaded("twilightforest")) {
-            LOGGER.warn("TF loaded");
             //CharmEvent priority is HIGHEST, so this event called after that.
             CompoundTag data = getPlayerData(player);
             if (data.contains(CHARM_DETECTED_TAG)) twilight_forest_charm = true;
         }
-
-        LOGGER.warn(gamerule? "keepinv true" : "keepinv false");
-        LOGGER.warn(twilight_forest_charm? "charm true" : "charm false");
 
         CompoundTag tag = new CompoundTag();
         if (gamerule || twilight_forest_charm) {
@@ -59,9 +56,7 @@ public class KeepPouchEvents {
             tag.putBoolean("offhand", inv.isActiveOffhand());
             tag.putBoolean("craft", inv.isActiveCraft());
         }
-        else{
-            LOGGER.warn("not apply");
-        }
+
         getPlayerData(player).put(KEEP_STATS_TAG, tag);
     }
 
@@ -101,13 +96,47 @@ public class KeepPouchEvents {
         }
     }
 
-    // The method to restore status has been moved to the server player class
-
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void returnPouch(PlayerEvent.PlayerRespawnEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer player)) return;
 
         CompoundTag data = getPlayerData(player);
+
+        if (data.contains(KEEP_ARM_TAG)) {
+            ListTag tag = data.getList(KEEP_ARM_TAG, 10);
+
+            LockableItemStackList armor = (LockableItemStackList) player.getInventory().armor;
+
+            for(int i = 0; i < tag.size(); ++i) {
+                CompoundTag compoundtag = tag.getCompound(i);
+                int slotNumber = compoundtag.getInt("Slot");
+                ItemStack itemstack = ItemStack.of(compoundtag);
+                if(!itemstack.isEmpty() && slotNumber < armor.size()) {
+                    armor.set(slotNumber, itemstack);
+                }
+            }
+            getPlayerData(player).getList(KEEP_ARM_TAG, 10).clear();
+            getPlayerData(player).remove(KEEP_ARM_TAG);
+        }
+
+        if (data.contains(KEEP_OFF_TAG)) {
+            ListTag tag = data.getList(KEEP_OFF_TAG, 10);
+
+            LockableItemStackList offhand = (LockableItemStackList) player.getInventory().offhand;
+
+            for(int i = 0; i < tag.size(); ++i) {
+                CompoundTag compoundtag = tag.getCompound(i);
+                int slotNumber = compoundtag.getInt("Slot");
+                ItemStack itemstack = ItemStack.of(compoundtag);
+                if(!itemstack.isEmpty() && slotNumber < offhand.size()) {
+                    offhand.set(slotNumber, itemstack);
+                }
+            }
+            getPlayerData(player).getList(KEEP_OFF_TAG, 10).clear();
+            getPlayerData(player).remove(KEEP_OFF_TAG);
+        }
+
+
         if (data.contains(KEEP_POUCH_TAG)) {
             ListTag tag = data.getList(KEEP_POUCH_TAG, 10);
 

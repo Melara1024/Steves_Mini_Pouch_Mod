@@ -2,34 +2,23 @@ package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.ModRegistry;
-import ga.melara.stevesminipouch.event.ClientEffectSlotSyncEvent;
 import ga.melara.stevesminipouch.event.InitMenuEvent;
 import ga.melara.stevesminipouch.event.InventorySyncEvent;
 import ga.melara.stevesminipouch.stats.InventoryStatsData;
 import ga.melara.stevesminipouch.stats.InventorySyncPacket;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.util.*;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.PlayerList;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -41,7 +30,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -162,9 +150,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     @OnlyIn(Dist.CLIENT)
     public void initClient(InventorySyncEvent e) {
-
-        //syncが起動するまで一回もinitClientが呼ばれていない！！！！
-
         initMiniPouch(e.getData());
     }
 
@@ -188,9 +173,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
             enchantSize = 0;
             effectSize = 0;
             hotbarSize = 9;
-
             maxPage = 0;
-
             isActiveInventory = true;
             isActiveArmor = true;
             isActiveOffhand = true;
@@ -224,12 +207,10 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         compartments.add(1, armor);
         compartments.add(2, offhand);
 
-        if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu)){
+        if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu)) {
             ((IMenuSynchronizer) player.containerMenu).setdataToClient(getAllData());
             ((IMenuSynchronizer) player.inventoryMenu).setdataToClient(getAllData());
         }
-
-        LOGGER.warn("inventory init");
     }
 
     @SubscribeEvent
@@ -238,13 +219,13 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         if(Objects.isNull(this.player)) return;
         if(player.getLevel().isClientSide()) return;
         if(Objects.isNull(player.containerMenu)) return;
-        if(!(menu.containerId == this.player.containerMenu.containerId) && !(menu.containerId == this.player.inventoryMenu.containerId)) return;
+        if(!(menu.containerId == this.player.containerMenu.containerId) && !(menu.containerId == this.player.inventoryMenu.containerId))
+            return;
 
         ((IMenuSynchronizer) player.containerMenu).setdataToClient(getAllData());
         ((IMenuSynchronizer) player.inventoryMenu).setdataToClient(getAllData());
         if(player instanceof ServerPlayer serverPlayer)
             Messager.sendToPlayer(new InventorySyncPacket(getAllData()), serverPlayer);
-        LOGGER.warn("on init menu");
     }
 
     @Inject(method = "getSlotWithRemainingSpace(Lnet/minecraft/world/item/ItemStack;)I", at = @At(value = "HEAD"), cancellable = true)
@@ -396,10 +377,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         } else {
             inventorySize = Math.max(inventorySize + change, 1);
         }
-        enchantSize = 0;
-        armor.forEach(
-                (item) -> enchantSize += item.getEnchantmentLevel(ModRegistry.SLOT_ENCHANT.get())
-        );
+
         if(avoidMiniPouch()) {
             inventorySize = 36;
             effectSize = 0;
@@ -407,8 +385,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         }
 
         int allSize = getInventorySize();
-        LOGGER.warn("all size");
-        LOGGER.warn(String.valueOf(allSize));
         if(allSize < 9) {
             hotbarSize = allSize;
             if(selected > allSize) selected = allSize - 1;
@@ -448,10 +424,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                 compartments.add(0, items);
             }
         }
-
-        LOGGER.warn("new max page");
-        LOGGER.warn(String.valueOf(newMaxPage));
-
         if(Objects.isNull(player)) return;
         ((IMenuChangable) player.containerMenu).judgePageReduction(newMaxPage, player);
         ((IMenuChangable) player.inventoryMenu).judgePageReduction(newMaxPage, player);
@@ -528,7 +500,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     public boolean isValidSlot(int id) {
         if(avoidMiniPouch()) return true;
         synchronized(compartments) {
-            // 0-35 are vanilla item slots.
+                // 0-35 are vanilla item slots.
             if(id < 36) return !((LockableItemStackList) items).lockList.get(id);
                 // 36-39 are vanilla armor slots.
             else if(id < 40) return !((LockableItemStackList) armor).lockList.get(id - 36);
@@ -573,7 +545,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     public void onGetItem(int id, CallbackInfoReturnable<ItemStack> cir) {
         if(!avoidMiniPouch()) {
             synchronized(compartments) {
-                // 0-35 are vanilla item slots.
+                    // 0-35 are vanilla item slots.
                 if(id < 36) cir.setReturnValue(items.get(id));
                     // 36-39 are vanilla armor slots.
                 else if(id < 40) cir.setReturnValue(armor.get(id - 36));
@@ -591,8 +563,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     public void onRemoveItem(int id, int decrement, CallbackInfoReturnable<ItemStack> cir) {
         if(!avoidMiniPouch()) {
             synchronized(compartments) {
-
-                // 0-35 are vanilla item slots.
+                    // 0-35 are vanilla item slots.
                 if(id < 36) cir.setReturnValue(ContainerHelper.removeItem(items, id, decrement));
                     // 36-39 are vanilla armor slots.
                 else if(id < 40) cir.setReturnValue(ContainerHelper.removeItem(armor, id - 36, decrement));
@@ -731,7 +702,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
         InventoryStatsData stats = new InventoryStatsData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
         initServer(stats);
-        if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu)){
+        if(Objects.nonNull(player) && Objects.nonNull(player.containerMenu)) {
             ((IMenuSynchronizer) player.containerMenu).setdataToClient(getAllData());
             ((IMenuSynchronizer) player.inventoryMenu).setdataToClient(getAllData());
         }

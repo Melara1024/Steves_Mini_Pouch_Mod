@@ -64,7 +64,6 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     public void onConstruct(MenuType menuType, int pContainerId, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.post(new InitMenuEvent((AbstractContainerMenu) (Object) this));
-        LOGGER.warn("menu constructor");
     }
 
     @SubscribeEvent
@@ -80,11 +79,13 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
         if(this.synchronizer != null) {
             int i = 0;
             for(int j = this.slots.size(); i < j; ++i) {
+                if(((IHasSlotType)this.slots.get(i)).getType() != SlotType.INVENTORY) continue;
                 this.remoteSlots.set(i, this.slots.get(i).getItem().copy());
                 this.synchronizer.sendSlotChange((AbstractContainerMenu) (Object) this, i, this.slots.get(i).getItem().copy());
             }
             i = 0;
             for(int k = this.dataSlots.size(); i < k; ++i) {
+                if(((IHasSlotType)this.slots.get(i)).getType() != SlotType.INVENTORY) continue;
                 this.remoteDataSlots.set(i, this.dataSlots.get(i).get());
                 this.synchronizer.sendDataChange((AbstractContainerMenu) (Object) this, i, this.dataSlots.get(i).get());
             }
@@ -138,8 +139,6 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
             for(Slot s : slots) {
                 if(((IHasSlotType) s).getType() == SlotType.INVENTORY && ((IHasSlotPage) s).getPage() > maxpage) {
                     MinecraftForge.EVENT_BUS.post(new PageReduceEvent(maxpage));
-                    LOGGER.warn("page reduction");
-                    LOGGER.warn("maxpage " + maxpage);
                     return;
                 }
             }
