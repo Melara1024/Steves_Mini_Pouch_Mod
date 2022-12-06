@@ -27,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static ga.melara.stevesminipouch.StevesMiniPouch.LOGGER;
 import static ga.melara.stevesminipouch.subscriber.KeepPouchEvents.*;
 
 @Mixin(ServerPlayer.class)
@@ -98,7 +99,7 @@ public class ServerPlayerMixin {
                     Curio.hasCharmCurio("charm_of_keeping_1", player) ||
                     Curio.hasCharmCurio("charm_of_keeping_2", player) ||
                     Curio.hasCharmCurio("charm_of_keeping_3", player)){
-                if(player.getInventory().hasAnyMatching((item)-> item.getItem().toString().contains("charm_of_keeping_3")) ||
+                if(player.getInventory().hasAnyMatching((item)-> item.getItem().toString().equals("charm_of_keeping_3")) ||
                         Curio.hasCharmCurio("charm_of_keeping_3", player)) {
                     getPlayerData(player).put(KeepPouchEvents.CHARM_DETECTED_TAG, new CompoundTag());
                 }
