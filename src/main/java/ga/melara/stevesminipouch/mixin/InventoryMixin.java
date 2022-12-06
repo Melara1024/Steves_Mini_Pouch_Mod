@@ -101,16 +101,14 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     private boolean avoidMiniPouch = true;
     private boolean decided = false;
     @Override
-    public boolean avoidMiniPouch()
-    {
+    public boolean avoidMiniPouch() {
         // Fixme Worst Code
         // Fixme Must be Rewrite
 
         // Mixin vanilla player inventory only, ignoring subclasses added by other mods
-        if (!decided){
+        if(!decided) {
 
             //Avoid custom inventory for other mods that inherit inventory
-
             ArrayList<String> classList = new ArrayList<>(Arrays.asList(
                     "net.minecraft.world.entity.player.Inventory",
                     "net.sistr.littlemaidrebirth.entity.LMInventorySupplier$LMInventory")) {
@@ -122,16 +120,19 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                     "net.minecraft.server.level.ServerPlayer")) {
             };
 
-            Optional<String> playerName = Optional.ofNullable(this.player.getClass().getName());
-            Optional<String> className = Optional.ofNullable(this.getClass().getName());
+            if(Objects.nonNull(this.getClass()) && Objects.nonNull(this.player)) {
+                Optional<String> playerName = Optional.ofNullable(this.player.getClass().getName());
+                Optional<String> className = Optional.ofNullable(this.getClass().getName());
 
-            if(playerName.isPresent() && className.isPresent()) avoidMiniPouch = !(playerList.contains(playerName.get()) && classList.contains(className.get()));
-            else avoidMiniPouch = false;
+                if(playerName.isPresent() && className.isPresent())
+                    avoidMiniPouch = !(playerList.contains(playerName.get()) && classList.contains(className.get()));
+                else avoidMiniPouch = false;
 
-            if (avoidMiniPouch) LOGGER.warn(className + " is not compatible with Steve's Mini Pouch.");
-            else LOGGER.info("Steve's Mini Pouch correctly applied to " + className);
+                if(avoidMiniPouch) LOGGER.warn(className + " is not compatible with Steve's Mini Pouch.");
+                else LOGGER.info("Steve's Mini Pouch correctly applied to " + className);
 
-            decided = true;
+                decided = true;
+            }
         }
         return avoidMiniPouch;
     }

@@ -22,7 +22,7 @@ apply plugin: 'org.spongepowered.mixin'
 
 
 
-version = '1.18.2-forge-1.0.0.2'
+version = '1.18.2-forge-1.0.2.3'
 group = 'ga.melara'
 archivesBaseName = 'stevesminipouch'
 
@@ -40,6 +40,8 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
             property 'forge.enabledGameTestNamespaces', 'stevesminipouch'
 
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
             mods {
                 stevesminipouch {
                     source sourceSets.main
@@ -55,6 +57,9 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             property 'forge.enabledGameTestNamespaces', 'stevesminipouch'
+
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
             mods {
                 stevesminipouch {

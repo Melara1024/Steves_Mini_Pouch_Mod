@@ -30,6 +30,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Predicate;
 
+import static ga.melara.stevesminipouch.StevesMiniPouch.LOGGER;
 import static ga.melara.stevesminipouch.subscriber.KeepPouchEvents.*;
 
 @Mixin(ServerPlayer.class)
@@ -152,6 +153,7 @@ public class ServerPlayerMixin {
 
     private static boolean hasAnyMatching(Inventory inventory, Predicate<ItemStack> predicate){
         for(int i=0; i<inventory.getContainerSize(); i++){
+            LOGGER.warn(inventory.getItem(i).toString());
             if(predicate.test(inventory.getItem(i))) return true;
         }
         return false;
