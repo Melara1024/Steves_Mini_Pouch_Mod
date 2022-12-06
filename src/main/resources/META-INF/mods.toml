@@ -1,13 +1,13 @@
 modLoader="javafml"
 loaderVersion="[43,)"
 license="GNU GPL v3"
-# issueTrackerURL="http://my.issue.tracker/"
+issueTrackerURL="https://github.com/Melara1024/Steves_Mini_Pouch_Mod/issues"
 
 [[mods]]
 modId="stevesminipouch"
 version="${file.jarVersion}"
 displayName="Steve's Mini Pouch"
-displayURL="https://www.curseforge.com/members/melara1024/projects"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/steves-mini-pouch"
 displayTest="MATCH_VERSION"
 logoFile="icon.png"
 authors="Melara1024"
