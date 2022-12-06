@@ -25,7 +25,7 @@ public class ServerPlayerMixin {
 
             // When initMenu is executed, the data is not ready, so only the synchronizer is set.
             statsSynchronizer = data -> Messager.sendToPlayer(new InventorySyncPacket(data), player);
-            ((IMenuSynchronizer) menu).setStatsSynchronizer(this.statsSynchronizer);
+            ((IMenuSynchronizer) menu).sendSynchronizePacket(this.statsSynchronizer);
         }
     }
 }

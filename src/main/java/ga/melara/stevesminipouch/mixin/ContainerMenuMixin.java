@@ -30,8 +30,6 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     @Shadow
     public NonNullList<Slot> slots;
 
-    StatsSynchronizer statsSynchronizer;
-
     @Shadow
     @Final
     private List<DataSlot> dataSlots;
@@ -45,9 +43,10 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     private ContainerSynchronizer synchronizer;
 
     InventoryStatsData data = new InventoryStatsData();
+    StatsSynchronizer statsSynchronizer;
 
     @Override
-    public void setStatsSynchronizer(StatsSynchronizer synchronizer) {
+    public void sendSynchronizePacket(StatsSynchronizer synchronizer) {
         // Send information to the client via serverPlayer.
         this.statsSynchronizer = synchronizer;
         synchronizer.sendInitialData(data);
@@ -65,7 +64,6 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
     @SubscribeEvent
     public void onPageChange(ServerPageChangeEvent e) {
-
         for(Slot s : this.slots) {
             ((IHasSlotPage) s).setPage(e.getPage());
         }
@@ -75,11 +73,13 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
         if(this.synchronizer != null) {
             int i = 0;
             for(int j = this.slots.size(); i < j; ++i) {
+                if(((IHasSlotType)this.slots.get(i)).getType() != SlotType.INVENTORY) continue;
                 this.remoteSlots.set(i, this.slots.get(i).getItem().copy());
                 this.synchronizer.sendSlotChange((AbstractContainerMenu) (Object) this, i, this.slots.get(i).getItem().copy());
             }
             i = 0;
             for(int k = this.dataSlots.size(); i < k; ++i) {
+                if(((IHasSlotType)this.slots.get(i)).getType() != SlotType.INVENTORY) continue;
                 this.remoteDataSlots.set(i, this.dataSlots.get(i).get());
                 this.synchronizer.sendDataChange((AbstractContainerMenu) (Object) this, i, this.dataSlots.get(i).get());
             }
@@ -131,7 +131,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
         // Judge if the page the player is currently viewing is unnecessary.
         if(player.getLevel().isClientSide()) {
             for(Slot s : slots) {
-                if(((IHasSlotPage) s).getPage() > maxpage) {
+                if(((IHasSlotType) s).getType() == SlotType.INVENTORY &&((IHasSlotPage) s).getPage() > maxpage) {
                     MinecraftForge.EVENT_BUS.post(new PageReduceEvent(maxpage));
                     return;
                 }
