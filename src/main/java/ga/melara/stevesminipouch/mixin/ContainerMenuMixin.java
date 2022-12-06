@@ -65,7 +65,9 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     @SubscribeEvent
     public void onPageChange(ServerPageChangeEvent e) {
         for(Slot s : this.slots) {
-            ((IHasSlotPage) s).setPage(e.getPage());
+            if (((IHasSlotType)s).getType() == SlotType.INVENTORY && ((IHasSlotPage)s).getOwner().equals(e.getUUID())){
+                ((IHasSlotPage) s).setPage(e.getPage());
+            }
         }
 
         // Synchronize all information except "carried" at page change with the client.

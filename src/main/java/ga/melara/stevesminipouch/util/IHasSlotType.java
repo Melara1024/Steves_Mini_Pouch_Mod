@@ -11,5 +11,4 @@ public interface IHasSlotType {
 
     SlotType getType();
 
-    UUID getOwner();
 }

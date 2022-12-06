@@ -1,9 +1,7 @@
 package ga.melara.stevesminipouch.stats;
 
-import ga.melara.stevesminipouch.event.ClientEffectSlotSyncEvent;
 import ga.melara.stevesminipouch.util.InventorySync;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
