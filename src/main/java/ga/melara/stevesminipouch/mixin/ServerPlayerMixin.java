@@ -2,7 +2,6 @@ package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.stats.InventorySyncPacket;
 import ga.melara.stevesminipouch.stats.Messager;
-import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
 import ga.melara.stevesminipouch.util.IMenuSynchronizer;
 import net.minecraft.server.level.ServerPlayer;

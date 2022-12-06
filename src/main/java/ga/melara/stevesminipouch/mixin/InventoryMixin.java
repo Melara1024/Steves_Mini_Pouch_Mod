@@ -5,7 +5,7 @@ import ga.melara.stevesminipouch.ModRegistry;
 import ga.melara.stevesminipouch.event.ClientEffectSlotSyncEvent;
 import ga.melara.stevesminipouch.event.InitMenuEvent;
 import ga.melara.stevesminipouch.event.InventorySyncEvent;
-import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
+import ga.melara.stevesminipouch.stats.InventoryStatsData;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -18,7 +18,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -169,7 +168,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     @Override
     @SubscribeEvent
     public void initClient(InventorySyncEvent e) {
-        PlayerInventorySizeData data = e.getData();
+        InventoryStatsData data = e.getData();
         initMiniPouch(data.getInventorySize(),
                 data.getEffectSize(),
                 data.isActiveInventory(),
@@ -224,7 +223,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
         if (Objects.nonNull(player.inventoryMenu)) {
             initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
-            ((IMenuSynchronizer) this.player.containerMenu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
+            ((IMenuSynchronizer) this.player.containerMenu).initMenu(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
         }
     }
 
@@ -232,7 +231,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     public void onInitMenu(InitMenuEvent e)
     {
         AbstractContainerMenu menu = e.getMenu();
-        ((IMenuSynchronizer) menu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
+        ((IMenuSynchronizer) menu).initMenu(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
     }
 
 
@@ -512,8 +511,8 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     }
 
     @Override
-    public PlayerInventorySizeData getAllData() {
-        return new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
+    public InventoryStatsData getAllData() {
+        return new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
     }
 
     @Override
@@ -769,7 +768,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
         tag.putBoolean("craft", this.isActiveCraft);
 
         initServer(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft);
-        ((IMenuSynchronizer) this.player.containerMenu).initMenu(new PlayerInventorySizeData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
+        ((IMenuSynchronizer) this.player.containerMenu).initMenu(new InventoryStatsData(this.inventorySize, this.effectSize, this.isActiveInventory, this.isActiveArmor, this.isActiveOffhand, this.isActiveCraft));
         return tag;
     }
 
@@ -808,6 +807,6 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                         tag.contains("craft") ? tag.getBoolean("craft") : Config.DEFAULT_CRAFT.get());
 
         initServer(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft);
-        ((IMenuSynchronizer) player.containerMenu).initMenu(new PlayerInventorySizeData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
+        ((IMenuSynchronizer) player.containerMenu).initMenu(new InventoryStatsData(inventorySize, effectSize, isActiveInventory, isActiveArmor, isActiveOffhand, isActiveCraft));
     }
 }

@@ -9,9 +9,9 @@ import java.util.function.Supplier;
 
 public class InventorySyncPacket {
 
-    PlayerInventorySizeData data;
+    InventoryStatsData data;
 
-    public InventorySyncPacket(PlayerInventorySizeData data) {
+    public InventorySyncPacket(InventoryStatsData data) {
         this.data = data;
     }
 
@@ -23,7 +23,7 @@ public class InventorySyncPacket {
         int slot = buf.readInt();
         int effectSlot = buf.readInt();
 
-        this.data = new PlayerInventorySizeData(slot, effectSlot, isActivateInventory, isActivateArmor, isActiveOffhand, isActivateCraft);
+        this.data = new InventoryStatsData(slot, effectSlot, isActivateInventory, isActivateArmor, isActiveOffhand, isActivateCraft);
     }
 
     public void toBytes(FriendlyByteBuf buf) {

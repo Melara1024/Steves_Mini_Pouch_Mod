@@ -11,7 +11,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class SlotEnchant extends Enchantment {
     public SlotEnchant() {
-        super(Rarity.RARE, EnchantmentCategory.ARMOR, new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.LEGS});
+        super(Rarity.RARE, EnchantmentCategory.ARMOR, new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET});
     }
 
     public static RegistryObject<Enchantment> buildInTo(DeferredRegister<Enchantment> ENCHANTMENT) {

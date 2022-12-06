@@ -1,7 +1,6 @@
 package ga.melara.stevesminipouch.util;
 
-import ga.melara.stevesminipouch.stats.PlayerInventorySizeData;
-import net.minecraft.world.entity.player.Player;
+import ga.melara.stevesminipouch.stats.InventoryStatsData;
 
 public interface ICustomInventory {
 
@@ -47,5 +46,5 @@ public interface ICustomInventory {
 
     int getHotbarSize();
 
-    PlayerInventorySizeData getAllData();
+    InventoryStatsData getAllData();
 }

@@ -19,12 +19,13 @@ public class Sub1SlotItem extends SlotItem {
         this.incremental = -1;
     }
 
-    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
-        return ITEMS.register("slot_sub_lv1", Sub1SlotItem::new);
-    }
 
     @Override
     public int getRegistryNumber() {
         return 7;
+    }
+
+    public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
+        return ITEMS.register("slot_sub_lv1", Sub1SlotItem::new);
     }
 }

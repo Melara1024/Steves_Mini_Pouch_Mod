@@ -1,11 +1,13 @@
 modLoader="javafml"
 loaderVersion="[40,)"
 license="GNU GPL v3"
+issueTrackerURL="https://github.com/Melara1024/Steves_Mini_Pouch_Mod/issues"
 
 [[mods]]
 modId="stevesminipouch"
 version="${file.jarVersion}"
 displayName="Steve's Mini Pouch"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/steves-mini-pouch"
 logoFile="icon.png"
 authors="Melara1024"
 description='''
@@ -19,7 +21,7 @@ This mod allows you to increase or decrease the number of slots and switch betwe
     ordering="NONE"
     side="BOTH"
 
-[[dependencies.examplemod]]
+[[dependencies.stevesminipouch]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.18.2,1.19)"

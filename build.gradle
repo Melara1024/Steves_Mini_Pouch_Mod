@@ -104,7 +104,9 @@ mixin {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-
+    maven {
+        url = "https://maven.theillusivec4.top/"
+    }
 }
 
 dependencies {
@@ -113,6 +115,8 @@ dependencies {
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
+    implementation "top.theillusivec4.curios:curios-forge:1.18.2-5.0.7.1"
+    implementation "top.theillusivec4.curios:curios-forge:1.18.2-5.0.7.1:api"
 }
 
 
