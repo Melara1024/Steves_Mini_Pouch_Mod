@@ -9,7 +9,6 @@ import ga.melara.stevesminipouch.stats.InventorySyncPacket;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -18,7 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.NonNullList;
-import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -34,7 +32,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static ga.melara.stevesminipouch.StevesMiniPouch.LOGGER;
@@ -118,14 +115,15 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
             //Avoid custom inventory for other mods that inherit inventory
             ArrayList<String> classList = new ArrayList<String>(Arrays.asList(
-                    "net.minecraft.world.entity.player.Inventory",
+                    "net.minecraft.entity.player.PlayerInventory",
                     "net.sistr.littlemaidrebirth.entity.LMInventorySupplier$LMInventory")) {
             };
 
             //Avoid entities of other mods that inherit the player
             ArrayList<String> playerList = new ArrayList<String>(Arrays.asList(
-                    "net.minecraft.client.player.LocalPlayer",
-                    "net.minecraft.server.level.ServerPlayer")) {
+                    "net.minecraft.client.entity.player.ClientPlayerEntity",
+                    "net.minecraft.client.entity.player.RemoteClientPlayerEntity",
+                    "net.minecraft.entity.player.ServerPlayerEntity")) {
             };
 
             if(Objects.nonNull(this.getClass()) && Objects.nonNull(this.player)) {
