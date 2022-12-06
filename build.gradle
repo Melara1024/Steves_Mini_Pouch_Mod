@@ -21,7 +21,7 @@ plugins {
 apply plugin: 'org.spongepowered.mixin'
 
 
-version = '1.18.2-forge-1.0.2.3'
+version = '1.17.1-forge-1.0.2.3'
 group = 'ga.melara'
 archivesBaseName = 'stevesminipouch'
 

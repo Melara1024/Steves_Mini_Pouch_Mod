@@ -152,7 +152,6 @@ public class ServerPlayerMixin {
 
     private static boolean hasAnyMatching(Inventory inventory, Predicate<ItemStack> predicate){
         for(int i=0; i<inventory.getContainerSize(); i++){
-            LOGGER.warning(inventory.getItem(i).toString());
             if(predicate.test(inventory.getItem(i))) return true;
         }
         return false;
