@@ -59,7 +59,7 @@ public class KeepPouchEvents {
     public static void preservePouch(LivingDeathEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer player)) return;
 
-        boolean gamerule = e.getEntity().getLevel().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
+        boolean gamerule = e.getEntity().level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
         boolean twilight_forest_charm = false;
         if (ModList.get().isLoaded("twilightforest")) {
             //CharmEvent priority is HIGHEST, so this event called after that.

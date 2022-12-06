@@ -2,9 +2,9 @@ package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.event.InitMenuEvent;
 import ga.melara.stevesminipouch.event.PageReduceEvent;
+import ga.melara.stevesminipouch.event.ServerPageChangeEvent;
 import ga.melara.stevesminipouch.stats.InventoryStatsData;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
-import ga.melara.stevesminipouch.event.ServerPageChangeEvent;
 import ga.melara.stevesminipouch.util.*;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.NonNullList;
@@ -131,7 +131,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     @Override
     public void judgePageReduction(int maxpage, Player player) {
         // Judge if the page the player is currently viewing is unnecessary.
-        if(player.getLevel().isClientSide()) {
+        if(player.level.isClientSide()) {
             for(Slot s : slots) {
                 if(((IHasSlotType) s).getType() == SlotType.INVENTORY &&((IHasSlotPage) s).getPage() > maxpage) {
                     MinecraftForge.EVENT_BUS.post(new PageReduceEvent(maxpage));

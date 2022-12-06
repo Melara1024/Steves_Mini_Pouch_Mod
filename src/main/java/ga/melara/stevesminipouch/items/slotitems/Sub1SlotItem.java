@@ -4,8 +4,8 @@ import ga.melara.stevesminipouch.ModRegistry;
 import ga.melara.stevesminipouch.items.SlotItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
 
 public class Sub1SlotItem extends SlotItem {
     public static Item.Properties PROPERTIES = new Item.Properties()

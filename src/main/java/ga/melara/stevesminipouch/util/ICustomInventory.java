@@ -13,15 +13,19 @@ public interface ICustomInventory {
     NonNullList<ItemStack> getBackUpPouch();
 
     void setInventory(boolean set);
+
     void toggleInventory();
 
     void setArmor(boolean set);
+
     void toggleArmor();
 
     void setOffhand(boolean set);
+
     void toggleOffhand();
 
     void setCraft(boolean set);
+
     void toggleCraft();
 
     boolean isActiveInventory();

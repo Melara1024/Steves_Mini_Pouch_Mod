@@ -21,17 +21,16 @@ plugins {
 apply plugin: 'org.spongepowered.mixin'
 
 
-
 version = '1.18.2-forge-1.0.2.3'
 group = 'ga.melara'
 archivesBaseName = 'stevesminipouch'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
 
-    mappings channel: 'parchment', version: '2022.08.07-1.18.2'
+    mappings channel: 'parchment', version: '2021.08.15-1.17.1'
 
     runs {
         client {
@@ -116,12 +115,12 @@ repositories {
 
 dependencies {
 
-    minecraft 'net.minecraftforge:forge:1.18.2-40.1.0'
+    minecraft 'net.minecraftforge:forge:1.17.1-37.1.1'
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    implementation "top.theillusivec4.curios:curios-forge:1.18.2-5.0.7.1"
-    implementation "top.theillusivec4.curios:curios-forge:1.18.2-5.0.7.1:api"
+    implementation "top.theillusivec4.curios:curios-forge:1.17.1-5.0.2.7"
+    implementation "top.theillusivec4.curios:curios-forge:1.17.1-5.0.2.7:api"
 }
 
 

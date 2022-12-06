@@ -6,7 +6,6 @@ import ga.melara.stevesminipouch.stats.InventoryStatsData;
 import ga.melara.stevesminipouch.stats.InventorySyncPacket;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
-import ga.melara.stevesminipouch.subscriber.KeepPouchEvents;
 import ga.melara.stevesminipouch.util.ICustomInventory;
 import ga.melara.stevesminipouch.util.IMenuSynchronizer;
 import ga.melara.stevesminipouch.util.LockableItemStackList;
@@ -98,7 +97,7 @@ public class ServerPlayerMixin {
         MinecraftForge.EVENT_BUS.unregister(player.inventoryMenu);
 
         // if player has twilight forest's charm lv3, inventory stats and pouch will reserve.
-        if (ModList.get().isLoaded("twilightforest") || !(player.getLevel().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))) {
+        if (ModList.get().isLoaded("twilightforest") || !(player.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))) {
             //CharmEvent priority is HIGHEST, so this event called after that.
             if(hasAnyMatching(player.getInventory(), (item)-> item.getItem().toString().contains("charm_of_keeping_")) ||
                     Curio.hasCharmCurio("charm_of_keeping_1", player) ||
@@ -153,7 +152,7 @@ public class ServerPlayerMixin {
 
     private static boolean hasAnyMatching(Inventory inventory, Predicate<ItemStack> predicate){
         for(int i=0; i<inventory.getContainerSize(); i++){
-            LOGGER.warn(inventory.getItem(i).toString());
+            LOGGER.warning(inventory.getItem(i).toString());
             if(predicate.test(inventory.getItem(i))) return true;
         }
         return false;

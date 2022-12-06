@@ -32,7 +32,7 @@ public class LivingEntityMixin {
         if((LivingEntity) (Object) this instanceof Player player && itemStack.getItem() instanceof FunctionFoodItem food) {
             if((itemStack.getItem() instanceof SlotItem || itemStack.getItem() instanceof CraftActivatItem || itemStack.getItem() instanceof ArmorActivateItem)
                     && !((ICustomInventory) player.getInventory()).isActiveInventory()) {
-                if(player.getLevel().isClientSide())
+                if(player.level.isClientSide())
                     player.sendMessage(new TranslatableComponent("message.useless"), player.getUUID());
                 cir.setReturnValue(itemStack);
             }

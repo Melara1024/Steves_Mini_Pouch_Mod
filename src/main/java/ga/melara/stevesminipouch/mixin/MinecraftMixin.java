@@ -22,8 +22,6 @@ public abstract class MinecraftMixin {
     @Shadow
     public LocalPlayer player;
 
-    @Shadow public abstract void prepareForMultiplayer();
-
     @Inject(method = "handleKeybinds()V", at = @At(value = "RETURN"), cancellable = true)
     public void onGetSuitableHotbarSlot(CallbackInfo ci) {
         if(this.player.getInventory().selected > ((ICustomInventory) this.player.getInventory()).getInventorySize() - 1)
@@ -40,7 +38,7 @@ public abstract class MinecraftMixin {
             String mainItem = main.getItem() == Items.AIR ? "nothing" : main.getItem().getName(main).getString();
             String offhandItem = offhand.getItem() == Items.AIR ? "nothing" : offhand.getItem().getName(offhand).getString();
 
-            if(player.getLevel().isClientSide()) {
+            if(player.level.isClientSide()) {
                 player.sendMessage(new TranslatableComponent("message.simple_inventory_1"), player.getUUID());
                 player.sendMessage(new TranslatableComponent("message.simple_inventory_2"), player.getUUID());
                 player.sendMessage(new TextComponent(mainItem), player.getUUID());

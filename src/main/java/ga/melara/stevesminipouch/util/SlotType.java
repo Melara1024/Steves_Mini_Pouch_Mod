@@ -1,6 +1,5 @@
 package ga.melara.stevesminipouch.util;
 
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -20,7 +19,7 @@ public enum SlotType {
     public static void setType(Slot targetSlot) {
         if(targetSlot.container instanceof Inventory inventory) {
 
-            if (!((IInheritGuard)inventory).avoidMiniPouch()){
+            if(!((IInheritGuard) inventory).avoidMiniPouch()) {
                 if(targetSlot.getSlotIndex() >= 0 && targetSlot.getSlotIndex() < 9) {
                     ((IHasSlotType) targetSlot).setType(SlotType.HOTBAR);
                 }

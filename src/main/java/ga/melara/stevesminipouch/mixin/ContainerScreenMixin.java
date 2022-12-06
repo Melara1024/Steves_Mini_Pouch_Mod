@@ -9,7 +9,6 @@ import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.stats.PageChangedPacket;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

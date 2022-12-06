@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 
 public class InventorySync {
     public static void initClient(InventoryStatsData data) {
-        ((ICustomInventory) Minecraft.getInstance().player.getInventory()). initMiniPouch(data);
+        ((ICustomInventory) Minecraft.getInstance().player.getInventory()).initMiniPouch(data);
     }
 
     public static void syncEffectSizeToClient(int newEffectSize) {

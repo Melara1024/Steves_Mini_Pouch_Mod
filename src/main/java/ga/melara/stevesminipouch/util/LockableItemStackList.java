@@ -1,24 +1,18 @@
 package ga.melara.stevesminipouch.util;
 
 import com.google.common.collect.Lists;
-import ga.melara.stevesminipouch.ModRegistry;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Event;
-import org.apache.commons.lang3.Validate;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class LockableItemStackList extends NonNullList<ItemStack> {
 
@@ -38,6 +32,7 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
 
 
     public List<Boolean> lockList;
+
     public void allLock() {
         for(int i = 0; i < this.lockList.size(); i++) {
             this.lockList.set(i, true);
@@ -81,7 +76,7 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
         lockList = new ArrayList<>() {
             @Override
             public Boolean set(int index, Boolean element) {
-                if (element && Objects.nonNull(inventory)) {
+                if(element && Objects.nonNull(inventory)) {
                     ItemStack itemStack = LockableItemStackList.this.get(index);
                     throwItem(itemStack);
                     LockableItemStackList.this.set(index, ItemStack.EMPTY);
@@ -90,14 +85,14 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
             }
         };
 
-        for(int i = 0; i< itemList.size(); i++) lockList.add(initLock);
+        for(int i = 0; i < itemList.size(); i++) lockList.add(initLock);
     }
 
 
     @Override
     @Nonnull
     public ItemStack get(int id) {
-        if(id > this.size()-1) return defaultItem;
+        if(id > this.size() - 1) return defaultItem;
         if(lockList.get(id)) return defaultItem;
         return super.get(id);
     }
@@ -105,7 +100,7 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
     @Override
     public ItemStack set(int id, ItemStack itemStack) {
         // If the slot is locked, throw the item in its place.
-        if(id > this.size()-1 || lockList.get(id)) {
+        if(id > this.size() - 1 || lockList.get(id)) {
             throwItem(itemStack);
             return defaultItem;
         }
@@ -117,16 +112,16 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
 
     @Override
     public ItemStack remove(int id) {
-        if(id > this.size()-1) return defaultItem;
+        if(id > this.size() - 1) return defaultItem;
         if(lockList.get(id)) return defaultItem;
         ItemStack result = super.remove(id);
         if(isActivateObserver) this.observer.accept(id, ItemStack.EMPTY);
         return result;
     }
 
-    private void throwItem(ItemStack itemStack)
-    {
-        if(Objects.isNull(inventory) || Objects.isNull(inventory.player) || Objects.isNull(inventory.player.level)) return;
+    private void throwItem(ItemStack itemStack) {
+        if(Objects.isNull(inventory) || Objects.isNull(inventory.player) || Objects.isNull(inventory.player.level))
+            return;
         Level level = inventory.player.level;
         ItemEntity itementity = new ItemEntity(level, inventory.player.getX(), inventory.player.getEyeY() - 0.3, inventory.player.getZ(), itemStack);
         itementity.setDefaultPickUpDelay();

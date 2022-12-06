@@ -128,7 +128,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
                     avoidMiniPouch = !(playerList.contains(playerName.get()) && classList.contains(className.get()));
                 else avoidMiniPouch = false;
 
-                if(avoidMiniPouch) LOGGER.warn(className + " is not compatible with Steve's Mini Pouch.");
+                if(avoidMiniPouch) LOGGER.warning(className + " is not compatible with Steve's Mini Pouch.");
                 else LOGGER.info("Steve's Mini Pouch correctly applied to " + className);
 
                 decided = true;
@@ -218,7 +218,7 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
     {
         AbstractContainerMenu menu = e.getMenu();
         if(Objects.isNull(this.player)) return;
-        if(player.getLevel().isClientSide()) return;
+        if(player.level.isClientSide()) return;
         if(Objects.isNull(player.containerMenu)) return;
         if(!(menu.containerId == this.player.containerMenu.containerId) && !(menu.containerId == this.player.inventoryMenu.containerId))
             return;
