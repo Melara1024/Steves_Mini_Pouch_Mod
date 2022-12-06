@@ -16,45 +16,28 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class LockableItemStackList extends NonNullList<ItemStack> {
 
-    private List<ItemStack> mutableList;
-
     private final Inventory inventory;
 
     private static final ItemStack defaultItem = ItemStack.EMPTY;
 
-    private Consumer<ItemStack> observer = itemStack -> {
+    private BiConsumer<Integer, ItemStack> observer = (slot, itemStack) -> {
     };
 
     private boolean isActivateObserver = false;
 
-    public void setObserver(Consumer<ItemStack> observer) {
+    public void setObserver(BiConsumer<Integer, ItemStack> observer) {
         this.observer = observer;
         isActivateObserver = true;
     }
 
 
-    public List<Boolean> lockList = new ArrayList<Boolean>() {
-        @Override
-        public Boolean set(int index, Boolean element) {
-            if(element && Objects.nonNull(inventory)) {
-                Level level = inventory.player.level;
-                Player entity = inventory.player;
-                ItemStack item = LockableItemStackList.this.get(index);
-                ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), item);
-                itementity.setDefaultPickUpDelay();
-                itementity.setThrower(entity.getUUID());
-                level.addFreshEntity(itementity);
-                LockableItemStackList.this.set(index, ItemStack.EMPTY);
-            }
-            return super.set(index, element);
-        }
-    };
-
+    public List<Boolean> lockList;
     public void allLock() {
         for(int i = 0; i < this.lockList.size(); i++) {
             this.lockList.set(i, true);
@@ -95,15 +78,26 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
         super(itemList, defaultItem);
         this.inventory = inventory;
 
-        for(ItemStack item : itemList) {
-            lockList.add(initLock);
-        }
+        lockList = new ArrayList<>() {
+            @Override
+            public Boolean set(int index, Boolean element) {
+                if (element && Objects.nonNull(inventory)) {
+                    ItemStack itemStack = LockableItemStackList.this.get(index);
+                    throwItem(itemStack);
+                    LockableItemStackList.this.set(index, ItemStack.EMPTY);
+                }
+                return super.set(index, element);
+            }
+        };
+
+        for(int i = 0; i< itemList.size(); i++) lockList.add(initLock);
     }
 
 
     @Override
     @Nonnull
     public ItemStack get(int id) {
+        if(id > this.size()-1) return defaultItem;
         if(lockList.get(id)) return defaultItem;
         return super.get(id);
     }
@@ -111,26 +105,32 @@ public class LockableItemStackList extends NonNullList<ItemStack> {
     @Override
     public ItemStack set(int id, ItemStack itemStack) {
         // If the slot is locked, throw the item in its place.
-        if(lockList.get(id)) {
-            Level level = inventory.player.level;
-            Player entity = inventory.player;
-            ItemEntity itementity = new ItemEntity(level, entity.getX(), entity.getEyeY() - 0.3, entity.getZ(), itemStack);
-            itementity.setDefaultPickUpDelay();
-            itementity.setThrower(entity.getUUID());
-            level.addFreshEntity(itementity);
+        if(id > this.size()-1 || lockList.get(id)) {
+            throwItem(itemStack);
             return defaultItem;
         }
 
         ItemStack result = super.set(id, itemStack);
-        if(isActivateObserver) this.observer.accept(itemStack);
+        if(isActivateObserver) this.observer.accept(id, itemStack);
         return result;
     }
 
     @Override
     public ItemStack remove(int id) {
+        if(id > this.size()-1) return defaultItem;
         if(lockList.get(id)) return defaultItem;
         ItemStack result = super.remove(id);
-        if(isActivateObserver) this.observer.accept(ItemStack.EMPTY);
+        if(isActivateObserver) this.observer.accept(id, ItemStack.EMPTY);
         return result;
+    }
+
+    private void throwItem(ItemStack itemStack)
+    {
+        if(Objects.isNull(inventory) || Objects.isNull(inventory.player) || Objects.isNull(inventory.player.level)) return;
+        Level level = inventory.player.level;
+        ItemEntity itementity = new ItemEntity(level, inventory.player.getX(), inventory.player.getEyeY() - 0.3, inventory.player.getZ(), itemStack);
+        itementity.setDefaultPickUpDelay();
+        itementity.setThrower(inventory.player.getUUID());
+        level.addFreshEntity(itementity);
     }
 }

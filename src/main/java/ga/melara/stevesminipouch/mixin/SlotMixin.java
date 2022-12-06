@@ -1,8 +1,8 @@
 package ga.melara.stevesminipouch.mixin;
 
-import ga.melara.stevesminipouch.StevesMiniPouch;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
@@ -13,6 +13,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.UUID;
 
 @Mixin(Slot.class)
 public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHidable {
@@ -123,6 +125,15 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
         }
     }
 
+    @Override
+    public UUID getOwner()
+    {
+        if(this.container instanceof Inventory inventory){
+            return inventory.player.getUUID();
+        }
+        return null;
+    }
+
     @Inject(method = "isActive()Z", at = @At("HEAD"), cancellable = true)
     public void onCallIsActive(CallbackInfoReturnable<Boolean> cir) {
         if(!this.isShowing()) cir.setReturnValue(false);
@@ -134,11 +145,11 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
     }
 
     //@Inject(method = "initialize(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
-    public void onInitialize(ItemStack p_40240_, CallbackInfo ci) {
+    public void onInitialize(ItemStack itemStack, CallbackInfo ci) {
         if(this.type == SlotType.INVENTORY && page > 0) {
             if(this.slot + 27 * page < ((ICustomInventory) container).getInventorySize()) {
                 this.show();
-                this.container.setItem(this.slot + 27 * page + 5, p_40240_);
+                this.container.setItem(this.slot + 27 * page + 5, itemStack);
                 this.setChanged();
                 ci.cancel();
             } else {

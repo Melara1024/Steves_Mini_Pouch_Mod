@@ -12,5 +12,5 @@ public interface IMenuChangable {
 
     void updateOffhandHiding(Player player);
 
-    void judgePageReduction(int change, int maxpage, Player player);
+    void judgePageReduction(int maxpage, Player player);
 }

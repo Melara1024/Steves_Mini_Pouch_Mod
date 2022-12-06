@@ -1,8 +1,16 @@
 package ga.melara.stevesminipouch.util;
 
 import ga.melara.stevesminipouch.stats.InventoryStatsData;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
 
 public interface ICustomInventory {
+
+    void initMiniPouch(InventoryStatsData stats);
+
+    void initServer(InventoryStatsData stats);
+
+    NonNullList<ItemStack> getBackUpPouch();
 
     void setInventory(boolean set);
     void toggleInventory();

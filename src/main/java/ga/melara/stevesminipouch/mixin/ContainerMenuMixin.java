@@ -52,7 +52,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
         synchronizer.sendInitialData(data);
     }
 
-    public void initMenu(InventoryStatsData data) {
+    public void setDataToClient(InventoryStatsData data) {
         this.data = data;
     }
 
@@ -127,7 +127,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
     }
 
     @Override
-    public void judgePageReduction(int change, int maxpage, Player player) {
+    public void judgePageReduction(int maxpage, Player player) {
         // Judge if the page the player is currently viewing is unnecessary.
         if(player.getLevel().isClientSide()) {
             for(Slot s : slots) {
