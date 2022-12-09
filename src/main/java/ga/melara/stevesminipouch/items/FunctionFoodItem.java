@@ -17,7 +17,6 @@ public class FunctionFoodItem extends Item {
             .build();
 
     public static Item.Properties ITEM_PROPERTIES = new Item.Properties()
-            .tab(CreativeModeTab.TAB_FOOD)
             .rarity(Rarity.EPIC)
             .stacksTo(64)
             .food(FOOD_PROPERTIES);

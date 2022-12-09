@@ -9,12 +9,12 @@ import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.stats.PageChangedPacket;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ChunkTaskPriorityQueueSorter;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraftforge.common.MinecraftForge;
@@ -94,25 +94,22 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         int buttonY = this.topPos + this.inventoryLabelY + 18 + Config.RENDER_OFFSET_Y.get();
 
         // Page change button settings
-        upButton = new Button(buttonX, buttonY, 18, 18,
-                Component.literal("▲"), (button) -> {
+        upButton = new Button.Builder(Component.literal("▲"), (button) -> {
             previousPage();
             Messager.sendToServer(new PageChangedPacket(page));
             this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
-        });
+        }).pos(buttonX, buttonY).size(18, 18).build();
 
         // Button only for page display
-        pageIndicator = new Button(buttonX, buttonY + upButton.getHeight(), 18, 18,
-                Component.literal(String.valueOf(page + 1)), (button) -> {
-        });
+        pageIndicator = new Button.Builder(Component.literal(String.valueOf(page + 1)), (button) -> {
+        }).pos(buttonX, buttonY + upButton.getHeight()).size(18, 18).build();
         pageIndicator.active = false;
 
-        downButton = new Button(buttonX, buttonY + upButton.getHeight() + pageIndicator.getHeight(), 18, 18,
-                Component.literal("▼"), (button) -> {
+        downButton = new Button.Builder(Component.literal("▼"), (button) -> {
             nextPage();
             Messager.sendToServer(new PageChangedPacket(page));
             this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
-        });
+        }).pos(buttonX, buttonY + upButton.getHeight() + pageIndicator.getHeight()).size(18, 18).build();
 
         upButton.visible = false;
         downButton.visible = false;
@@ -146,10 +143,10 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
             // Shift the button position when the recipe book is opened.
             int buttonX = this.leftPos + this.inventoryLabelX + this.imageWidth - 9 + Config.RENDER_OFFSET_X.get();
-            if(pageIndicator.x != buttonX) {
-                upButton.x = buttonX;
-                downButton.x = buttonX;
-                pageIndicator.x = buttonX;
+            if(pageIndicator.getX() != buttonX) {
+                upButton.setX(buttonX);
+                downButton.setX(buttonX);
+                pageIndicator.setX(buttonX);
             }
 
             upButton.renderButton(poseStack, mouseX, mouseY, partialTick);
@@ -194,8 +191,8 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
     @Override
     public void buttonClicked(double mouseX, double mouseY, int leftPos, int RightPos, CallbackInfoReturnable<Boolean> cir) {
-        int x = upButton.x;
-        int y = upButton.y;
+        int x = upButton.getX();
+        int y = upButton.getY();
 
         int w = upButton.getWidth();
         int h = upButton.getHeight() * 3;

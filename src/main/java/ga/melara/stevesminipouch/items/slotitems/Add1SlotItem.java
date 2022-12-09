@@ -8,8 +8,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 public class Add1SlotItem extends SlotItem {
+
     public static Item.Properties PROPERTIES = new Item.Properties()
-            .tab(ModRegistry.ITEM_GROUP)
             .rarity(Rarity.COMMON)
             .stacksTo(27)
             .food(FOOD_PROPERTIES);

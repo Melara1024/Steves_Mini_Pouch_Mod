@@ -1,7 +1,6 @@
 package ga.melara.stevesminipouch.util;
 
 import ga.melara.stevesminipouch.stats.InventoryStatsData;
-import ga.melara.stevesminipouch.util.ICustomInventory;
 import net.minecraft.client.Minecraft;
 
 

@@ -16,7 +16,6 @@ import net.minecraftforge.registries.RegistryObject;
 public class OffhandActivateItem extends FunctionFoodItem {
 
     public static final Item.Properties PROPERTIES = new Item.Properties()
-            .tab(ModRegistry.ITEM_GROUP)
             .rarity(Rarity.EPIC)
             .stacksTo(1)
             .food(FOOD_PROPERTIES);

@@ -9,25 +9,27 @@ buildscript {
 }
 
 plugins {
+    id 'eclipse'
+    id 'maven-publish'
     id 'net.minecraftforge.gradle' version '5.1.+'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
 apply plugin: 'org.spongepowered.mixin'
 
+version = '1.19.3-forge-1.0.2.4'
 group = 'ga.melara'
-version = '1.19.2-forge-1.0.2.3'
+archivesBaseName = 'stevesminipouch'
 
-java {
-    archivesBaseName = 'stevesminipouch'
-    toolchain.languageVersion = JavaLanguageVersion.of(17)
-}
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 
 minecraft {
-    mappings channel: 'parchment', version: '2022.08.14-1.19.2'
+
+    // mappings channel: 'parchment', version: '2022.08.14-1.19.2'
+    mappings channel: 'official', version: '1.19.3'
 
     runs {
         client {
@@ -119,11 +121,10 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.2-43.1.28'
+    minecraft 'net.minecraftforge:forge:1.19.3-44.0.1'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    implementation "top.theillusivec4.curios:curios-forge:1.19.2-5.1.1.0"
-    implementation "top.theillusivec4.curios:curios-forge:1.19.2-5.1.1.0:api"
+    implementation "top.theillusivec4.curios:curios-forge:1.19.3-5.1.1.2:api"
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
@@ -138,6 +139,19 @@ jar {
                 //"Implementation-Vendor": "stevesminipouch authors",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/mcmodsrepo"
+        }
     }
 }
 

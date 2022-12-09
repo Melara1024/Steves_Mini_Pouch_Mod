@@ -2,17 +2,15 @@ package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.event.InitMenuEvent;
 import ga.melara.stevesminipouch.event.PageReduceEvent;
+import ga.melara.stevesminipouch.event.ServerPageChangeEvent;
 import ga.melara.stevesminipouch.stats.InventoryStatsData;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
-import ga.melara.stevesminipouch.event.ServerPageChangeEvent;
 import ga.melara.stevesminipouch.util.*;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Final;
@@ -25,8 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 import java.util.List;
-
-import static ga.melara.stevesminipouch.StevesMiniPouch.LOGGER;
 
 @Mixin(AbstractContainerMenu.class)
 public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchronizer, ContainerSynchronizer {

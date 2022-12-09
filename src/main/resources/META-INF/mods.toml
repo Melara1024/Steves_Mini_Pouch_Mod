@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[43,)"
+loaderVersion="[44,)"
 license="GNU GPL v3"
 issueTrackerURL="https://github.com/Melara1024/Steves_Mini_Pouch_Mod/issues"
 
@@ -16,13 +16,13 @@ description='''This mod allows you to increase or decrease the number of slots a
 [[dependencies.stevesminipouch]]
    modId="forge"
    mandatory=true
-   versionRange="[43,)"
+   versionRange="[44,)"
    ordering="NONE"
    side="BOTH"
 
 [[dependencies.stevesminipouch]]
    modId="minecraft"
    mandatory=true
-   versionRange="[1.19.2,1.20)"
+   versionRange="[1.19.3,1.20)"
    ordering="NONE"
    side="BOTH"

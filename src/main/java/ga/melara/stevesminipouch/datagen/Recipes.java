@@ -3,6 +3,7 @@ package ga.melara.stevesminipouch.datagen;
 import ga.melara.stevesminipouch.ModRegistry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.Items;
@@ -13,13 +14,13 @@ import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
 public class Recipes extends RecipeProvider {
     public Recipes(DataGenerator generator) {
-        super(generator);
+        super(generator.getPackOutput());
     }
 
     @Override
-    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
 
-        ShapedRecipeBuilder.shaped(ModRegistry.SLOT_ADD1_ITEM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.SLOT_ADD1_ITEM.get())
                 .define('S', Items.NETHER_STAR)
                 .define('C', Items.CHEST)
                 .define('X', Items.BREAD)
@@ -29,7 +30,7 @@ public class Recipes extends RecipeProvider {
                 .unlockedBy("has_chest", has(Items.CHEST))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(ModRegistry.SLOT_ADD9_ITEM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.SLOT_ADD9_ITEM.get())
                 .define('X', ModRegistry.SLOT_ADD1_ITEM.get())
                 .pattern("XXX")
                 .pattern("XXX")
@@ -37,7 +38,7 @@ public class Recipes extends RecipeProvider {
                 .unlockedBy("has_slot_add1", has(ModRegistry.SLOT_ADD1_ITEM.get()))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(ModRegistry.SLOT_ADD27_ITEM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.SLOT_ADD27_ITEM.get())
                 .define('X', ModRegistry.SLOT_ADD9_ITEM.get())
                 .pattern("XXX")
                 .pattern("XXX")
@@ -45,7 +46,7 @@ public class Recipes extends RecipeProvider {
                 .unlockedBy("has_slot_add1", has(ModRegistry.SLOT_ADD1_ITEM.get()))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(ModRegistry.SLOT_SUB1_ITEM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.SLOT_SUB1_ITEM.get())
                 .define('S', Items.NETHER_STAR)
                 .define('C', Items.CHEST)
                 .define('X', Items.BREAD)
@@ -55,7 +56,7 @@ public class Recipes extends RecipeProvider {
                 .unlockedBy("has_diamond", has(Items.CHEST))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(ModRegistry.SLOT_SUB9_ITEM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.SLOT_SUB9_ITEM.get())
                 .define('X', ModRegistry.SLOT_SUB1_ITEM.get())
                 .pattern("XXX")
                 .pattern("XXX")
@@ -63,7 +64,7 @@ public class Recipes extends RecipeProvider {
                 .unlockedBy("has_slot_sub1", has(ModRegistry.SLOT_SUB1_ITEM.get()))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(ModRegistry.SLOT_SUB27_ITEM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.SLOT_SUB27_ITEM.get())
                 .define('X', ModRegistry.SLOT_SUB9_ITEM.get())
                 .pattern("XXX")
                 .pattern("XXX")
@@ -71,7 +72,7 @@ public class Recipes extends RecipeProvider {
                 .unlockedBy("has_slot_sub1", has(ModRegistry.SLOT_SUB1_ITEM.get()))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(ModRegistry.INVENTORY_ACTIVATE_ITEM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.INVENTORY_ACTIVATE_ITEM.get())
                 .define('S', Items.WHEAT_SEEDS)
                 .define('X', Items.OAK_LOG)
                 .pattern("XXX")
@@ -80,7 +81,7 @@ public class Recipes extends RecipeProvider {
                 .unlockedBy("has_oak_log", has(Items.OAK_LOG))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(ModRegistry.ARMOR_ACTIVATE_ITEM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.ARMOR_ACTIVATE_ITEM.get())
                 .define('S', Items.DIAMOND)
                 .define('X', Items.IRON_BLOCK)
                 .define('G', Items.AMETHYST_SHARD)
@@ -90,7 +91,7 @@ public class Recipes extends RecipeProvider {
                 .unlockedBy("has_diamond", has(Items.DIAMOND))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(ModRegistry.OFFHAND_ACTIVATE_ITEM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.OFFHAND_ACTIVATE_ITEM.get())
                 .define('S', Items.STICK)
                 .define('X', Items.MOSSY_COBBLESTONE)
                 .pattern("XSX")
@@ -99,7 +100,7 @@ public class Recipes extends RecipeProvider {
                 .unlockedBy("has_stick", has(Items.STICK))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(ModRegistry.CRAFT_ACTIVATE_ITEM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.CRAFT_ACTIVATE_ITEM.get())
                 .define('E', Items.EMERALD_BLOCK)
                 .define('X', Items.IRON_INGOT)
                 .define('C', Items.CHEST)
