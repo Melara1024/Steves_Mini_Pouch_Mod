@@ -14,6 +14,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -40,7 +41,7 @@ public class ModRegistry {
         ITEMS.register(eventBus);
         ENCHANTMENTS.register(eventBus);
         EFFECT.register(eventBus);
-        eventBus.addListener(ModRegistry::registerCommands);
+        MinecraftForge.EVENT_BUS.addListener(ModRegistry::registerCommands);
     }
 
     public static final RegistryObject<Item> SLOT_ADD1_ITEM = Add1SlotItem.buildInTo(ITEMS);
