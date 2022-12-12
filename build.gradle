@@ -28,7 +28,7 @@ compileTestJava.options.encoding = 'UTF-8'
 
 minecraft {
 
-    // mappings channel: 'parchment', version: '2022.08.14-1.19.2'
+    // mappings channel: 'parchment', version: '2022.12.25-1.19.3'
     mappings channel: 'official', version: '1.19.3'
 
     runs {
@@ -37,7 +37,6 @@ minecraft {
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
             property 'forge.enabledGameTestNamespaces', 'stevesminipouch'
-
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
             mods {
@@ -49,16 +48,11 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
-
             property 'forge.logging.markers', 'REGISTRIES'
-
             property 'forge.logging.console.level', 'debug'
-
             property 'forge.enabledGameTestNamespaces', 'stevesminipouch'
-
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
-
             mods {
                 stevesminipouch {
                     source sourceSets.main
@@ -68,13 +62,9 @@ minecraft {
 
         gameTestServer {
             workingDirectory project.file('run')
-
             property 'forge.logging.markers', 'REGISTRIES'
-
             property 'forge.logging.console.level', 'debug'
-
             property 'forge.enabledGameTestNamespaces', 'stevesminipouch'
-
             mods {
                 stevesminipouch {
                     source sourceSets.main
@@ -84,13 +74,9 @@ minecraft {
 
         data {
             workingDirectory project.file('run')
-
             property 'forge.logging.markers', 'REGISTRIES'
-
             property 'forge.logging.console.level', 'debug'
-
             args '--mod', 'stevesminipouch', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
             mods {
                 stevesminipouch {
                     source sourceSets.main
@@ -98,9 +84,7 @@ minecraft {
             }
         }
     }
-
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
 }
 
 mixin {
@@ -109,7 +93,6 @@ mixin {
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
-
 
 repositories {
     maven {
@@ -123,20 +106,18 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.19.3-44.0.1'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-
     implementation "top.theillusivec4.curios:curios-forge:1.19.3-5.1.1.2:api"
 }
 
-// Example for how to get properties into the manifest for reading at runtime.
 jar {
     manifest {
         attributes([
                 "Specification-Title"     : "stevesminipouch",
-                //"Specification-Vendor": "stevesminipouch authors",
-                "Specification-Version"   : "1", // We are version 1 of ourselves
+                "Specification-Vendor"    : "Melara1024",
+                "Specification-Version"   : "1.19.3-forge-1.0.2.4",
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
-                //"Implementation-Vendor": "stevesminipouch authors",
+                "Implementation-Vendor"   : "Melara1024",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }

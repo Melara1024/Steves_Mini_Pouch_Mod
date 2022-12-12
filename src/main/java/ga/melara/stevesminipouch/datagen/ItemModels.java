@@ -7,6 +7,7 @@ import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
+import static ga.melara.stevesminipouch.ModRegistry.*;
 
 public class ItemModels extends ItemModelProvider {
     public ItemModels(DataGenerator generator, ExistingFileHelper existingFileHelper) {
@@ -16,13 +17,13 @@ public class ItemModels extends ItemModelProvider {
     @Override
     protected void registerModels() {
         ResourceLocation parent = mcLoc("item/generated");
-        ResourceLocation box_1 = modLoc("item/slot_sub_lv1");
-        this.singleTexture("slot_sub_lv2", box_1, "layer", modLoc("item/slot_sub_lv2"));
-        this.singleTexture("slot_sub_lv3", box_1, "layer", modLoc("item/slot_sub_lv3"));
+        ResourceLocation box_1 = modLoc("item/" + SLOT_SUB1_ITEM.getId().getPath());
+        this.singleTexture(SLOT_SUB9_ITEM.getId().getPath(), box_1, "layer", modLoc("item/" + SLOT_SUB9_ITEM.getId().getPath()));
+        this.singleTexture(SLOT_SUB27_ITEM.getId().getPath(), box_1, "layer", modLoc("item/" + SLOT_SUB27_ITEM.getId().getPath()));
 
-        this.singleTexture("activate_inventory", parent, "layer0", modLoc("item/activate_inventory"));
-        this.singleTexture("activate_armor", parent, "layer0", modLoc("item/activate_armor"));
-        this.singleTexture("activate_offhand", parent, "layer0", modLoc("item/activate_offhand"));
-        this.singleTexture("activate_craft", parent, "layer0", modLoc("item/activate_craft"));
+        this.singleTexture(INVENTORY_ACTIVATE_ITEM.getId().getPath(), parent, "layer0", modLoc("item/" + INVENTORY_ACTIVATE_ITEM.getId().getPath()));
+        this.singleTexture(ARMOR_ACTIVATE_ITEM.getId().getPath(), parent, "layer0", modLoc("item/" + ARMOR_ACTIVATE_ITEM.getId().getPath()));
+        this.singleTexture(OFFHAND_ACTIVATE_ITEM.getId().getPath(), parent, "layer0", modLoc("item/" + OFFHAND_ACTIVATE_ITEM.getId().getPath()));
+        this.singleTexture(CRAFT_ACTIVATE_ITEM.getId().getPath(), parent, "layer0", modLoc("item/" + CRAFT_ACTIVATE_ITEM.getId().getPath()));
     }
 }

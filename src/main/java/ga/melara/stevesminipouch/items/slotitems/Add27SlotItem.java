@@ -19,12 +19,6 @@ public class Add27SlotItem extends SlotItem {
         this.incremental = 27;
     }
 
-
-    @Override
-    public int getRegistryNumber() {
-        return 6;
-    }
-
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
         return ITEMS.register("slot_add_lv3", Add27SlotItem::new);
     }

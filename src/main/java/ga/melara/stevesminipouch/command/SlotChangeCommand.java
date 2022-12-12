@@ -21,7 +21,9 @@ import net.minecraft.world.entity.player.Inventory;
 import java.util.Collection;
 
 public class SlotChangeCommand {
-    private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("command.failed"));
+
+    public static final String ERROR_MESSAGE = "command.failed";
+    private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable(ERROR_MESSAGE));
 
     public static void register(CommandDispatcher<CommandSourceStack> commandDispatcher) {
 

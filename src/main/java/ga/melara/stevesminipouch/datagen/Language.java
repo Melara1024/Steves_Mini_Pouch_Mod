@@ -1,10 +1,12 @@
 package ga.melara.stevesminipouch.datagen;
 
 import ga.melara.stevesminipouch.ModRegistry;
+import ga.melara.stevesminipouch.command.SlotChangeCommand;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
+import static ga.melara.stevesminipouch.ModRegistry.*;
 
 public class Language extends LanguageProvider {
     public Language(DataGenerator generator, String locale) {
@@ -13,25 +15,25 @@ public class Language extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
-        add(ModRegistry.SLOT_ADD1_ITEM.get(), "Edible Chest");
-        add(ModRegistry.SLOT_ADD9_ITEM.get(), "Edible Largechest");
-        add(ModRegistry.SLOT_ADD27_ITEM.get(), "Edible Triplechest");
+        add(SLOT_ADD1_ITEM.get(), "Edible Chest");
+        add(SLOT_ADD9_ITEM.get(), "Edible Largechest");
+        add(SLOT_ADD27_ITEM.get(), "Edible Triplechest");
 
-        add(ModRegistry.SLOT_SUB1_ITEM.get(), "Edible Air");
-        add(ModRegistry.SLOT_SUB9_ITEM.get(), "Edible Null");
-        add(ModRegistry.SLOT_SUB27_ITEM.get(), "Edible Void");
+        add(SLOT_SUB1_ITEM.get(), "Edible Air");
+        add(SLOT_SUB9_ITEM.get(), "Edible Null");
+        add(SLOT_SUB27_ITEM.get(), "Edible Void");
 
-        add(ModRegistry.INVENTORY_ACTIVATE_ITEM.get(), "Inventorye bread");
-        add(ModRegistry.ARMOR_ACTIVATE_ITEM.get(), "Armorange");
-        add(ModRegistry.OFFHAND_ACTIVATE_ITEM.get(), "Offhandorian");
-        add(ModRegistry.CRAFT_ACTIVATE_ITEM.get(), "Crafruits");
+        add(INVENTORY_ACTIVATE_ITEM.get(), "Inventorye bread");
+        add(ARMOR_ACTIVATE_ITEM.get(), "Armorange");
+        add(OFFHAND_ACTIVATE_ITEM.get(), "Offhandorian");
+        add(CRAFT_ACTIVATE_ITEM.get(), "Crafruits");
 
-        add("itemGroup.tab_minipouch", "Steve's Mini Pouch");
+        add(TAB_NAME, "Steve's Mini Pouch");
 
-        add("enchantment.stevesminipouch.slot_enchant", "Cramming");
-        add("effect.stevesminipouch.slot_effect", "Cramming");
+        add("enchantment.stevesminipouch." + SLOT_ENCHANT.getId().getPath(), "Cramming");
+        add("effect.stevesminipouch." + SLOT_EFFECT.getId().getPath(), "Cramming");
 
-        add("command.failed", "Pouch Command Failed.");
+        add(SlotChangeCommand.ERROR_MESSAGE, "Pouch Command Failed.");
 
         add("message.useless", "You felt a great surge of power, but nothing happened.");
         add("message.simple_inventory_1", "You looked at your hand.");

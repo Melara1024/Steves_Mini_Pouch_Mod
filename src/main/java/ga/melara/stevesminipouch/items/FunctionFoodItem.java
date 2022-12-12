@@ -31,8 +31,4 @@ public class FunctionFoodItem extends Item {
 
     public void onEat(LivingEntity entity) {
     }
-
-    public int getRegistryNumber() {
-        return 0;
-    }
 }

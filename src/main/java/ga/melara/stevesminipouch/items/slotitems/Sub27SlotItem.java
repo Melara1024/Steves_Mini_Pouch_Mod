@@ -19,11 +19,6 @@ public class Sub27SlotItem extends SlotItem {
         this.incremental = -27;
     }
 
-    @Override
-    public int getRegistryNumber() {
-        return 9;
-    }
-
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
         return ITEMS.register("slot_sub_lv3", Sub27SlotItem::new);
     }

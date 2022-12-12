@@ -13,5 +13,4 @@ public interface IAdditionalDataHandler {
     ListTag saveAdditional(ListTag tag);
 
     void loadAdditional(ListTag tag);
-
 }

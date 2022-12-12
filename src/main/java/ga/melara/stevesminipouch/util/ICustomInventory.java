@@ -6,8 +6,6 @@ import net.minecraft.world.item.ItemStack;
 
 public interface ICustomInventory {
 
-
-
     void initMiniPouch(InventoryStatsData stats);
 
     void initServer(InventoryStatsData stats);
