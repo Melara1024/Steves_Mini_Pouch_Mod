@@ -8,6 +8,7 @@ buildscript {
     }
 }
 
+
 plugins {
     id 'eclipse'
     id 'maven-publish'
@@ -28,8 +29,7 @@ compileTestJava.options.encoding = 'UTF-8'
 
 minecraft {
 
-    // mappings channel: 'parchment', version: '2022.12.25-1.19.3'
-    mappings channel: 'official', version: '1.19.3'
+    mappings channel: 'parchment', version: '2022.12.18-1.19.3'
 
     runs {
         client {
