@@ -10,6 +10,7 @@ public class Config {
         registerClientConfig();
     }
 
+    // server configs
 
     public static ForgeConfigSpec.IntValue DEFAULT_SIZE;
     public static ForgeConfigSpec.IntValue MAX_SIZE;
@@ -28,7 +29,7 @@ public class Config {
     public static ForgeConfigSpec.BooleanValue FORCE_ARMOR;
 
 
-    //client settings
+    // client configs
     public static ForgeConfigSpec.IntValue RENDER_OFFSET_X;
     public static ForgeConfigSpec.IntValue RENDER_OFFSET_Y;
 
