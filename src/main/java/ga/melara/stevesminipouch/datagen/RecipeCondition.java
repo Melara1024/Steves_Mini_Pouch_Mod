@@ -8,8 +8,10 @@ import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 import net.minecraftforge.common.crafting.conditions.ItemExistsCondition;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
+
 public class RecipeCondition implements ICondition {
-    private static final ResourceLocation NAME = new ResourceLocation("forge", "item_exists");
+    private static final ResourceLocation NAME = new ResourceLocation(MODID, "recipe_availability");
     private final ResourceLocation item;
 
     public RecipeCondition(String location)
@@ -42,7 +44,7 @@ public class RecipeCondition implements ICondition {
     @Override
     public String toString()
     {
-        return "item_exists(\"" + item + "\")";
+        return "recipe_availability";
     }
 
     public static class Serializer implements IConditionSerializer<RecipeCondition>
