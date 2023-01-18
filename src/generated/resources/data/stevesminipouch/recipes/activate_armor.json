@@ -5,7 +5,8 @@
     {
       "conditions": [
         {
-          "type": "forge:true"
+          "type": "stevesminipouch:recipe_availability",
+          "item": "armor"
         }
       ],
       "recipe": {

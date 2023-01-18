@@ -1,6 +1,8 @@
 package ga.melara.stevesminipouch;
 
+import net.minecraftforge.common.ForgeConfig;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 
@@ -67,17 +69,17 @@ public class Config {
         DEFAULT_ARMOR = SERVER_BUILDER.comment("Default setting of armor activate").define("armor", true);
         FORCE_ARMOR = SERVER_BUILDER.comment("If true, The above settings are enforced on all players.").define("force_armor", false);
 
-        SERVER_BUILDER.comment("// item register settings");
+        SERVER_BUILDER.comment("item register settings");
         REGISTER_INVENTORY = SERVER_BUILDER.comment("Register Inventory Item").define("register_inv", true);
-        REGISTER_ARMOR = SERVER_BUILDER.comment("Register Inventory Item").define("register_arm", true);
-        REGISTER_OFFHAND = SERVER_BUILDER.comment("Register Inventory Item").define("register_off", true);
-        REGISTER_CRAFT = SERVER_BUILDER.comment("Register Inventory Item").define("register_cft", true);
-        REGISTER_INC1 = SERVER_BUILDER.comment("Register Inventory Item").define("register_inc1", true);
-        REGISTER_DEC9 = SERVER_BUILDER.comment("Register Inventory Item").define("register_inc9", true);
-        REGISTER_INC27 = SERVER_BUILDER.comment("Register Inventory Item").define("register_inc27", true);
-        REGISTER_DEC1 = SERVER_BUILDER.comment("Register Inventory Item").define("register_dec1", true);
-        REGISTER_DEC9 = SERVER_BUILDER.comment("Register Inventory Item").define("register_dec9", true);
-        REGISTER_DEC27 = SERVER_BUILDER.comment("Register Inventory Item").define("register_dec27", true);
+        REGISTER_ARMOR = SERVER_BUILDER.define("register_arm", true);
+        REGISTER_OFFHAND = SERVER_BUILDER.define("register_off", true);
+        REGISTER_CRAFT = SERVER_BUILDER.define("register_cft", true);
+        REGISTER_INC1 = SERVER_BUILDER.define("register_inc1", true);
+        REGISTER_DEC9 = SERVER_BUILDER.define("register_inc9", true);
+        REGISTER_INC27 = SERVER_BUILDER.define("register_inc27", true);
+        REGISTER_DEC1 = SERVER_BUILDER.define("register_dec1", true);
+        REGISTER_DEC9 = SERVER_BUILDER.define("register_dec9", true);
+        REGISTER_DEC27 = SERVER_BUILDER.define("register_dec27", true);
 
         SERVER_BUILDER.pop();
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_BUILDER.build());
@@ -99,4 +101,5 @@ public class Config {
         CLIENT_BUILDER.pop();
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());
     }
+
 }
