@@ -1,5 +1,6 @@
 package ga.melara.stevesminipouch.items;
 
+import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.stats.InventorySyncPacket;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.util.ICustomInventory;
@@ -19,6 +20,7 @@ public class SlotItem extends FunctionFoodItem {
 
     @Override
     public void onEat(LivingEntity entity) {
+        if(!Config.REGISTER_SLOT.get()) return;
         if(!(entity instanceof Player player)) return;
         ICustomInventory inventory = (ICustomInventory) player.getInventory();
         inventory.changeStorageSize(incremental);

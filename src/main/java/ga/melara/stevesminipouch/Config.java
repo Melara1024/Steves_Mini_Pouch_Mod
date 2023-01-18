@@ -35,13 +35,7 @@ public class Config {
     public static ForgeConfigSpec.BooleanValue REGISTER_ARMOR;
     public static ForgeConfigSpec.BooleanValue REGISTER_OFFHAND;
     public static ForgeConfigSpec.BooleanValue REGISTER_CRAFT;
-    public static ForgeConfigSpec.BooleanValue REGISTER_INC1;
-    public static ForgeConfigSpec.BooleanValue REGISTER_INC9;
-    public static ForgeConfigSpec.BooleanValue REGISTER_INC27;
-    public static ForgeConfigSpec.BooleanValue REGISTER_DEC1;
-    public static ForgeConfigSpec.BooleanValue REGISTER_DEC9;
-    public static ForgeConfigSpec.BooleanValue REGISTER_DEC27;
-
+    public static ForgeConfigSpec.BooleanValue REGISTER_SLOT;
 
 
     // client configs
@@ -74,12 +68,7 @@ public class Config {
         REGISTER_ARMOR = SERVER_BUILDER.define("register_arm", true);
         REGISTER_OFFHAND = SERVER_BUILDER.define("register_off", true);
         REGISTER_CRAFT = SERVER_BUILDER.define("register_cft", true);
-        REGISTER_INC1 = SERVER_BUILDER.define("register_inc1", true);
-        REGISTER_DEC9 = SERVER_BUILDER.define("register_inc9", true);
-        REGISTER_INC27 = SERVER_BUILDER.define("register_inc27", true);
-        REGISTER_DEC1 = SERVER_BUILDER.define("register_dec1", true);
-        REGISTER_DEC9 = SERVER_BUILDER.define("register_dec9", true);
-        REGISTER_DEC27 = SERVER_BUILDER.define("register_dec27", true);
+        REGISTER_SLOT = SERVER_BUILDER.define("register_slot", true);
 
         SERVER_BUILDER.pop();
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_BUILDER.build());

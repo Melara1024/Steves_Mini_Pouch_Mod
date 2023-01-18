@@ -1,5 +1,6 @@
 package ga.melara.stevesminipouch.items;
 
+import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.ModRegistry;
 import ga.melara.stevesminipouch.stats.InventorySyncPacket;
 import ga.melara.stevesminipouch.stats.Messager;
@@ -26,6 +27,7 @@ public class OffhandActivateItem extends FunctionFoodItem {
 
     @Override
     public void onEat(LivingEntity entity) {
+        if(!Config.REGISTER_OFFHAND.get()) return;
         if(!(entity instanceof Player player)) return;
         ICustomInventory inventory = (ICustomInventory) player.getInventory();
         inventory.toggleOffhand();
