@@ -59,6 +59,9 @@ public abstract class InventoryMixin implements ICustomInventory, IAdditionalDat
 
     // The inventory status is changed by rewriting the item list.
     // If this is overwritten by another mod, a conflict will occur.
+
+    //Todo Reduce mixin usage
+    //Todo Overhaul needed
     @Shadow
     public NonNullList<ItemStack> items;
     @Shadow
