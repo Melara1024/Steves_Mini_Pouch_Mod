@@ -146,7 +146,7 @@ public abstract class SlotMixin implements IHasSlotType, IHasSlotPage, ISlotHida
         if(!this.isShowing()) cir.setReturnValue(false);
     }
 
-    @Inject(method = "initialize(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
+    //@Inject(method = "initialize(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
     public void onInitialize(ItemStack p_40240_, CallbackInfo ci) {
         if(this.type == SlotType.INVENTORY && page > 0) {
             if(this.slot + 27 * page < ((ICustomInventory) container).getInventorySize()) {

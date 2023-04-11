@@ -70,7 +70,7 @@ public class ModRegistry {
         e.registerCreativeModeTab(new ResourceLocation(MODID), (builder) -> {
             builder.title(Component.translatable(TAB_NAME))
                     .icon(() -> new ItemStack(SLOT_ADD1_ITEM.get()))
-                    .displayItems((featureFlagSet, toAdd, flag) -> {
+                    .displayItems((featureFlagSet, toAdd) -> {
                         toAdd.accept(INVENTORY_ACTIVATE_ITEM.get());
                         toAdd.accept(ARMOR_ACTIVATE_ITEM.get());
                         toAdd.accept(OFFHAND_ACTIVATE_ITEM.get());

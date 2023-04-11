@@ -87,8 +87,8 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
         MinecraftForge.EVENT_BUS.post(new InitMenuEvent(menu));
 
-        this.setBlitOffset(100);
-        this.itemRenderer.blitOffset = 100.0F;
+        //this.setBlitOffset(100);
+        //this.itemRenderer.blitOffset = 100.0F;
 
         int buttonX = this.leftPos + this.inventoryLabelX + this.imageWidth - 9 + Config.RENDER_OFFSET_X.get();
         int buttonY = this.topPos + this.inventoryLabelY + 18 + Config.RENDER_OFFSET_Y.get();
@@ -119,8 +119,8 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         this.addRenderableWidget(pageIndicator);
         this.addRenderableWidget(downButton);
 
-        this.itemRenderer.blitOffset = 0.0F;
-        this.setBlitOffset(0);
+        //this.itemRenderer.blitOffset = 0.0F;
+        //this.setBlitOffset(0);
     }
 
     public void nextPage() {
@@ -149,10 +149,10 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
                 pageIndicator.setX(buttonX);
             }
 
-            upButton.renderButton(poseStack, mouseX, mouseY, partialTick);
-            downButton.renderButton(poseStack, mouseX, mouseY, partialTick);
+            //upButton.renderButton(poseStack, mouseX, mouseY, partialTick);
+            //downButton.renderButton(poseStack, mouseX, mouseY, partialTick);
             pageIndicator.setMessage(Component.literal(String.valueOf(page + 1)));
-            pageIndicator.renderButton(poseStack, mouseX, mouseY, partialTick);
+            //pageIndicator.renderButton(poseStack, mouseX, mouseY, partialTick);
 
         } else {
             // Page change button is not displayed when the slot is smaller than 36.
@@ -163,8 +163,8 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
             }
         }
 
-        int j = this.getBlitOffset();
-        this.setBlitOffset(-90);
+        //int j = this.getBlitOffset();
+        //this.setBlitOffset(-90);
 
         for(Slot slot : this.menu.slots) {
             // Update status of slots.
@@ -180,7 +180,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
                 patchSlot(poseStack, slot);
             }
         }
-        this.setBlitOffset(j);
+        //this.setBlitOffset(j);
     }
 
 
@@ -213,7 +213,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
     private void patchSlot(PoseStack poseStack, Slot slot) {
         RenderSystem.setShaderTexture(0, PATCH);
-        RenderSystem.enableTexture();
+        //RenderSystem.enableTexture();
         RenderSystem.enableDepthTest();
         blit(poseStack, slot.x + leftPos - 1, slot.y + topPos - 1, 0, 0, 18, 18, 18, 18);
     }

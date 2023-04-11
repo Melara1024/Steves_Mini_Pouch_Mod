@@ -11,7 +11,7 @@ import static ga.melara.stevesminipouch.ModRegistry.*;
 
 public class ItemModels extends ItemModelProvider {
     public ItemModels(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        super(generator, MODID, existingFileHelper);
+        super(generator.getPackOutput(), MODID, existingFileHelper);
     }
 
     @Override

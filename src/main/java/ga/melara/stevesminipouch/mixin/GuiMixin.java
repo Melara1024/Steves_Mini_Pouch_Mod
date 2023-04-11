@@ -44,14 +44,14 @@ public class GuiMixin extends GuiComponent {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, HOTBARS_LOCATION);
 
-        int blitOffset = this.getBlitOffset();
-        this.setBlitOffset(-90);
+        //int blitOffset = this.getBlitOffset();
+        //this.setBlitOffset(-90);
 
         int w2 = this.screenWidth / 2;
         this.blit(poseStack, w2 - 91, this.screenHeight - 22, 0, (9 - hotbarSize) * 22, 182, (9 - hotbarSize) * 22 + 22);
         RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
         this.blit(poseStack, w2 - 91 - 1 + player.getInventory().selected * 20, this.screenHeight - 22 - 1, 0, 22, 24, 22);
 
-        this.setBlitOffset(blitOffset);
+        //this.setBlitOffset(blitOffset);
     }
 }

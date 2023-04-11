@@ -10,7 +10,7 @@ import static ga.melara.stevesminipouch.ModRegistry.*;
 
 public class Language extends LanguageProvider {
     public Language(DataGenerator generator, String locale) {
-        super(generator, MODID, locale);
+        super(generator.getPackOutput(), MODID, locale);
     }
 
     @Override
