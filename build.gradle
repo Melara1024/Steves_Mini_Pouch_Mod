@@ -18,7 +18,7 @@ plugins {
 
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.19.3-forge-1.0.2.4'
+version = '1.19.4-forge-1.0.2.5'
 group = 'ga.melara'
 archivesBaseName = 'stevesminipouch'
 
@@ -29,7 +29,8 @@ compileTestJava.options.encoding = 'UTF-8'
 
 minecraft {
 
-    mappings channel: 'parchment', version: '2022.12.18-1.19.3'
+    //mappings channel: 'parchment', version: '2022.12.18-1.19.3'
+    mappings channel: 'official', version: '1.19.4'
 
     runs {
         client {
@@ -105,9 +106,10 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.3-44.0.1'
+    minecraft 'net.minecraftforge:forge:1.19.4-45.0.43'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    implementation "top.theillusivec4.curios:curios-forge:1.19.3-5.1.1.2:api"
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.19.4-5.1.4.3")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.19.4-5.1.4.3:api")
 }
 
 jar {
@@ -115,7 +117,7 @@ jar {
         attributes([
                 "Specification-Title"     : "stevesminipouch",
                 "Specification-Vendor"    : "Melara1024",
-                "Specification-Version"   : "1.19.3-forge-1.0.2.4",
+                "Specification-Version"   : "1.19.4-forge-1.0.2.5",
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
                 "Implementation-Vendor"   : "Melara1024",

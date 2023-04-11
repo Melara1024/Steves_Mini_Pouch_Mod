@@ -40,12 +40,15 @@ import static ga.melara.stevesminipouch.StevesMiniPouch.LOGGER;
 @Mixin(Inventory.class)
 public abstract class InventoryMixin implements ICustomInventory, IAdditionalDataHandler, IInheritGuard {
 
-
+    // base inventory size
     private int inventorySize = Math.min(Config.DEFAULT_SIZE.get(), Config.MAX_SIZE.get());
 
+    // increment of "Cramming" enchantment
     private int enchantSize = 0;
 
+    // increment of "Cramming" effect
     private int effectSize = 0;
+
     private int hotbarSize = Math.min(inventorySize, 9);
 
     private int maxPage = (int) Math.max(Math.floor((inventorySize - 10) / 27f), 0);
