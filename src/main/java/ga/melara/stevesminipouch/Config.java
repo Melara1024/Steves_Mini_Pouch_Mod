@@ -28,6 +28,7 @@ public class Config {
     public static ForgeConfigSpec.BooleanValue DEFAULT_ARMOR;
     public static ForgeConfigSpec.BooleanValue FORCE_ARMOR;
 
+    public static ForgeConfigSpec.BooleanValue KEEP_STATS_ON_DEATH;
 
     public static ForgeConfigSpec.BooleanValue REGISTER_INVENTORY;
     public static ForgeConfigSpec.BooleanValue REGISTER_ARMOR;
@@ -61,6 +62,8 @@ public class Config {
         DEFAULT_ARMOR = SERVER_BUILDER.comment("Default setting of armor activate").define("armor", true);
         FORCE_ARMOR = SERVER_BUILDER.comment("If true, The above settings are enforced on all players.").define("force_armor", false);
 
+        KEEP_STATS_ON_DEATH = SERVER_BUILDER.comment("Keep stats on player death").define("keep_stats_on_death", false);
+
         SERVER_BUILDER.comment("item register settings");
         REGISTER_INVENTORY = SERVER_BUILDER.comment("Register Inventory Item").define("register_inv", true);
         REGISTER_ARMOR = SERVER_BUILDER.define("register_arm", true);
@@ -88,5 +91,4 @@ public class Config {
         CLIENT_BUILDER.pop();
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());
     }
-
 }

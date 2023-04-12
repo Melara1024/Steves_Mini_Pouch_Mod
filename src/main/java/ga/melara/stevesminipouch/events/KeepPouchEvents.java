@@ -41,9 +41,10 @@ public class KeepPouchEvents {
             CompoundTag data = getPlayerData(player);
             if (data.contains(CHARM_DETECTED_TAG)) twilight_forest_charm = true;
         }
+        boolean keepOnDeath = Config.KEEP_STATS_ON_DEATH.get();
 
         CompoundTag tag = new CompoundTag();
-        if (gamerule || twilight_forest_charm) {
+        if (gamerule || twilight_forest_charm || keepOnDeath) {
             ICustomInventory inv = (ICustomInventory) player.getInventory();
             tag.putInt("inventorysize", inv.getBaseSize());
             tag.putBoolean("inventory", inv.isActiveInventory());
