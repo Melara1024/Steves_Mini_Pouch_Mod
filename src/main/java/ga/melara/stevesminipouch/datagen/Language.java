@@ -1,12 +1,11 @@
 package ga.melara.stevesminipouch.datagen;
 
-import ga.melara.stevesminipouch.ModRegistry;
 import ga.melara.stevesminipouch.command.SlotChangeCommand;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
-import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 import static ga.melara.stevesminipouch.ModRegistry.*;
+import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
 public class Language extends LanguageProvider {
     public Language(DataGenerator generator, String locale) {

@@ -1,6 +1,9 @@
 package ga.melara.stevesminipouch.mixin;
 
-import ga.melara.stevesminipouch.items.*;
+import ga.melara.stevesminipouch.items.ArmorActivateItem;
+import ga.melara.stevesminipouch.items.CraftActivatItem;
+import ga.melara.stevesminipouch.items.FunctionFoodItem;
+import ga.melara.stevesminipouch.items.SlotItem;
 import ga.melara.stevesminipouch.util.ICustomInventory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;

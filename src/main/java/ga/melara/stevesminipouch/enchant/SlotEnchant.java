@@ -1,11 +1,8 @@
 package ga.melara.stevesminipouch.enchant;
 
-import ga.melara.stevesminipouch.items.slotitems.Add1SlotItem;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 

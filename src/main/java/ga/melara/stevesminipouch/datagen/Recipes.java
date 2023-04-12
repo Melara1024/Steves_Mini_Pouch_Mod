@@ -10,8 +10,6 @@ import net.minecraft.world.item.Items;
 
 import java.util.function.Consumer;
 
-import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
-
 public class Recipes extends RecipeProvider {
     public Recipes(DataGenerator generator) {
         super(generator.getPackOutput());

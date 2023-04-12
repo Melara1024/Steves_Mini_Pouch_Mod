@@ -1,12 +1,12 @@
 package ga.melara.stevesminipouch.mixin;
 
 import ga.melara.stevesminipouch.Config;
+import ga.melara.stevesminipouch.events.KeepPouchEvents;
 import ga.melara.stevesminipouch.integration.curio.Curio;
 import ga.melara.stevesminipouch.stats.InventoryStatsData;
 import ga.melara.stevesminipouch.stats.InventorySyncPacket;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
-import ga.melara.stevesminipouch.events.KeepPouchEvents;
 import ga.melara.stevesminipouch.util.ICustomInventory;
 import ga.melara.stevesminipouch.util.IMenuSynchronizer;
 import ga.melara.stevesminipouch.util.LockableItemStackList;

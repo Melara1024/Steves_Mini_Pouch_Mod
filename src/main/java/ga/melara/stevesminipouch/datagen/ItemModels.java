@@ -1,13 +1,12 @@
 package ga.melara.stevesminipouch.datagen;
 
-import ga.melara.stevesminipouch.ModRegistry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
-import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 import static ga.melara.stevesminipouch.ModRegistry.*;
+import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 
 public class ItemModels extends ItemModelProvider {
     public ItemModels(DataGenerator generator, ExistingFileHelper existingFileHelper) {

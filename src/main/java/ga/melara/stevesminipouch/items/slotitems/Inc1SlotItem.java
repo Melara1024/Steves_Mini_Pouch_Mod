@@ -19,6 +19,6 @@ public class Inc1SlotItem extends SlotItem {
     }
 
     public static RegistryObject<Item> buildInTo(DeferredRegister<Item> ITEMS) {
-        return ITEMS.register("slot_add_lv1", Add1SlotItem::new);
+        return ITEMS.register("slot_add_lv1", Inc1SlotItem::new);
     }
 }

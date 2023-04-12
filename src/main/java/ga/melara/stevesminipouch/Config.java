@@ -1,8 +1,6 @@
 package ga.melara.stevesminipouch;
 
-import net.minecraftforge.common.ForgeConfig;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 

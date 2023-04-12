@@ -1,6 +1,5 @@
 package ga.melara.stevesminipouch.command;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -9,14 +8,12 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import ga.melara.stevesminipouch.stats.InventorySyncPacket;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.util.ICustomInventory;
-import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Inventory;
 
 import java.util.Collection;
 

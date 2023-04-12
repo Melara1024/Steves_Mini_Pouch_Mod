@@ -44,7 +44,7 @@ public class ModRegistry {
         MinecraftForge.EVENT_BUS.addListener(ModRegistry::registerCommands);
     }
 
-    public static final RegistryObject<Item> SLOT_ADD1_ITEM = Add1SlotItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> SLOT_ADD1_ITEM = Inc1SlotItem.buildInTo(ITEMS);
     public static final RegistryObject<Item> SLOT_ADD9_ITEM = Inc9SlotItem.buildInTo(ITEMS);
     public static final RegistryObject<Item> SLOT_ADD27_ITEM = Inc27SlotItem.buildInTo(ITEMS);
 
