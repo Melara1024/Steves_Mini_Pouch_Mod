@@ -181,10 +181,10 @@ public class SlotChangeCommand {
                 if(entity instanceof ServerPlayer player) {
                     ICustomInventory inventory = (ICustomInventory)player.getInventory();
                     commandSourceStack.sendSuccess(Component.literal(String.format(
-                            "-- %s's inventory stats --\n" +
-                            "Inventory: %b\n" +
-                            "Armor: %b\n" +
-                            "Offhand: %b\n" +
+                            "§a-- %s's inventory stats --\n" +
+                            "§0Inventory: %b\n" +
+                            "§1Armor: %b\n" +
+                            "§2Offhand: %b\n" +
                             "Craft: %b\n" +
                             "Base Size: %d\n" +
                             "Effect Size: %d\n" +

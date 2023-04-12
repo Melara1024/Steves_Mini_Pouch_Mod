@@ -1,5 +1,6 @@
 package ga.melara.stevesminipouch.events;
 
+import ga.melara.stevesminipouch.Config;
 import ga.melara.stevesminipouch.util.ICustomInventory;
 import ga.melara.stevesminipouch.util.LockableItemStackList;
 import net.minecraft.core.NonNullList;

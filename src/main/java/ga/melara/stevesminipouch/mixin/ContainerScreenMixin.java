@@ -10,8 +10,10 @@ import ga.melara.stevesminipouch.stats.PageChangedPacket;
 import ga.melara.stevesminipouch.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -30,7 +32,7 @@ import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
 @Mixin(AbstractContainerScreen.class)
 public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> extends Screen implements IHasPageButton {
 
-    private static final ResourceLocation PATCH = new ResourceLocation(MODID, "textures/gui/patch.png");
+    private static final ResourceLocation PATCH = new ResourceLocation(MODID, "textures/gui/slot_patch.png");
 
     private int page = 0;
 
@@ -55,6 +57,9 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
     Button downButton;
     Button pageIndicator;
 
+    EditBox pageEditBox;
+
+
     protected ContainerScreenMixin(Component component) {
         super(component);
     }
@@ -64,14 +69,14 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         MinecraftForge.EVENT_BUS.register(this);
 
         //たぶんメニューを開いた瞬間にアイテム情報をクライアントに送れていない？
-        page = 0;
+        //page = 0;
         Messager.sendToServer(new PageChangedPacket(0));
         this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(0));
     }
 
     @Inject(method = "onClose", at = @At(value = "HEAD"), cancellable = true)
     public void onClose(CallbackInfo ci) {
-        page = 0;
+        //page = 0;
         Messager.sendToServer(new PageChangedPacket(0));
         this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(0));
     }
@@ -110,13 +115,22 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
             this.menu.slots.forEach(slot -> ((IHasSlotPage) slot).setPage(page));
         }).pos(buttonX, buttonY + upButton.getHeight() + pageIndicator.getHeight()).size(18, 18).build();
 
+        int imageWidth = 176;
+        int imageHeight = 166;
+        int i = (this.width - imageWidth) / 2;
+        int j = (this.height - imageHeight) / 2;
+        pageEditBox = new EditBox(this.font, i + 62, j + 24, 103, 12, Component.translatable("container.repair"));
+
+
         upButton.visible = false;
         downButton.visible = false;
         pageIndicator.visible = false;
+        pageEditBox.visible = false;
 
         this.addRenderableWidget(upButton);
         this.addRenderableWidget(pageIndicator);
         this.addRenderableWidget(downButton);
+        this.addRenderableWidget(pageEditBox);
 
         //this.itemRenderer.blitOffset = 0.0F;
         //this.setBlitOffset(0);
@@ -138,6 +152,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
                 upButton.visible = true;
                 downButton.visible = true;
                 pageIndicator.visible = true;
+                pageEditBox.visible = true;
             }
 
             // Shift the button position when the recipe book is opened.
@@ -146,11 +161,13 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
                 upButton.setX(buttonX);
                 downButton.setX(buttonX);
                 pageIndicator.setX(buttonX);
+                pageEditBox.setX(buttonX);
             }
 
             //upButton.renderButton(poseStack, mouseX, mouseY, partialTick);
             //downButton.renderButton(poseStack, mouseX, mouseY, partialTick);
             pageIndicator.setMessage(Component.literal(String.valueOf(page + 1)));
+            pageEditBox.setValue(String.valueOf((page + 1)));
             //pageIndicator.renderButton(poseStack, mouseX, mouseY, partialTick);
 
         } else {
@@ -159,6 +176,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
                 upButton.visible = false;
                 downButton.visible = false;
                 pageIndicator.visible = false;
+                pageEditBox.visible = false;
             }
         }
 
