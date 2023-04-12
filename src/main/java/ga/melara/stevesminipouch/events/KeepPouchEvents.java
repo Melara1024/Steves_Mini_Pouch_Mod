@@ -1,9 +1,6 @@
-package ga.melara.stevesminipouch.subscriber;
+package ga.melara.stevesminipouch.events;
 
-import ga.melara.stevesminipouch.Config;
-import ga.melara.stevesminipouch.stats.InventoryStatsData;
 import ga.melara.stevesminipouch.util.ICustomInventory;
-import ga.melara.stevesminipouch.util.IMenuSynchronizer;
 import ga.melara.stevesminipouch.util.LockableItemStackList;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -21,8 +18,6 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static ga.melara.stevesminipouch.StevesMiniPouch.LOGGER;
 
 @Mod.EventBusSubscriber
 public class KeepPouchEvents {

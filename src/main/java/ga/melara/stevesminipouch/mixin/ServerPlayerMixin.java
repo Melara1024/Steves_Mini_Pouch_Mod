@@ -6,7 +6,7 @@ import ga.melara.stevesminipouch.stats.InventoryStatsData;
 import ga.melara.stevesminipouch.stats.InventorySyncPacket;
 import ga.melara.stevesminipouch.stats.Messager;
 import ga.melara.stevesminipouch.stats.StatsSynchronizer;
-import ga.melara.stevesminipouch.subscriber.KeepPouchEvents;
+import ga.melara.stevesminipouch.events.KeepPouchEvents;
 import ga.melara.stevesminipouch.util.ICustomInventory;
 import ga.melara.stevesminipouch.util.IMenuSynchronizer;
 import ga.melara.stevesminipouch.util.LockableItemStackList;
@@ -27,8 +27,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static ga.melara.stevesminipouch.StevesMiniPouch.LOGGER;
-import static ga.melara.stevesminipouch.subscriber.KeepPouchEvents.*;
+import static ga.melara.stevesminipouch.events.KeepPouchEvents.*;
 
 @Mixin(ServerPlayer.class)
 public class ServerPlayerMixin {

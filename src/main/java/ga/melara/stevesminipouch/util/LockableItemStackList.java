@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
+// NonNullList with item slot lock function
 public class LockableItemStackList extends NonNullList<ItemStack> {
 
     private final Inventory inventory;

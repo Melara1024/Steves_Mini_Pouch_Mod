@@ -16,6 +16,7 @@ public enum SlotType {
     UNDEFINED;
 
 
+    // Classification to make it easier to distinguish slots
     public static void setType(Slot targetSlot) {
         if(targetSlot.container instanceof Inventory inventory) {
 

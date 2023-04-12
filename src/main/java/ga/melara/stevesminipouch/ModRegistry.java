@@ -15,7 +15,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -24,7 +23,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 import static ga.melara.stevesminipouch.StevesMiniPouch.MODID;
@@ -47,12 +45,12 @@ public class ModRegistry {
     }
 
     public static final RegistryObject<Item> SLOT_ADD1_ITEM = Add1SlotItem.buildInTo(ITEMS);
-    public static final RegistryObject<Item> SLOT_ADD9_ITEM = Add9SlotItem.buildInTo(ITEMS);
-    public static final RegistryObject<Item> SLOT_ADD27_ITEM = Add27SlotItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> SLOT_ADD9_ITEM = Inc9SlotItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> SLOT_ADD27_ITEM = Inc27SlotItem.buildInTo(ITEMS);
 
-    public static final RegistryObject<Item> SLOT_SUB1_ITEM = Sub1SlotItem.buildInTo(ITEMS);
-    public static final RegistryObject<Item> SLOT_SUB9_ITEM = Sub9SlotItem.buildInTo(ITEMS);
-    public static final RegistryObject<Item> SLOT_SUB27_ITEM = Sub27SlotItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> SLOT_SUB1_ITEM = Dec1SlotItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> SLOT_SUB9_ITEM = Dec9SlotItem.buildInTo(ITEMS);
+    public static final RegistryObject<Item> SLOT_SUB27_ITEM = Dec27SlotItem.buildInTo(ITEMS);
 
     public static final RegistryObject<Item> INVENTORY_ACTIVATE_ITEM = InventoryActivateItem.buildInTo(ITEMS);
     public static final RegistryObject<Item> CRAFT_ACTIVATE_ITEM = CraftActivatItem.buildInTo(ITEMS);
