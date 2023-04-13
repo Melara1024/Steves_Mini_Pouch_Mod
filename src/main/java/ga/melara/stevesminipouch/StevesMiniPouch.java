@@ -18,6 +18,6 @@ public class StevesMiniPouch {
 
         Messager.register();
 
-        ModRegistry.registerItems();
+        ModRegistry.register();
     }
 }

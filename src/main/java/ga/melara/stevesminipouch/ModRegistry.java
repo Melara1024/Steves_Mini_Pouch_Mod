@@ -36,7 +36,7 @@ public class ModRegistry {
 
     private static final DeferredRegister<MobEffect> EFFECT = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
 
-    public static void registerItems() {
+    public static void register() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ITEMS.register(eventBus);
         ENCHANTMENTS.register(eventBus);

@@ -64,7 +64,7 @@ public class Config {
 
         KEEP_STATS_ON_DEATH = SERVER_BUILDER.comment("Keep stats on player death").define("keep_stats_on_death", false);
 
-        REGISTER_INVENTORY = SERVER_BUILDER.comment("Register Inventory Item").define("register_inv", true);
+        REGISTER_INVENTORY = SERVER_BUILDER.comment("Switch item functions").define("register_inv", true);
         REGISTER_ARMOR = SERVER_BUILDER.define("register_arm", true);
         REGISTER_OFFHAND = SERVER_BUILDER.define("register_off", true);
         REGISTER_CRAFT = SERVER_BUILDER.define("register_cft", true);

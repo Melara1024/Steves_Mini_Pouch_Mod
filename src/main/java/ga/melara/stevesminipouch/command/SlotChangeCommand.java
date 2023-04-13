@@ -189,7 +189,6 @@ public class SlotChangeCommand {
                             "§fBase Size: %s\n" +
                             "§fEffect Size: %s\n" +
                             "§fEnchant Size: %s",
-
                             player.getName().getString(),
                             (inventory.isActiveInventory()?"§e":"§7") + inventory.isActiveInventory(),
                             (inventory.isActiveArmor()?"§e":"§7") + inventory.isActiveArmor(),
