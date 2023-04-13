@@ -119,7 +119,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
         int imageHeight = 166;
         int i = (this.width - imageWidth) / 2;
         int j = (this.height - imageHeight) / 2;
-        pageEditBox = new EditBox(this.font, i + 62, j + 24, 103, 12, Component.translatable("container.repair"));
+        pageEditBox = new EditBox(this.font, buttonX, buttonY + upButton.getHeight() + pageIndicator.getHeight() + downButton.getHeight(), 18, 18, Component.translatable("container.repair"));
 
 
         upButton.visible = false;
@@ -192,7 +192,7 @@ public abstract class ContainerScreenMixin<T extends AbstractContainerMenu> exte
 
             if(((IHasSlotType) slot).getType() == SlotType.UNDEFINED) SlotType.setType(slot);
 
-            // Render "x" on an unusable slot.
+            // Render "x" on an inactive slot.
             if(!((ISlotHidable) slot).isShowing()) {
                 patchSlot(poseStack, slot);
             }

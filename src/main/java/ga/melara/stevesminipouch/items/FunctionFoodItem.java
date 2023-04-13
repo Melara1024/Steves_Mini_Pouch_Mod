@@ -16,7 +16,7 @@ public class FunctionFoodItem extends Item {
             .build();
 
     public static Item.Properties ITEM_PROPERTIES = new Item.Properties()
-            .rarity(Rarity.EPIC)
+            .rarity(Rarity.RARE)
             .stacksTo(64)
             .food(FOOD_PROPERTIES);
 

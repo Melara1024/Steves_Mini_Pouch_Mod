@@ -7,17 +7,19 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.function.Consumer;
 
+
+@Mod.EventBusSubscriber
 public class Recipes extends RecipeProvider {
     public Recipes(DataGenerator generator) {
         super(generator.getPackOutput());
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
-
+    protected void buildRecipes(Consumer<FinishedRecipe> writer) {
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.SLOT_ADD1_ITEM.get())
                 .define('S', Items.NETHER_STAR)
                 .define('C', Items.CHEST)
@@ -26,7 +28,7 @@ public class Recipes extends RecipeProvider {
                 .pattern("XCX")
                 .pattern("XXX")
                 .unlockedBy("has_chest", has(Items.CHEST))
-                .save(consumer);
+                .save(writer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.SLOT_ADD9_ITEM.get())
                 .define('X', ModRegistry.SLOT_ADD1_ITEM.get())
@@ -34,7 +36,7 @@ public class Recipes extends RecipeProvider {
                 .pattern("XXX")
                 .pattern("XXX")
                 .unlockedBy("has_slot_add1", has(ModRegistry.SLOT_ADD1_ITEM.get()))
-                .save(consumer);
+                .save(writer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.SLOT_ADD27_ITEM.get())
                 .define('X', ModRegistry.SLOT_ADD9_ITEM.get())
@@ -42,7 +44,7 @@ public class Recipes extends RecipeProvider {
                 .pattern("XXX")
                 .pattern("XXX")
                 .unlockedBy("has_slot_add1", has(ModRegistry.SLOT_ADD1_ITEM.get()))
-                .save(consumer);
+                .save(writer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.SLOT_SUB1_ITEM.get())
                 .define('S', Items.NETHER_STAR)
@@ -51,8 +53,8 @@ public class Recipes extends RecipeProvider {
                 .pattern("XXX")
                 .pattern("XCX")
                 .pattern("XSX")
-                .unlockedBy("has_diamond", has(Items.CHEST))
-                .save(consumer);
+                .unlockedBy("has_chest", has(Items.CHEST))
+                .save(writer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.SLOT_SUB9_ITEM.get())
                 .define('X', ModRegistry.SLOT_SUB1_ITEM.get())
@@ -60,7 +62,7 @@ public class Recipes extends RecipeProvider {
                 .pattern("XXX")
                 .pattern("XXX")
                 .unlockedBy("has_slot_sub1", has(ModRegistry.SLOT_SUB1_ITEM.get()))
-                .save(consumer);
+                .save(writer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.SLOT_SUB27_ITEM.get())
                 .define('X', ModRegistry.SLOT_SUB9_ITEM.get())
@@ -68,7 +70,7 @@ public class Recipes extends RecipeProvider {
                 .pattern("XXX")
                 .pattern("XXX")
                 .unlockedBy("has_slot_sub1", has(ModRegistry.SLOT_SUB1_ITEM.get()))
-                .save(consumer);
+                .save(writer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.INVENTORY_ACTIVATE_ITEM.get())
                 .define('S', Items.WHEAT_SEEDS)
@@ -77,7 +79,7 @@ public class Recipes extends RecipeProvider {
                 .pattern("XSX")
                 .pattern("XXX")
                 .unlockedBy("has_oak_log", has(Items.OAK_LOG))
-                .save(consumer);
+                .save(writer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.ARMOR_ACTIVATE_ITEM.get())
                 .define('S', Items.DIAMOND)
@@ -87,7 +89,7 @@ public class Recipes extends RecipeProvider {
                 .pattern("SGS")
                 .pattern("XSX")
                 .unlockedBy("has_diamond", has(Items.DIAMOND))
-                .save(consumer);
+                .save(writer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.OFFHAND_ACTIVATE_ITEM.get())
                 .define('S', Items.STICK)
@@ -96,7 +98,7 @@ public class Recipes extends RecipeProvider {
                 .pattern("XSX")
                 .pattern("XSX")
                 .unlockedBy("has_stick", has(Items.STICK))
-                .save(consumer);
+                .save(writer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModRegistry.CRAFT_ACTIVATE_ITEM.get())
                 .define('E', Items.EMERALD_BLOCK)
@@ -106,6 +108,6 @@ public class Recipes extends RecipeProvider {
                 .pattern("CEC")
                 .pattern("XCX")
                 .unlockedBy("has_emerald", has(Items.EMERALD))
-                .save(consumer);
+                .save(writer);
     }
 }

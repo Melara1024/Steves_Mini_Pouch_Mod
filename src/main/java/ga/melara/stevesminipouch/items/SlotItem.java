@@ -10,7 +10,13 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class SlotItem extends FunctionFoodItem {
 
@@ -18,6 +24,20 @@ public class SlotItem extends FunctionFoodItem {
 
     public SlotItem(Item.Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack itemStack, @Nullable Level p_41422_, List<Component> tooltipComponent, TooltipFlag isAdvanced) {
+        if(Config.REGISTER_SLOT.get() && incremental != 0){
+            if(incremental > 0){
+                tooltipComponent.add(Component.literal(String.format("§6Increase %d slots", incremental)));
+            }
+            else {
+                tooltipComponent.add(Component.literal(String.format("§6Decrease %d slots", -incremental)));
+            }
+        } else {
+            tooltipComponent.add(Component.literal("§4It's just food."));
+        }
     }
 
     @Override

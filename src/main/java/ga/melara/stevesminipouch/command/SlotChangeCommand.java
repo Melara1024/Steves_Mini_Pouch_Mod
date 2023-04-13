@@ -182,21 +182,22 @@ public class SlotChangeCommand {
                     ICustomInventory inventory = (ICustomInventory)player.getInventory();
                     commandSourceStack.sendSuccess(Component.literal(String.format(
                             "§a-- %s's inventory stats --\n" +
-                            "§0Inventory: %b\n" +
-                            "§1Armor: %b\n" +
-                            "§2Offhand: %b\n" +
-                            "Craft: %b\n" +
-                            "Base Size: %d\n" +
-                            "Effect Size: %d\n" +
-                            "Enchant Size: %d",
+                            "§fInventory: %s\n" +
+                            "§fArmor: %s\n" +
+                            "§fOffhand: %s\n" +
+                            "§fCraft: %s\n" +
+                            "§fBase Size: %s\n" +
+                            "§fEffect Size: %s\n" +
+                            "§fEnchant Size: %s",
+
                             player.getName().getString(),
-                            inventory.isActiveInventory(),
-                            inventory.isActiveArmor(),
-                            inventory.isActiveOffhand(),
-                            inventory.isActiveCraft(),
-                            inventory.getBaseSize(),
-                            inventory.getEffectSize(),
-                            inventory.getEnchantSize())), true);
+                            (inventory.isActiveInventory()?"§e":"§7") + inventory.isActiveInventory(),
+                            (inventory.isActiveArmor()?"§e":"§7") + inventory.isActiveArmor(),
+                            (inventory.isActiveOffhand()?"§e":"§7") + inventory.isActiveOffhand(),
+                            (inventory.isActiveCraft()?"§e":"§7") + inventory.isActiveCraft(),
+                            (inventory.getBaseSize()==0?"§7":"§e") + inventory.getBaseSize(),
+                            (inventory.getEffectSize()==0?"§7":"§e") + inventory.getEffectSize(),
+                            (inventory.getEffectSize()==0?"§7":"§e") + inventory.getEnchantSize())), true);
                 }
             }
             return applied;

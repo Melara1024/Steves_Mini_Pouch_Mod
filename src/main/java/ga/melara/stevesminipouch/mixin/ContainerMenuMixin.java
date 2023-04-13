@@ -64,6 +64,8 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
 
     @SubscribeEvent
     public void onPageChange(ServerPageChangeEvent e) {
+        System.out.println("page changed to " + e.getPage());
+
         for(Slot s : this.slots) {
             if (((IHasSlotType)s).getType() == SlotType.INVENTORY && ((IHasSlotPage)s).getOwner().equals(e.getUUID())){
                 ((IHasSlotPage) s).setPage(e.getPage());
@@ -71,7 +73,7 @@ public abstract class ContainerMenuMixin implements IMenuChangable, IMenuSynchro
         }
 
         // Synchronize all information except "carried" at page change with the client.
-        // If you synchronize "carried" in here, it could disappear when players put on and take off the armor with slot enchantment.
+        // If "carried" synchronized in here, carried item could disappear when players put on and take off the armor with slot enchantment.
         if(this.synchronizer != null) {
             int i = 0;
             for(int j = this.slots.size(); i < j; ++i) {
