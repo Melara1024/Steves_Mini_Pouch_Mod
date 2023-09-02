@@ -1,7 +1,11 @@
-// 1.19.3	2022-12-12T08:55:06.8710354	Item Models: stevesminipouch
-265f5f26738e6ad536d8052c53eda941d1c86fae assets/stevesminipouch/models/item/activate_armor.json
-992690d3d06df7d7f7b7f0178c45480a187cbe2a assets/stevesminipouch/models/item/activate_craft.json
-f8bb50cb6287cb5cbcc391077aa04828ce1b863e assets/stevesminipouch/models/item/activate_inventory.json
-3ee0d4379884996d1c76c5120fe42c60a986ba30 assets/stevesminipouch/models/item/activate_offhand.json
-6738ae529ff123b21abd66be0d9074d391277cc8 assets/stevesminipouch/models/item/slot_sub_lv2.json
-819522642c380b4331cf2455ec00b169cd4561cd assets/stevesminipouch/models/item/slot_sub_lv3.json
+// 1.19.4	2023-09-03T00:44:46.1138264	Item Models: stevesminipouch
+ecc5bcd8089e6c86ab12f52f190cd4adfb52a4bd assets/stevesminipouch/models/item/activate_armor.json
+0eeb7248786af2c586eebad5e45e39da05f3a14a assets/stevesminipouch/models/item/activate_craft.json
+647d42b08ebe7a7aecf3af53aec53a4c9779f633 assets/stevesminipouch/models/item/activate_inventory.json
+7c6fc655ed3d4ddd5ef2d71eb7449f16fcd8fb82 assets/stevesminipouch/models/item/activate_offhand.json
+d8c7ccecb66a4f9a3d6861c67e3dcb70ff9372f3 assets/stevesminipouch/models/item/slot_add_lv1.json
+0a903c58b35d7e255bfc59db76a98c5d930d9878 assets/stevesminipouch/models/item/slot_add_lv2.json
+b8ef7e994b5becc757271e2f50a12db6802310d5 assets/stevesminipouch/models/item/slot_add_lv3.json
+d55448702f29681dcf06a58bbb0ec67b149c41a4 assets/stevesminipouch/models/item/slot_sub_lv1.json
+645c4c77eb2de417cd27367c42a2bfb090c92ade assets/stevesminipouch/models/item/slot_sub_lv2.json
+e833afdbf523777f75b787b21ea7b9e9f459e280 assets/stevesminipouch/models/item/slot_sub_lv3.json

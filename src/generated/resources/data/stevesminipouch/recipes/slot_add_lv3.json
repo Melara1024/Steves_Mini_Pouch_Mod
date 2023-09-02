@@ -13,5 +13,6 @@
   ],
   "result": {
     "item": "stevesminipouch:slot_add_lv3"
-  }
+  },
+  "show_notification": true
 }

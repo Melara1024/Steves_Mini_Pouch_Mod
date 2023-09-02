@@ -1,37 +1,24 @@
 {
-  "type": "forge:conditional",
-
-  "recipes": [
-    {
-      "conditions": [
-        {
-          "type": "stevesminipouch:recipe_availability",
-          "item": "armor"
-        }
-      ],
-      "recipe": {
-        "type": "minecraft:crafting_shaped",
-        "category": "misc",
-        "key": {
-          "G": {
-            "item": "minecraft:amethyst_shard"
-          },
-          "S": {
-            "item": "minecraft:diamond"
-          },
-          "X": {
-            "item": "minecraft:iron_block"
-          }
-        },
-        "pattern": [
-          "XSX",
-          "SGS",
-          "XSX"
-        ],
-        "result": {
-          "item": "stevesminipouch:activate_armor"
-        }
-      }
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "S": {
+      "item": "minecraft:diamond"
+    },
+    "X": {
+      "item": "minecraft:iron_block"
     }
-  ]
+  },
+  "pattern": [
+    "XSX",
+    "SGS",
+    "XSX"
+  ],
+  "result": {
+    "item": "stevesminipouch:activate_armor"
+  },
+  "show_notification": true
 }

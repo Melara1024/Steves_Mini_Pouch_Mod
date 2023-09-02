@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "stevesminipouch:activate_offhand"
-  }
+  },
+  "show_notification": true
 }

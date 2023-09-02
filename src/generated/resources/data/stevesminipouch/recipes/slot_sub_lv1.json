@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "stevesminipouch:slot_sub_lv1"
-  }
+  },
+  "show_notification": true
 }

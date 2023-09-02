@@ -13,5 +13,6 @@
   ],
   "result": {
     "item": "stevesminipouch:slot_sub_lv2"
-  }
+  },
+  "show_notification": true
 }

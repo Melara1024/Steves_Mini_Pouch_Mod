@@ -1,5 +1,5 @@
 {
-  "parent": "stevesminipouch:item/slot_sub_lv1",
+  "parent": "stevesminipouch:item/cube",
   "textures": {
     "layer": "stevesminipouch:item/slot_sub_lv2"
   }

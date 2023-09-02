@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/generated",
+  "parent": "stevesminipouch:item/oriented_cube",
   "textures": {
-    "layer0": "stevesminipouch:item/activate_craft"
+    "layer": "stevesminipouch:item/activate_craft"
   }
 }

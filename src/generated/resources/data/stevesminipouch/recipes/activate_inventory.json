@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "stevesminipouch:activate_inventory"
-  }
+  },
+  "show_notification": true
 }

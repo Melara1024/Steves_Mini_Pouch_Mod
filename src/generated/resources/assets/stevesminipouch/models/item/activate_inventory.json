@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/generated",
+  "parent": "stevesminipouch:item/backpack",
   "textures": {
-    "layer0": "stevesminipouch:item/activate_inventory"
+    "0": "stevesminipouch:item/backpack"
   }
 }

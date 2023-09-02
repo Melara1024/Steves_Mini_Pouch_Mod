@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "stevesminipouch:activate_craft"
-  }
+  },
+  "show_notification": true
 }
